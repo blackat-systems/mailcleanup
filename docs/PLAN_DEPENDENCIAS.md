@@ -1,7 +1,7 @@
 # Plan de dependencias y worktrees
 
 Estado del plan: ejecución controlada; D1 está `INTEGRADA`, D2 está
-`LISTA PARA CREAR` y las demás dependencias conservan sus bloqueos.
+`EN DESARROLLO` y las demás dependencias conservan sus bloqueos.
 
 Fecha de inspección: 18 de agosto de 2026.
 
@@ -206,7 +206,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Implementar autorización de una cuenta en modo de sólo lectura, identidad de cuenta, almacenamiento seguro, renovación, desconexión y revocación. |
 | Razón para separarlo | Las credenciales forman una frontera de seguridad distinta del inventario y requieren pruebas negativas propias. |
-| Estado actual | `LISTA PARA CREAR` |
+| Estado actual | `EN DESARROLLO` |
 | Dependencias previas | Base Segura aceptada; D1 integrada; implementación sintética autorizada por D-020; C2/C3 aprobados. |
 | Contratos que consume | `docs/contracts/GMAIL_SESSION_V1.md`, C2 y C3. |
 | Resultados que produce | Sesión de sólo lectura y estados de conexión sin exponer tokens. |
@@ -214,7 +214,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Permitido | Nuevos módulos de sesión Gmail, almacén de credenciales y pruebas sintéticas con dobles; configuración ignorada por Git. |
 | Prohibido | Inventario completo, clasificación, SQLite del mapa, frontend, `gmail.modify`, credenciales reales en pruebas o commits. |
 | Rama propuesta | `codex/secure-gmail-session` |
-| Ruta propuesta | Worktree aislado generado por Codex y registrado después de su creación real. |
+| Ruta real | `C:\Users\Joaquin\.codex\worktrees\6d71\mailcleanup` |
 | Commit base requerido | SHA limpio que contenga `GMAIL_SESSION_V1.md`, D-019, D-020 y el prompt D2. |
 | Verificaciones específicas | Pruebas de scopes, cuenta esperada, renovación, revocación, errores, permisos de archivos, secretos y barrera de no escritura. |
 | Criterios de aceptación | No usa contraseña, no registra tokens, no pide permisos de modificación y permite revocar y borrar el estado local. |

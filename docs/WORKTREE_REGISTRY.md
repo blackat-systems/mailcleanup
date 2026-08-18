@@ -63,6 +63,29 @@ un defecto de severidad media: una migración fallida podía dejar DDL parcial.
 La integración agrega una transacción explícita para cada migración y una prueba
 de regresión. D1 continúa siendo local, sintética y no apta para datos reales.
 
+## D2 — `secure-gmail-session`
+
+| Campo | Estado real |
+|---|---|
+| Proceso | Mapa Total, preparación sintética de sesión |
+| Estado | `EN DESARROLLO` |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\6d71\mailcleanup` |
+| Rama | `codex/secure-gmail-session` |
+| Base | `889d5f55acf1262aea722ace3d48a9064d06803f` |
+| HEAD al crear | `889d5f55acf1262aea722ace3d48a9064d06803f` |
+| Tarea | `01a014f4-c5a0-7d31-be0a-fd7dbe92e38c` — `D2 · Sesión segura Gmail` |
+| Prompt | `docs/prompts/D2_SECURE_GMAIL_SESSION.md` |
+| Contrato | `docs/contracts/GMAIL_SESSION_V1.md` |
+| Alcance | Sesión de sólo metadatos, puertos OAuth, identidad, DPAPI, renovación, desconexión y revocación, todo con dobles sintéticos |
+| Archivos permitidos | `src/mailmap/session_model.py`, `src/mailmap/oauth_session.py`, `src/mailmap/windows_secret_store.py`, `tests/test_gmail_session.py`, `tests/test_base_segura_safety.py`, `pyproject.toml` |
+| OAuth real, Gmail, credenciales y datos reales | Prohibidos durante desarrollo y pruebas |
+| Commit del especialista | No autorizado |
+| Integración en `main` | Pendiente de entrega y auditoría de MAIN |
+
+Codex creó inicialmente D2 en `detached HEAD`. MAIN verificó que estaba limpio,
+lo adjuntó a `codex/secure-gmail-session`, confirmó nuevamente ruta, rama, base y
+estado y recién entonces indicó al especialista que comenzara.
+
 ## Reglas de actualización
 
 Al crear, entregar, integrar o descartar un worktree se registran ruta, rama,

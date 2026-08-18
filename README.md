@@ -16,7 +16,8 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
 - Joa aceptó Base Segura; la revisión visual instrumental continúa registrada
   como no verificada;
 - D1 de persistencia sintética fue auditada e integrada;
-- D2 puede implementarse con dobles sintéticos bajo un contrato específico;
+- D2 está en desarrollo en un worktree aislado, con dobles sintéticos y bajo un
+  contrato específico;
 - abrir OAuth, conectar Gmail, solicitar credenciales y usar datos reales siguen
   prohibidos;
 - esta consolidación queda registrada en el commit que contiene este documento.

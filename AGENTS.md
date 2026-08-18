@@ -301,8 +301,8 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 # 10. ESPECIALISTAS
 
 El worktree fuente de D1 `real-index-persistence` se conserva como evidencia de
-una entrega ya integrada. D2 `secure-gmail-session` es la única dependencia
-habilitada para crear; no existe otro especialista autorizado.
+una entrega ya integrada. D2 `secure-gmail-session` es el único especialista en
+desarrollo; no existe otra dependencia autorizada.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
