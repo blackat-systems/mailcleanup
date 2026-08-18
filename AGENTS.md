@@ -1,0 +1,59 @@
+# Reglas del proyecto
+
+## Idioma y colaboración
+
+- Trabajar y reportar en español claro.
+- Liderar con el resultado, la evidencia y el próximo paso.
+- Avanzar con autonomía dentro del hito activo y pedir confirmación sólo cuando cambie alcance, arquitectura, permisos externos o riesgo.
+
+## Fuentes de verdad
+
+Leer antes de desarrollar, en este orden:
+
+1. `docs/CONTRATO_MVP.md`.
+2. `docs/AUDITORIA_PRE_DESARROLLO.md`.
+3. `docs/ESPECIFICACION_FUNCIONAL.md` como visión futura.
+
+El contrato MVP prevalece ante cualquier diferencia. Implementar únicamente el hito autorizado por Joa.
+
+MAIN debe leer además `docs/PROMPT_MAESTRO_MAIN.md` y
+`docs/WORKTREE_REGISTRY.md` antes de planificar integraciones o crear una
+dependencia.
+
+## MAIN y worktrees especialistas
+
+- La carpeta raíz del proyecto sobre la rama `main` es el worktree de MAIN.
+- MAIN conserva visión integral, contratos compartidos, arquitectura, columna vertebral, batería global e integración.
+- Un worktree especialista recibe una responsabilidad acotada desde un commit base confirmado.
+- Antes de editar, todo especialista debe verificar ruta, rama, `HEAD` y estado de Git.
+- Un especialista no cambia contratos compartidos, alcance o arquitectura sin devolver el problema a MAIN.
+- Un especialista no integra en `main` ni hace `commit`, `push` o `merge` salvo autorización explícita de Joa transmitida por MAIN.
+- Una entrega especialista es evidencia parcial. MAIN inspecciona el diff completo, archivos no rastreados, pruebas y contratos antes de integrar.
+- MAIN repite la validación relevante después de integrar; no hereda como prueba suficiente el resultado informado por la dependencia.
+- Ningún worktree nuevo se crea hasta que MAIN tenga un commit base limpio y un prompt autosuficiente para esa dependencia.
+
+## Seguridad y privacidad
+
+- No conectar Gmail ni abrir OAuth antes de la puerta de aprobación correspondiente.
+- No modificar, archivar, mover, desuscribir ni marcar correos durante los Hitos 0, 1 y 2.
+- No usar correos reales, nombres privados, credenciales ni tokens en fixtures, pruebas, logs, capturas o commits.
+- No renderizar cuerpos HTML ni cargar imágenes o recursos remotos de mensajes.
+- No enviar datos de correo a servicios externos de IA durante el MVP.
+- No implementar eliminación definitiva.
+- Toda futura acción real debe ser revalidada, idempotente, registrable y aprobada.
+
+## Desarrollo
+
+- Tratar `src/gmail_cleaner` como prototipo no auditado, no como arquitectura aprobada.
+- Separar evidencia, inferencia, decisión del usuario, plan y ejecución.
+- Mantener reglas de precedencia y clasificación en una única fuente lógica.
+- Trabajar con datos sintéticos hasta que el contrato habilite expresamente una cuenta real.
+- No ampliar el alcance con Outlook, pagos, múltiples cuentas, filtros persistentes ni Guardián en segundo plano.
+- Mantener `docs/WORKTREE_REGISTRY.md` actualizado cuando se cree, entregue, integre o descarte un worktree.
+
+## Verificación
+
+- Cada cambio funcional necesita la prueba más pequeña que demuestre su comportamiento.
+- Antes de cerrar un hito, ejecutar pruebas, lint, chequeo de tipos, build y recorrido visual aplicables.
+- Diferenciar lo verificado, lo inferido y lo pendiente.
+- No declarar terminado un hito si falta un criterio de aceptación del contrato.
