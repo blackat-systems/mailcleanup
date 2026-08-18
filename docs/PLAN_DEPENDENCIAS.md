@@ -1,6 +1,7 @@
 # Plan de dependencias y worktrees
 
-Estado del plan: `PROPUESTA` para revisión de Joa.
+Estado del plan: ejecución controlada; D1 está `INTEGRADA` localmente y las
+demás dependencias conservan sus bloqueos.
 
 Fecha de inspección: 18 de agosto de 2026.
 
@@ -14,17 +15,17 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 |---|---|
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\mailcleanup` |
 | Rama | `main` |
-| HEAD inspeccionado | `27e8cde1c52a7e9b517c89595b45f83e48283946` |
-| Estado inicial | Limpio, sin archivos no rastreados |
-| Worktrees | Uno: MAIN en la raíz del repositorio |
+| HEAD de MAIN al integrar D1 | `7720ad4c57c984c7ba6fc2e6bc9c5e02119756a2` |
+| Estado actual | D1 integrada y consolidada en el commit que contiene este estado |
+| Worktrees | Dos: MAIN y D1 `real-index-persistence` |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Consolidada técnicamente; revisión visual en escritorio y 390 px y aceptación de Joa pendientes |
 | Capacidades autorizadas | Base Segura sintética y preparación/implementación sintética de D1; ningún acceso real ni proceso operativo posterior |
 
-El SHA anterior es evidencia de esta planificación, no la base autorizada de un
-worktree futuro. Cada dependencia requiere un SHA limpio posterior que contenga
-sus contratos estabilizados y las autorizaciones necesarias.
+El SHA anterior es la base de MAIN sobre la que se integró D1, no un commit de
+integración. Cada dependencia posterior requiere un SHA limpio nuevo que
+contenga sus contratos estabilizados y las autorizaciones necesarias.
 
 ## 2. Inventario de lo que ya existe
 
@@ -176,7 +177,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Implementar persistencia y migraciones del índice normalizado, checkpoints, estados de sincronización y borrado local conforme a C1 y C4. |
 | Razón para separarlo | Es una frontera local, sin red, con invariantes de migración y recuperación verificables en aislamiento. |
-| Estado actual | `EN DESARROLLO` |
+| Estado actual | `INTEGRADA` y consolidada en el commit que contiene este estado |
 | Dependencias previas | Joa autorizó abrir D1 como infraestructura sintética; C1/C4 quedan estabilizados para ese alcance por `docs/contracts/INDEX_PERSISTENCE_V1.md`. |
 | Contratos que consume | C1, C4, reglas SQLite vigentes. |
 | Resultados que produce | Repositorios y migraciones versionadas para índice, checkpoints y ciclo de borrado. |
@@ -184,7 +185,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Permitido | Nuevos módulos de índice/persistencia, migraciones y pruebas; adaptador explícito en `repository.py` sólo si el prompt lo delimita. |
 | Prohibido | OAuth, clientes Gmail, clasificación, API pública, frontend y datos reales en pruebas. |
 | Rama propuesta | `codex/real-index-persistence` |
-| Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-real-index-persistence` |
+| Ruta real | `C:\Users\Joaquin\.codex\worktrees\ab1f\mailcleanup` |
 | Commit base requerido | SHA limpio que incorpore `docs/contracts/INDEX_PERSISTENCE_V1.md` y la autorización D-017; el prompt autosuficiente debe registrar y comunicar ese SHA exacto. |
 | Verificaciones específicas | Migración desde base nueva y versión anterior; transacciones; reanudación; borrado; pytest, Ruff y mypy afectados. |
 | Criterios de aceptación | No pierde decisiones ni duplica registros; reanuda de forma determinista; elimina el índice solicitado; no almacena secretos. |
@@ -478,21 +479,23 @@ MAIN: contrato C1/C4 sintético + batería + SHA limpio
 ```
 
 Orden de apertura recomendado: D1, D2, D3, D4, D5, D6, D7, D8, D9 y D10.
-El orden expresa consumo real. D2 puede abrirse mientras D1 está en desarrollo
-si sus contratos y archivos ya están aislados. D8 puede adelantarse con fixtures
+El orden expresa consumo real. D1 ya fue integrada localmente. D2 permanece
+bloqueada por autorización y no se habilita por esta integración. D8 puede adelantarse con fixtures
 solamente si C6 y la API están congelados; su integración siempre espera D7.
 
-## 8. Primer worktree posible
+## 8. Primer worktree creado e integrado
 
-El primer worktree autorizado es D1 `real-index-persistence`. Puede verificarse
+El primer worktree autorizado fue D1 `real-index-persistence`. Fue verificado
 sin red ni credenciales y produce la base consumida por el inventario, pero no
 habilita por sí solo ningún dato real.
 
-Estado actual: `EN DESARROLLO` con alcance exclusivamente sintético desde la
-base `c3dc210e69e31eb252443d08558e78f756c719d2`.
+Estado actual: `INTEGRADA` en el árbol de trabajo de MAIN, con alcance
+exclusivamente sintético desde la base
+`c3dc210e69e31eb252443d08558e78f756c719d2`. La integración queda fijada por el
+commit que contiene este estado.
 
 La condición original se acotó por instrucción explícita de Joa. Para crear D1
-ahora deben cumplirse todas:
+se cumplieron:
 
 1. D1 permanece limitada a datos sintéticos por D-017;
 2. MAIN aprueba el contrato `INDEX_PERSISTENCE_V1.md`;
@@ -500,7 +503,7 @@ ahora deben cumplirse todas:
 4. `main` queda limpio en un SHA nuevo y se registra ese hash;
 5. MAIN completa un prompt autosuficiente desde
    `docs/prompts/PLANTILLA_DEPENDENCIA.md`;
-6. `docs/WORKTREE_REGISTRY.md` continúa sin registrar D1 hasta su creación real.
+6. `docs/WORKTREE_REGISTRY.md` registró D1 después de su creación real.
 
 La revisión visual y la autorización de Gmail, OAuth y datos reales siguen
 pendientes y no forman parte de D1.

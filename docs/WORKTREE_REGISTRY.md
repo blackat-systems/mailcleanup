@@ -40,7 +40,7 @@ worktrees que existen realmente.
 | Campo | Estado real |
 |---|---|
 | Proceso | Mapa Total, infraestructura sintética preparatoria |
-| Estado | `EN DESARROLLO` |
+| Estado | `INTEGRADA` en el árbol de trabajo de MAIN; fuente conservada |
 | Ruta | `C:\Users\Joaquin\.codex\worktrees\ab1f\mailcleanup` |
 | Rama | `codex/real-index-persistence` |
 | Base | `c3dc210e69e31eb252443d08558e78f756c719d2` |
@@ -52,11 +52,16 @@ worktrees que existen realmente.
 | Archivos permitidos | `src/mailmap/index_model.py`, `src/mailmap/repository.py`, `tests/test_index_persistence.py` |
 | Gmail, OAuth y datos reales | Prohibidos |
 | Commit del especialista | No autorizado |
-| Integración en `main` | Pendiente de entrega y auditoría de MAIN |
+| Integración en `main` | Auditada e integrada en el commit que contiene este registro, sobre base `7720ad4c57c984c7ba6fc2e6bc9c5e02119756a2` |
 
 Codex creó inicialmente el checkout en `detached HEAD`. MAIN comprobó que estaba
 limpio, lo adjuntó a la rama indicada y volvió a verificar rama, HEAD y estado
 antes de habilitar al especialista para editar.
+
+MAIN auditó los tres archivos autorizados, repitió la batería completa y detectó
+un defecto de severidad media: una migración fallida podía dejar DDL parcial.
+La integración agrega una transacción explícita para cada migración y una prueba
+de regresión. D1 continúa siendo local, sintética y no apta para datos reales.
 
 ## Reglas de actualización
 

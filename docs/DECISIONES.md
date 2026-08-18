@@ -24,6 +24,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-015 | La nomenclatura activa es Base Segura, Mapa Total, Estudio de Limpieza y Limpieza Controlada. | Vigente | Instrucción explícita de Joa |
 | D-016 | MAIN puede consolidar la base vigente en `main`, crear el commit y hacer push sólo si existe un remoto válido. | Ejecutada localmente | Autorización explícita de Joa |
 | D-017 | Crear D1 `real-index-persistence` como primer worktree, limitado a infraestructura sintética y sin habilitar Gmail, OAuth, credenciales ni datos reales. | Autorizada | Instrucción explícita de Joa del 18 de agosto de 2026 |
+| D-018 | Integrar D1 en MAIN después de auditoría independiente, corrigiendo la atomicidad de migraciones y sin habilitar consumidores posteriores. | Ejecutada y consolidada en el commit que contiene esta decisión | Auditoría MAIN y autorización explícita de Joa del 18 de agosto de 2026 |
 
 ## Decisiones suficientemente definidas
 
@@ -41,9 +42,10 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 
 ## Confirmación recibida
 
-Joa respondió afirmativamente y autorizó D-005 + D-006. Esta autorización no
-incluye Gmail, OAuth, credenciales, datos reales, acciones externas, Mapa Total ni
-worktrees especialistas.
+Joa respondió afirmativamente y autorizó D-005 + D-006. Posteriormente autorizó
+la excepción sintética D-017 y la auditoría e integración D-018. Ninguna de esas
+autorizaciones incluye Gmail, OAuth, credenciales, datos reales, acciones
+externas, Mapa Total operativo, D2 ni D3.
 
 ## Resultado de la implementación autorizada
 

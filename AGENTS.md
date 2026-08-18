@@ -49,15 +49,17 @@ La revisión visual en escritorio y móvil estrecho, la corrección de cualquier
 defecto visual que aparezca y la aceptación final de Joa siguen pendientes.
 
 No están autorizados Gmail, OAuth, credenciales, datos reales ni Mapa Total.
-Existe un solo worktree, correspondiente a MAIN sobre `main`, y no hay remoto
-Git configurado.
+Existen dos worktrees: MAIN sobre `main` y D1
+`codex/real-index-persistence`. D1 fue auditada e integrada en el árbol de
+trabajo de MAIN con alcance exclusivamente sintético y queda consolidada por el
+commit que contiene esta actualización. No hay remoto Git configurado.
 
 ## Objetivo actual
 
 Cerrar Base Segura de manera verificable: conservar la base técnica consolidada,
-completar su revisión visual y obtener una decisión explícita de Joa. No comenzar
-Mapa Total ni crear una dependencia especialista antes de esa decisión y de un
-contrato específico estable.
+completar su revisión visual y obtener una decisión explícita de Joa. La
+infraestructura sintética D1 es una excepción preparatoria ya integrada; no
+habilita Mapa Total ni permite crear D2 o D3.
 
 ---
 
@@ -295,7 +297,9 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 
 # 10. ESPECIALISTAS
 
-No existe actualmente ningún especialista ni worktree especialista.
+Existe un único worktree especialista, D1 `real-index-persistence`. Su entrega
+fue auditada e integrada en el árbol de trabajo de MAIN; el worktree fuente se
+conserva hasta cerrar la integración. No existe otro especialista habilitado.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
