@@ -1,109 +1,515 @@
-## Metodología global de proyectos con MAIN y worktrees
+# PROJECT AGENTS — MAILCLEANUP
 
-Para proyectos de software no triviales, trabajar por defecto con esta organización:
+# 0. INICIALIZACIÓN DE LA PLANTILLA
 
-### PLANIFICACIÓN
+Esta sección conserva el contrato de inicialización del gobierno específico del
+proyecto. MAIN inicializó este archivo el 18 de agosto de 2026 después de
+inspeccionar Git, código, pruebas, configuración y documentación vigente.
 
-- PLANIFICACIÓN define el producto, resuelve decisiones teóricas, delimita hitos y prepara instrucciones para MAIN.
-- PLANIFICACIÓN no implementa módulos funcionales ni integra código.
-- Las decisiones acordadas deben transferirse a fuentes durables del repositorio.
+Al inicializar o revisar estas reglas, MAIN debe:
 
-### MAIN
+1. deducir la información específica desde fuentes verificables del repositorio;
+2. mantener el archivo alineado con el alcance, la arquitectura y el estado real;
+3. eliminar ejemplos genéricos que no describan MailCleanup;
+4. no inventar datos para completar una sección;
+5. registrar como `PENDIENTE`, con su razón, aquello que requiera una decisión
+   material de Joa;
+6. consultar a Joa sólo si falta una decisión sobre alcance, arquitectura,
+   seguridad, privacidad, costos o comportamiento esperado.
 
-- MAIN es el director integral del proyecto.
-- Conserva visión, contratos compartidos, arquitectura, seguridad, documentación, batería global y estado de integración.
-- MAIN construye únicamente la columna vertebral y los cambios transversales que no puedan delegarse de forma segura.
-- MAIN no debe absorber personalmente todos los módulos funcionales.
-- Antes de delegar, MAIN debe tener contratos estables, un commit base limpio y un prompt especialista autosuficiente.
-- MAIN define el orden de dependencias y evita abrir trabajos paralelos que dependan de contratos todavía inestables.
+No deben permanecer campos de plantilla sin resolver. Este archivo contiene
+únicamente reglas específicas de MailCleanup y complementa las reglas globales
+de Codex sin duplicarlas.
 
-### Dependencias especialistas
+Antes de cambios importantes, leer este archivo y las fuentes de verdad que
+correspondan a la tarea.
 
-- Cada módulo funcional cohesivo e independientemente verificable debe desarrollarse en un chat especialista y un worktree separado.
-- Cada chat especialista recibe una sola responsabilidad acotada.
-- Antes de editar, verifica ruta, rama, HEAD y estado de Git.
-- No modifica arquitectura, contratos compartidos ni alcance sin devolver la decisión a MAIN.
-- No integra en `main`.
-- No hace commit, push, merge, rebase ni publicación salvo autorización explícita transmitida por MAIN.
-- Entrega un handoff con objetivo, cambios, pruebas, riesgos, archivos no rastreados y estado exacto de Git.
+---
 
-### Integración
+# 1. PROYECTO
 
-- Una entrega especialista es evidencia parcial, no integración.
-- MAIN inspecciona el diff completo y los archivos no rastreados.
-- MAIN comprueba que la entrega respete su contrato.
-- MAIN ejecuta las pruebas específicas.
-- MAIN integra de forma controlada.
-- MAIN repite la batería global desde su propio worktree.
-- MAIN actualiza documentación, decisiones y registro de worktrees.
-- Ninguna entrega se declara terminada solamente porque el especialista informó que sus pruebas pasaron.
+## Nombre
 
-### Continuidad
+MailCleanup. El repositorio se llama `mailcleanup`, la distribución Python
+mantiene por ahora el nombre técnico `limpiar-mails` y el paquete activo es
+`mailmap`.
 
-- El repositorio, Git, los contratos y las pruebas son la fuente de verdad durable.
-- No reconstruir decisiones importantes exclusivamente desde conversaciones.
-- Cada cierre debe dejar objetivo, cambios, verificaciones, riesgos, pendientes y próximo paso.
-- No crear worktrees por tareas mínimas o mecánicas: la separación se aplica a módulos cohesivos cuyo aislamiento reduzca confusión, riesgo o carga de contexto.
-----------------------------------------------------------
-# Reglas del proyecto
+## Propósito
 
-## Idioma y colaboración
+Construir una aplicación local para Windows que ayude a una persona a comprender
+qué recibe en Gmail mediante un mapa explicable de fuentes y flujos antes de
+preparar cualquier limpieza. Debe separar identidad, rubro, intención,
+suscripción, protección, confianza y evidencia, y preservar por defecto aquello
+que sea importante, ambiguo o contradictorio.
 
-- Trabajar y reportar en español claro.
-- Liderar con el resultado, la evidencia y el próximo paso.
-- Avanzar con autonomía dentro del hito activo y pedir confirmación sólo cuando cambie alcance, arquitectura, permisos externos o riesgo.
+## Estado actual
 
-## Fuentes de verdad
+`DEVELOPMENT` — Base Segura está consolidada técnicamente con datos sintéticos.
+La revisión visual en escritorio y móvil estrecho, la corrección de cualquier
+defecto visual que aparezca y la aceptación final de Joa siguen pendientes.
 
-Leer antes de desarrollar, en este orden:
+No están autorizados Gmail, OAuth, credenciales, datos reales ni Mapa Total.
+Existe un solo worktree, correspondiente a MAIN sobre `main`, y no hay remoto
+Git configurado.
 
-1. `docs/CONTRATO_MVP.md`.
+## Objetivo actual
+
+Cerrar Base Segura de manera verificable: conservar la base técnica consolidada,
+completar su revisión visual y obtener una decisión explícita de Joa. No comenzar
+Mapa Total ni crear una dependencia especialista antes de esa decisión y de un
+contrato específico estable.
+
+---
+
+# 2. PRIORIDAD
+
+Completar la aceptación de Base Segura sin introducir acceso real a Gmail ni
+ampliar el producto. Todo cambio debe sostener la base sintética, corregir un
+defecto comprobado, completar la revisión visual o mantener fuentes durables.
+
+Mapa Total, Estudio de Limpieza y Limpieza Controlada permanecen detrás de
+puertas de autorización independientes. Las ideas futuras se registran sin
+incorporarlas al alcance activo.
+
+---
+
+# 3. FUENTES DE VERDAD
+
+Para determinar alcance y autorización:
+
+1. `docs/CONTRATO_MVP.md` — prevalece ante diferencias.
 2. `docs/AUDITORIA_PRE_DESARROLLO.md`.
-3. `docs/ESPECIFICACION_FUNCIONAL.md` como visión futura.
+3. `docs/ESPECIFICACION_FUNCIONAL.md` — visión futura, no autorización.
 
-El contrato MVP prevalece ante cualquier diferencia. Implementar únicamente el hito autorizado por Joa.
+Para determinar implementación y estado actual:
 
-MAIN debe leer además `docs/PROMPT_MAESTRO_MAIN.md` y
-`docs/WORKTREE_REGISTRY.md` antes de planificar integraciones o crear una
-dependencia.
+1. código en `src/mailmap` y `frontend/src`;
+2. pruebas en `tests` y `frontend/src`;
+3. `docs/contracts/API_V1.md`;
+4. `docs/adr/0001-arquitectura-base-segura.md`;
+5. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
+6. `docs/ESTADO_BASE_SEGURA.md`;
+7. `docs/DECISIONES.md`.
 
-## MAIN y worktrees especialistas
+Para coordinación de MAIN y dependencias:
 
-- La carpeta raíz del proyecto sobre la rama `main` es el worktree de MAIN.
-- MAIN conserva visión integral, contratos compartidos, arquitectura, columna vertebral, batería global e integración.
-- Un worktree especialista recibe una responsabilidad acotada desde un commit base confirmado.
-- Antes de editar, todo especialista debe verificar ruta, rama, `HEAD` y estado de Git.
-- Un especialista no cambia contratos compartidos, alcance o arquitectura sin devolver el problema a MAIN.
-- Un especialista no integra en `main` ni hace `commit`, `push` o `merge` salvo autorización explícita de Joa transmitida por MAIN.
-- Una entrega especialista es evidencia parcial. MAIN inspecciona el diff completo, archivos no rastreados, pruebas y contratos antes de integrar.
-- MAIN repite la validación relevante después de integrar; no hereda como prueba suficiente el resultado informado por la dependencia.
-- Ningún worktree nuevo se crea hasta que MAIN tenga un commit base limpio y un prompt autosuficiente para esa dependencia.
+1. `docs/PROMPT_MAESTRO_MAIN.md`;
+2. `docs/WORKTREE_REGISTRY.md`;
+3. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
 
-## Seguridad y privacidad
+Si código, pruebas y documentación se contradicen, investigar la divergencia.
+No ampliar alcance apoyándose en una implementación accidental ni cambiar un
+contrato sin evidencia y decisión de MAIN.
 
-- No conectar Gmail ni abrir OAuth antes de la puerta de aprobación correspondiente.
-- No modificar, archivar, mover, desuscribir ni marcar correos durante Base
-  Segura, Mapa Total y Estudio de Limpieza.
-- No usar correos reales, nombres privados, credenciales ni tokens en fixtures, pruebas, logs, capturas o commits.
-- No renderizar cuerpos HTML ni cargar imágenes o recursos remotos de mensajes.
-- No enviar datos de correo a servicios externos de IA durante el MVP.
-- No implementar eliminación definitiva.
-- Toda futura acción real debe ser revalidada, idempotente, registrable y aprobada.
+---
 
-## Desarrollo
+# 4. STACK
 
-- El prototipo `gmail_cleaner` sólo existe en el historial Git. No reintroducir,
-  importar, empaquetar ni instalar código o dependencias de Gmail durante el
-  Base Segura.
-- Separar evidencia, inferencia, decisión del usuario, plan y ejecución.
-- Mantener reglas de precedencia y clasificación en una única fuente lógica.
-- Trabajar con datos sintéticos hasta que el contrato habilite expresamente una cuenta real.
-- No ampliar el alcance con Outlook, pagos, múltiples cuentas, filtros persistentes ni Guardián en segundo plano.
-- Mantener `docs/WORKTREE_REGISTRY.md` actualizado cuando se cree, entregue, integre o descarte un worktree.
+## Lenguajes y runtime
 
-## Verificación
+- Python 3.11 o posterior.
+- TypeScript 6 en modo estricto.
+- PowerShell para preparación, ejecución y verificación.
+- Node.js con pnpm 11 para el frontend.
 
-- Cada cambio funcional necesita la prueba más pequeña que demuestre su comportamiento.
-- Antes de cerrar un hito, ejecutar pruebas, lint, chequeo de tipos, build y recorrido visual aplicables.
-- Diferenciar lo verificado, lo inferido y lo pendiente.
-- No declarar terminado un hito si falta un criterio de aceptación del contrato.
+## Backend
+
+- FastAPI, Pydantic y Uvicorn.
+- SQLite mediante la biblioteca estándar de Python.
+- `tzdata` y `zoneinfo` para `America/Argentina/Cordoba`.
+
+## Frontend
+
+- React 19, TypeScript 6 y Vite 8.
+- Navegación local por hash y consumo de `/api/v1`.
+
+## Persistencia
+
+- SQLite local con migraciones versionadas.
+- Base generada en `data/mailmap-base-segura.db`.
+- `data/` es regenerable e ignorado por Git.
+
+## Calidad
+
+- pytest, Ruff y mypy estricto.
+- Vitest, Testing Library, jsdom y ESLint.
+- Build TypeScript y Vite.
+
+Windows es la plataforma objetivo inicial. No reemplazar tecnologías centrales
+ni agregar dependencias importantes sin necesidad demostrada y, cuando afecte
+arquitectura o seguridad, aprobación de Joa.
+
+---
+
+# 5. ARQUITECTURA
+
+MailCleanup es una aplicación web local. FastAPI compone dominio, persistencia y
+API y sirve el build estático de React. Toda la aplicación se enlaza a loopback.
+Base Segura usa sólo fixtures sintéticos y no contiene clientes de Gmail, OAuth
+ni red externa.
+
+```text
+fixtures sintéticos
+        ↓
+clasificación determinista y explicable
+        ↓
+repositorio SQLite con migraciones
+        ↓
+servicio de fuentes, flujos, protecciones y planes simulados
+        ↓
+API local v1
+        ↓
+interfaz React/TypeScript
+```
+
+## Componentes
+
+- `model.py`, `fixtures.py`, `classifier.py`: modelo versionado, dataset canónico
+  y reglas de identidad, intención, confianza y protección.
+- `repository.py`: migraciones, siembra sintética y persistencia de mensajes y
+  planes simulados; no almacena credenciales.
+- `service.py`, `api.py`, `main.py`: agregación, planes incapaces de ejecutarse,
+  API y servidor fijado a `127.0.0.1:8765`.
+- `frontend/src`: presentación, navegación, selección y consumo tipado de la API;
+  no duplica reglas de clasificación o seguridad.
+- `tests`, pruebas frontend y `scripts/check.ps1`: invariantes, contrato HTTP,
+  barrera de seguridad, lint, tipos, pruebas y build.
+
+Mantener separadas evidencia, inferencia, decisión del usuario, plan y futura
+ejecución. No mover reglas entre capas como efecto secundario de una tarea local.
+
+---
+
+# 6. ESTRUCTURA DEL REPOSITORIO
+
+```text
+mailcleanup/
+├── AGENTS.md
+├── README.md
+├── pyproject.toml
+├── src/mailmap/
+├── frontend/
+│   ├── package.json
+│   ├── pnpm-lock.yaml
+│   └── src/
+├── scripts/
+├── tests/
+└── docs/
+    ├── adr/
+    ├── contracts/
+    └── prompts/
+```
+
+- `src/mailmap`: backend, dominio y persistencia de Base Segura.
+- `frontend/src`: interfaz y tipos consumidores de la API.
+- `tests`: pruebas Python de dominio, API y seguridad.
+- `scripts`: recorrido oficial de preparación, ejecución y batería global.
+- `docs`: contratos, arquitectura, decisiones, estado y coordinación.
+- `data`: estado SQLite local generado; puede no existir y no se versiona.
+
+El prototipo `src/gmail_cleaner` sólo existe en el historial Git. No
+reintroducirlo, instalarlo ni usarlo como atajo.
+
+---
+
+# 7. COMANDOS OFICIALES
+
+Ejecutar desde la raíz del repositorio en PowerShell.
+
+## Instalar y construir
+
+```powershell
+.\scripts\setup.ps1
+```
+
+## Ejecutar
+
+```powershell
+.\scripts\run.ps1
+```
+
+Sirve la aplicación compilada en `http://127.0.0.1:8765`.
+
+## Batería global
+
+```powershell
+.\scripts\check.ps1
+```
+
+Ejecuta pytest, Ruff, mypy, ESLint, Vitest y build; se detiene ante fallos.
+
+## Comprobaciones específicas
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m ruff check src\mailmap tests
+.\.venv\Scripts\python.exe -m mypy
+pnpm --dir frontend lint
+pnpm --dir frontend test
+pnpm --dir frontend build
+```
+
+El build frontend ejecuta `tsc -b` antes de Vite. No hay un script independiente
+de typecheck frontend. No declarar que un comando pasó si no fue ejecutado.
+
+---
+
+# 8. REGLAS DE IMPLEMENTACIÓN
+
+- Implementar sólo el proceso autorizado.
+- Mantener clasificación y precedencia en una fuente lógica del backend.
+- Preservar API v1 o versionarla si MAIN aprueba un cambio incompatible.
+- Añadir la prueba mínima que demuestre cada cambio funcional.
+- Usar fixtures sintéticos con dominios reservados `.example`.
+- Modificar SQLite mediante migraciones, no editando bases generadas.
+- Mantener `canExecute: false` incondicional durante Base Segura.
+- Sincronizar documentación cuando cambien contratos, arquitectura o estado.
+- Evitar refactors oportunistas, dependencias nuevas y cambios fuera de alcance.
+
+---
+
+# 9. MAIN
+
+MAIN conserva visión, contrato MVP, arquitectura, modelo compartido, API,
+fixtures, batería global, seguridad, estado y registro de worktrees.
+
+Antes de dividir trabajo debe explicitar:
+
+```text
+TASKS
+DEPENDENCIES
+PARALLELIZABLE
+BLOCKED
+INTEGRATION ORDER
+```
+
+MAIN puede construir columna vertebral y cambios transversales, pero no absorber
+por defecto cada módulo funcional. Antes de delegar necesita commit base limpio,
+contrato estable, límites, validación y prompt autosuficiente.
+
+MAIN revisa diff completo y archivos no rastreados, integra controladamente y
+repite las pruebas relevantes. El informe especialista no sustituye su auditoría.
+
+---
+
+# 10. ESPECIALISTAS
+
+No existe actualmente ningún especialista ni worktree especialista.
+
+Cuando MAIN habilite una dependencia debe completar
+`docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
+alcance, dependencias, prohibiciones, validación y cierre.
+
+- Verificar ruta, rama, SHA base, `HEAD`, estado y worktrees antes de editar.
+- Trabajar sobre una responsabilidad cohesiva.
+- No cambiar contratos, arquitectura o alcance sin devolver la decisión a MAIN.
+- No integrar en `main`.
+- No hacer commit, push, merge, rebase ni publicar salvo autorización explícita
+  de Joa transmitida por MAIN.
+- Entregar handoff con cambios, pruebas, riesgos y estado Git.
+
+---
+
+# 11. DEPENDENCIAS
+
+```text
+Base Segura técnicamente consolidada
+        ↓
+revisión visual y aceptación explícita de Joa
+        ↓
+primera dependencia definida por MAIN
+        ↓
+contrato + base limpia + prompt autosuficiente
+        ↓
+especialista → auditoría MAIN → integración
+```
+
+Las puertas de producto son secuenciales:
+
+```text
+Base Segura
+    ↓ autorización independiente
+Mapa Total
+    ↓ autorización independiente
+Estudio de Limpieza
+    ↓ autorización independiente
+Limpieza Controlada
+```
+
+Los dominios tentativos de `docs/WORKTREE_REGISTRY.md` no son contratos ni una
+orden de creación. No paralelizar consumidores de interfaces inestables.
+
+---
+
+# 12. WORKTREES Y RAMAS
+
+- La raíz sobre `main` es el worktree de MAIN.
+- Sincronizar `docs/WORKTREE_REGISTRY.md` con `git worktree list`.
+- No crear worktree sin base limpia, contrato, prompt y frontera estable.
+- Usar aislamiento cuando reduzca conflicto; no para tareas mecánicas mínimas.
+- Un especialista no integra su entrega.
+- MAIN revisa alcance, contratos, secretos, datos privados y conflictos
+  semánticos antes de integrar y luego repite la batería.
+
+No hay remoto configurado. No inventarlo ni afirmar que un commit local fue
+publicado.
+
+---
+
+# 13. ESTADO DURABLE
+
+Usar las fuentes actuales; no crear duplicados genéricos:
+
+- `docs/ESTADO_BASE_SEGURA.md`: estado, verificaciones, riesgos y pendientes.
+- `docs/DECISIONES.md`: decisiones materiales y autoridad.
+- `docs/adr/0001-arquitectura-base-segura.md`: arquitectura aceptada.
+- `docs/WORKTREE_REGISTRY.md`: bases, worktrees y dependencias.
+- `docs/contracts/API_V1.md`: interfaz compartida.
+
+Actualizar sólo cuando cambie la realidad. No crear archivos paralelos de estado,
+decisiones o arquitectura mientras estas fuentes cumplan su función.
+
+---
+
+# 14. HANDOFF DE ESPECIALISTA
+
+Debe incluir objetivo, cambios, archivos, decisiones, contratos preservados,
+validaciones exactas, riesgos, pendientes, dependencias, próximo paso y estado
+Git. Para worktrees también: ruta, rama, base y `HEAD`.
+
+La información necesaria para integrar debe quedar en código, Git, contratos o
+documentación, no depender de otro chat.
+
+---
+
+# 15. TESTING Y VALIDACIÓN
+
+- Dominio, clasificación o protección: pruebas Python afectadas.
+- Repositorio o migraciones: base temporal nueva y revalidación.
+- API: pruebas de contrato y rutas activas.
+- Frontend: Vitest, ESLint y build.
+- Seguridad: `tests/test_base_segura_safety.py`.
+- Cambio transversal o integración: `scripts/check.ps1`.
+- Interfaz o cierre de Base Segura: recorrido visual en escritorio y 390 px.
+- Servidor o composición: HTTP real en loopback cuando corresponda.
+
+Antes de cerrar, ejecutar `git diff --check`, revisar el diff completo y buscar
+secretos, datos privados y artefactos generados. Si una prueba no puede
+ejecutarse, registrar el fallo y el riesgo restante.
+
+---
+
+# 16. DEFINITION OF DONE
+
+Una tarea de MailCleanup está terminada sólo si:
+
+- respeta el proceso autorizado y el contrato MVP;
+- mantiene separados evidencia, clasificación, protección, plan y ejecución;
+- no introduce Gmail, OAuth, datos reales o ejecución fuera de su puerta;
+- conserva loopback y `canExecute: false` durante Base Segura;
+- pasan las pruebas específicas y, cuando corresponde, la batería global;
+- un cambio visual fue recorrido o queda expresamente pendiente;
+- API, código y documentación coinciden;
+- el diff no contiene secretos, bases, cachés ni dependencias descargadas;
+- Git y el registro de worktrees reflejan el estado real.
+
+Base Segura no queda aceptada porque compile: requiere revisión visual y
+aceptación explícita de Joa.
+
+---
+
+# 17. SEGURIDAD Y PRIVACIDAD
+
+- No conectar Gmail ni abrir OAuth durante Base Segura.
+- No solicitar ni almacenar `credentials.json`, `token.json`, contraseñas o
+  tokens.
+- No usar mensajes, nombres ni direcciones reales en fixtures, pruebas, logs,
+  capturas o commits.
+- No renderizar HTML ni cargar imágenes o recursos remotos de correos.
+- No enviar datos de correo a IA externa ni otros servicios.
+- Mantener la aplicación en loopback.
+- No introducir clientes Gmail o de red en `src/mailmap` durante Base Segura.
+- Mantener entornos, bases, cachés y dependencias descargadas fuera de Git.
+- No implementar eliminación definitiva ni vaciado de Papelera.
+- Toda futura acción real debe revalidarse, ser idempotente, registrable,
+  reversible cuando corresponda y aprobada.
+
+No desactivar la barrera automática de Base Segura para hacer pasar otro cambio.
+
+---
+
+# 18. RESTRICCIONES ESPECÍFICAS
+
+## Obligatorias
+
+- Usar sólo Base Segura, Mapa Total, Estudio de Limpieza y Limpieza Controlada
+  como nombres activos de procesos.
+- Trabajar sólo con datos sintéticos hasta nueva autorización.
+- Mantener Fuente y Flujo separados.
+- Mantener Suscripciones y Spam como vistas de Fuentes.
+- Proteger Enviados, Borradores, Papelera, estrella, importancia, seguridad,
+  documentación, decisiones manuales y evidencia contradictoria.
+- Tratar Archivo, Papelera y desuscripción como acciones independientes.
+- No presentar tamaño seleccionado como espacio liberado.
+
+## Áreas de cuidado
+
+- clasificación, confianza, protección y precedencia;
+- migraciones SQLite y planes;
+- fechas civiles de Córdoba;
+- compatibilidad API v1 y tipos frontend;
+- rutas HTTP y dependencias con red;
+- fixtures y ausencia de datos privados.
+
+## Requieren aprobación explícita de Joa
+
+- aceptar Base Segura y habilitar Mapa Total;
+- conectar Gmail, abrir OAuth o usar credenciales y datos reales;
+- solicitar permisos de lectura o modificación;
+- habilitar Estudio de Limpieza o Limpieza Controlada;
+- modificar mensajes reales o enviar desuscripciones;
+- cambiar arquitectura, plataforma o persistencia central;
+- agregar dependencias importantes o servicios externos;
+- cambiar de forma incompatible la API;
+- crear o publicar un remoto, hacer push o desplegar;
+- incorporar cuerpos, IA externa, varias cuentas, Outlook, filtros persistentes,
+  Guardián en segundo plano, pagos o eliminación definitiva.
+
+---
+
+# 19. NO HACER
+
+- No confundir visión futura con alcance aprobado.
+- No reintroducir el prototipo Gmail retirado.
+- No fusionar fuentes de confianza baja ni automatizar contradicciones.
+- No trasladar reglas de seguridad al frontend.
+- No inventar ejecución detrás de una vista previa simulada.
+- No crear worktrees por una lista tentativa de módulos.
+- No versionar resultados de pruebas o builds.
+- No afirmar aceptación visual, conexión o publicación sin evidencia.
+- No dejar decisiones materiales sólo en el chat.
+
+---
+
+# 20. PRINCIPIO OPERATIVO DEL PROYECTO
+
+```text
+contrato y estado durable
+          ↓
+         MAIN
+          ↓
+dependencias y puertas de autorización
+          ↓
+especialistas con fronteras estables, cuando correspondan
+          ↓
+handoffs auditables
+          ↓
+integración de MAIN
+          ↓
+batería, seguridad y revisión visual aplicable
+          ↓
+Git y documentación actualizados
+```
+
+Los especialistas producen piezas acotadas. MAIN protege la coherencia. Git,
+contratos, pruebas y estado durable conservan la memoria del proyecto.
