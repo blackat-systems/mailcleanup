@@ -4,6 +4,11 @@ Fecha: 18 de agosto de 2026.
 
 Alcance: revisión crítica de `ESPECIFICACION_FUNCIONAL.md` y del prototipo CLI existente. Esta auditoría no modifica ni valida el código de Gmail y no autoriza una conexión real.
 
+Estado de herencia: sus principios de producto y seguridad se consideran
+rescatables. Las afirmaciones específicas sobre permisos o comportamiento del
+proveedor deberán revalidarse con documentación oficial antes de Mapa Total; no
+fueron verificadas en vivo durante la inicialización de este MAIN.
+
 ## 1. Dictamen
 
 La visión de producto es valiosa y diferenciable, pero el documento original no puede usarse directamente como alcance de desarrollo. Contiene una mezcla de:
@@ -26,7 +31,8 @@ La corrección propuesta es conservar la visión completa y desarrollar mediante
 
 **Impacto:** no existe una definición comprobable de “terminado”; cualquier desarrollo podría expandirse indefinidamente.
 
-**Resolución:** dividir el trabajo en cuatro hitos: fundamento sin Gmail, mapa de sólo lectura, planificación sin efectos y acciones reales controladas.
+**Resolución:** dividir el trabajo en cuatro procesos: Base Segura, Mapa Total,
+Estudio de Limpieza y Limpieza Controlada.
 
 ### A-02. “Local” y “Guardián continuo” son incompatibles sin una decisión adicional
 

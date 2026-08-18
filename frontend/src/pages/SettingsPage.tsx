@@ -12,7 +12,7 @@ export function SettingsPage() {
 
   return (
     <div className="page">
-      <PageHeader eyebrow="Estado y configuración" title="Límites visibles, no promesas" description="Este tablero muestra qué puede y qué no puede hacer la aplicación en el hito actual." />
+      <PageHeader eyebrow="Estado y configuración" title="Límites visibles, no promesas" description="Este tablero muestra qué puede y qué no puede hacer Base Segura." />
       <div className="settings-grid">
         <section className="panel environment-card"><span className="eyebrow">Entorno</span><h2>Aplicación local</h2><dl><div><dt>Plataforma</dt><dd>{config.platform}</dd></div><div><dt>Experiencia</dt><dd>{config.experience}</dd></div><div><dt>Zona civil</dt><dd>{config.timezone}</dd></div><div><dt>Esquema local</dt><dd>Versión {config.schemaVersion}</dd></div></dl></section>
         <section className="panel safety-card"><span className="eyebrow">Capacidades bloqueadas</span><h2>Puertas de seguridad</h2><ul><SafetyItem label="Conexión a Gmail" enabled={config.gmailConnected} /><SafetyItem label="OAuth disponible" enabled={config.oauthAvailable} /><SafetyItem label="IA remota" enabled={config.remoteAi} /><SafetyItem label="Eliminación definitiva" enabled={config.permanentDelete} /></ul></section>

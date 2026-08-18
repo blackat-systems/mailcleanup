@@ -1,6 +1,7 @@
 # Especificación funcional de la aplicación
 
-Estado: visión amplia de producto, no contrato de implementación.
+Estado: visión futura heredada. No constituye alcance aprobado ni autorización
+de desarrollo.
 
 > Para iniciar desarrollo, usar primero `CONTRATO_MVP.md` y
 > `AUDITORIA_PRE_DESARROLLO.md`. Cuando exista una diferencia, el contrato MVP

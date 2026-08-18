@@ -1,3 +1,50 @@
+## Metodología global de proyectos con MAIN y worktrees
+
+Para proyectos de software no triviales, trabajar por defecto con esta organización:
+
+### PLANIFICACIÓN
+
+- PLANIFICACIÓN define el producto, resuelve decisiones teóricas, delimita hitos y prepara instrucciones para MAIN.
+- PLANIFICACIÓN no implementa módulos funcionales ni integra código.
+- Las decisiones acordadas deben transferirse a fuentes durables del repositorio.
+
+### MAIN
+
+- MAIN es el director integral del proyecto.
+- Conserva visión, contratos compartidos, arquitectura, seguridad, documentación, batería global y estado de integración.
+- MAIN construye únicamente la columna vertebral y los cambios transversales que no puedan delegarse de forma segura.
+- MAIN no debe absorber personalmente todos los módulos funcionales.
+- Antes de delegar, MAIN debe tener contratos estables, un commit base limpio y un prompt especialista autosuficiente.
+- MAIN define el orden de dependencias y evita abrir trabajos paralelos que dependan de contratos todavía inestables.
+
+### Dependencias especialistas
+
+- Cada módulo funcional cohesivo e independientemente verificable debe desarrollarse en un chat especialista y un worktree separado.
+- Cada chat especialista recibe una sola responsabilidad acotada.
+- Antes de editar, verifica ruta, rama, HEAD y estado de Git.
+- No modifica arquitectura, contratos compartidos ni alcance sin devolver la decisión a MAIN.
+- No integra en `main`.
+- No hace commit, push, merge, rebase ni publicación salvo autorización explícita transmitida por MAIN.
+- Entrega un handoff con objetivo, cambios, pruebas, riesgos, archivos no rastreados y estado exacto de Git.
+
+### Integración
+
+- Una entrega especialista es evidencia parcial, no integración.
+- MAIN inspecciona el diff completo y los archivos no rastreados.
+- MAIN comprueba que la entrega respete su contrato.
+- MAIN ejecuta las pruebas específicas.
+- MAIN integra de forma controlada.
+- MAIN repite la batería global desde su propio worktree.
+- MAIN actualiza documentación, decisiones y registro de worktrees.
+- Ninguna entrega se declara terminada solamente porque el especialista informó que sus pruebas pasaron.
+
+### Continuidad
+
+- El repositorio, Git, los contratos y las pruebas son la fuente de verdad durable.
+- No reconstruir decisiones importantes exclusivamente desde conversaciones.
+- Cada cierre debe dejar objetivo, cambios, verificaciones, riesgos, pendientes y próximo paso.
+- No crear worktrees por tareas mínimas o mecánicas: la separación se aplica a módulos cohesivos cuyo aislamiento reduzca confusión, riesgo o carga de contexto.
+----------------------------------------------------------
 # Reglas del proyecto
 
 ## Idioma y colaboración
@@ -35,7 +82,8 @@ dependencia.
 ## Seguridad y privacidad
 
 - No conectar Gmail ni abrir OAuth antes de la puerta de aprobación correspondiente.
-- No modificar, archivar, mover, desuscribir ni marcar correos durante los Hitos 0, 1 y 2.
+- No modificar, archivar, mover, desuscribir ni marcar correos durante Base
+  Segura, Mapa Total y Estudio de Limpieza.
 - No usar correos reales, nombres privados, credenciales ni tokens en fixtures, pruebas, logs, capturas o commits.
 - No renderizar cuerpos HTML ni cargar imágenes o recursos remotos de mensajes.
 - No enviar datos de correo a servicios externos de IA durante el MVP.
@@ -44,7 +92,9 @@ dependencia.
 
 ## Desarrollo
 
-- Tratar `src/gmail_cleaner` como prototipo no auditado, no como arquitectura aprobada.
+- El prototipo `gmail_cleaner` sólo existe en el historial Git. No reintroducir,
+  importar, empaquetar ni instalar código o dependencias de Gmail durante el
+  Base Segura.
 - Separar evidencia, inferencia, decisión del usuario, plan y ejecución.
 - Mantener reglas de precedencia y clasificación en una única fuente lógica.
 - Trabajar con datos sintéticos hasta que el contrato habilite expresamente una cuenta real.

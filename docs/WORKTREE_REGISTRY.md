@@ -1,48 +1,63 @@
 # Registro de worktrees
 
-Este archivo es la fuente durable de coordinación. No reemplaza `git worktree list`; ambos deben coincidir.
+Este archivo es la fuente durable de coordinación. No reemplaza
+`git worktree list`; ambos deben coincidir.
 
 ## MAIN
 
 | Campo | Estado |
 |---|---|
-| Rol | Dueño integral, columna vertebral, auditoría e integración |
-| Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\limpiar_mails` |
+| Rol | Dueño integral, contratos, auditoría e integración |
+| Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\mailcleanup` |
 | Rama | `main` |
-| Commit base inicial | `28bfaf3a5d7f0625d509d529105d17dc85e7d879` |
-| Checkpoint funcional Hito 0 | `0a90b71403bb176c6fd2457213bcb8b347428a92` |
-| Hito autorizado | Hito 0 completo, exclusivamente con datos sintéticos |
+| HEAD heredado al iniciar | `fecdef43745a7b145641394651b364378cf6257a` |
+| Base previa al desarrollo adelantado | `3209f044d12107511aaf9f973b1cc6baf89e9405` |
+| Candidato funcional heredado | `0a90b71403bb176c6fd2457213bcb8b347428a92` |
+| Proceso autorizado | Base Segura por portado selectivo, sólo con datos sintéticos |
 | Gmail real | Prohibido |
-| Estado | Candidato del Hito 0 implementado y automatizado; revisión visual de Joa pendiente |
+| Base consolidada | El commit que contiene este registro |
+| Estado | Base Git limpia y técnicamente verificada; revisión visual y aceptación de producto pendientes |
 
-Nota de entorno: las invocaciones Git desde el sandbox deben usar
-`-c safe.directory=C:/Users/Joaquin/Desktop/chatgptprojects/limpiar_mails`.
-No modificar la configuración global de Git para evitar este control.
+## Estado observado el 18 de agosto de 2026
 
-## Dependencias planificadas
+- Existe un solo worktree: la ruta de MAIN indicada arriba.
+- No existe un worktree especialista.
+- La ruta histórica `C:\Users\Joaquin\Desktop\chatgptprojects\limpiar_mails`
+  no estaba disponible durante la auditoría.
+- El historial de esa referencia sí está presente en el repositorio actual.
+- No hay remoto Git configurado.
+- La consolidación local queda fijada por el commit que contiene este registro.
+- No se creó ni habilitó ningún worktree especialista durante esta intervención.
 
-Todavía no se creó ningún worktree especialista. Los nombres son orientativos y MAIN debe confirmar contratos antes de crearlos.
+## Dependencias futuras
+
+No se crea ninguna hasta que MAIN complete y verifique la columna vertebral,
+Joa revise la base, exista un commit limpio y confirmado, y haya un contrato y
+prompt autosuficiente para el alcance elegido.
 
 | Orden | Dependencia posible | Responsabilidad acotada | Estado |
 |---:|---|---|---|
-| 1 | `classification-domain` | Evidencias, taxonomía, precedencia y fixtures | Cubierto inicialmente por MAIN; no creado |
-| 2 | `source-map-ui` | Explorador y detalle sobre contratos estables | Cubierto inicialmente por MAIN; no creado |
-| 3 | `local-persistence` | SQLite, migraciones y reanudación local | Cubierto inicialmente por MAIN; no creado |
-| 4 | `gmail-readonly` | Adaptador OAuth y metadatos del Hito 1 | Fuera del Hito 0 |
-| 5 | `action-engine` | Planes, revalidación, Papelera y Archivo | Fuera del Hito 0 |
-| 6 | `unsubscribe-security` | Baja RFC 8058 e idempotencia | Fuera del Hito 0 |
-| 7 | `qa-security` | Auditoría transversal y pruebas de aceptación | Se define por hito |
+| 1 | `classification-domain` | Fuentes, flujos, grupos sin nombre, evidencia y confianza | Provisional; no creada |
+| 2 | `correction-memory` | Correcciones locales y aprendizaje explicable | Provisional; no creada |
+| 3 | `protection-engine` | Precedencia, exclusiones y contradicciones | Provisional; no creada |
+| 4 | `local-persistence` | SQLite, migraciones y reanudación local | Provisional; no creada |
+| 5 | `cleanup-plans` | Planes simulados, alcance, muestras y revalidación | Provisional; no creada |
+| 6 | `source-map-ui` | Panorama, fuentes, detalle y experiencia visual | Provisional; no creada |
+| 7 | `gmail-readonly` | Inventario y metadatos de Mapa Total | No autorizada |
+| 8 | `action-engine` | Lotes, Archivo y Papelera de Limpieza Controlada | No autorizada |
+| 9 | `manual-unsubscribe` | Presentación segura de mecanismos manuales | Provisional; no creada |
+
+Los nombres y límites son hipótesis de partición. MAIN debe revisar dependencias
+entre dominios antes de proponer el primer worktree y no debe abrirlos todos al
+mismo tiempo.
 
 ## Reglas de actualización
 
-Al crear un worktree, registrar:
+Al crear, entregar, integrar o descartar un worktree se registran ruta, rama,
+base, prompt, alcance, estado Git y verificaciones. Ninguna entrega especialista
+se considera integrada hasta que MAIN inspecciona el diff y repite la batería
+relevante.
 
-- nombre canónico;
-- ruta absoluta;
-- rama;
-- commit base;
-- prompt asignado;
-- alcance;
-- estado de Git inicial.
-
-Al recibir una entrega, registrar pruebas, riesgos y ubicación del diff. Al integrar, registrar commit de MAIN y repetir validación. Un worktree retirado debe marcarse como retirado; no se reutiliza silenciosamente para otro alcance.
+La secuencia obligatoria es: base limpia, contrato, prompt, creación, entrega,
+auditoría, integración, batería global y recién después habilitación de un
+consumidor.

@@ -7,7 +7,11 @@ from datetime import date, datetime, time
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from mailmap.classifier import assess_messages
+from mailmap.classifier import (
+    DEFAULT_USER_PROTECTED_LABELS,
+    SYSTEM_PROTECTED_LABELS,
+    assess_messages,
+)
 from mailmap.fixtures import REQUIRED_FIXTURE_TAGS
 from mailmap.model import (
     Confianza,
@@ -335,12 +339,13 @@ class MailmapService:
         return self.repository.plans()
 
     def configuration(self) -> dict[str, Any]:
+        protected_labels = sorted(SYSTEM_PROTECTED_LABELS | DEFAULT_USER_PROTECTED_LABELS)
         return {
             "mode": "synthetic",
             "platform": "Windows",
             "experience": "Aplicación web local",
             "timezone": "America/Argentina/Cordoba",
-            "protectedLabels": ["STARRED", "IMPORTANT", "Trabajo", "Familia", "Pagos"],
+            "protectedLabels": protected_labels,
             "schemaVersion": self.repository.schema_version(),
             "gmailConnected": False,
             "oauthAvailable": False,

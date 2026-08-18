@@ -14,7 +14,7 @@ from mailmap.repository import Repository
 from mailmap.service import MailmapService
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "mailmap-hito0.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "mailmap-base-segura.db"
 PlanOperation = Literal["trash", "archive", "unsubscribe"]
 
 
@@ -36,10 +36,11 @@ def create_app(db_path: Path | None = None, *, serve_frontend: bool = True) -> F
     service = MailmapService(repository)
     app = FastAPI(
         title="Mailmap local",
-        description="API local del Hito 0. Sólo contiene datos sintéticos.",
+        description="API local de Base Segura. Sólo contiene datos sintéticos.",
         version=__version__,
         docs_url="/api/docs",
         openapi_url="/api/openapi.json",
+        swagger_ui_oauth2_redirect_url=None,
     )
     app.state.repository = repository
     app.state.service = service

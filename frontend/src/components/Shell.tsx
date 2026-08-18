@@ -8,7 +8,7 @@ const navItems: NavItem[] = [
   { href: "#/sources", label: "Fuentes", icon: "sources" },
   { href: "#/sources?view=subscriptions", label: "Suscripciones", icon: "subscription" },
   { href: "#/sources?view=spam", label: "Spam", icon: "spam" },
-  { href: "#/plan", label: "Plan", icon: "plan" },
+  { href: "#/plan", label: "Estudio de Limpieza", icon: "plan" },
   { href: "#/settings", label: "Estado", icon: "settings" },
 ];
 
@@ -60,7 +60,7 @@ export function Shell({ children, routeKey, selectedCount }: Props) {
               >
                 <Icon name={item.icon} />
                 <span>{item.label}</span>
-                {item.label === "Plan" && selectedCount > 0 ? (
+                {item.href === "#/plan" && selectedCount > 0 ? (
                   <span className="nav-count">{selectedCount}</span>
                 ) : null}
               </a>
@@ -70,7 +70,7 @@ export function Shell({ children, routeKey, selectedCount }: Props) {
 
         <div className="sidebar-footer">
           <Icon name="shield" />
-          <p><strong>Todo queda en tu equipo.</strong> Este hito no tiene credenciales ni acciones reales.</p>
+          <p><strong>Todo queda en tu equipo.</strong> Base Segura no tiene credenciales ni acciones reales.</p>
         </div>
       </aside>
       {open ? <button className="scrim" type="button" aria-label="Cerrar menú" onClick={() => setOpen(false)} /> : null}

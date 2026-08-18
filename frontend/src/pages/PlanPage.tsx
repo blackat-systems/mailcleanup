@@ -47,7 +47,7 @@ export function PlanPage({ selected, onToggle }: Props) {
 
   return (
     <div className="page">
-      <PageHeader eyebrow="Plan de limpieza" title="Decidir con una vista previa" description="Definí alcance, fecha y acciones por separado. La simulación excluye protecciones y nunca puede ejecutarse sobre Gmail." />
+      <PageHeader eyebrow="Estudio de Limpieza" title="Decidir con una vista previa" description="Definí alcance, fecha y acciones por separado. La simulación excluye protecciones y nunca puede ejecutarse sobre Gmail." />
 
       <section className="safety-banner safety-plan"><Icon name="shield" /><div><strong>Simulación sin efectos</strong><p>Preparar este plan sólo guarda un registro local de prueba.</p></div><Badge tone="positive">Ejecución bloqueada</Badge></section>
 
@@ -65,7 +65,7 @@ export function PlanPage({ selected, onToggle }: Props) {
             <section className="panel plan-step"><div className="step-number">3</div><div className="step-content"><span className="eyebrow">Decisiones independientes</span><h2>Qué querés simular</h2><div className="operation-grid"><label className={operations.has("trash") ? "checked" : ""}><input type="checkbox" checked={operations.has("trash")} onChange={() => toggleOperation("trash")} /><span><strong>Mover a Papelera</strong><small>Nunca eliminación definitiva</small></span></label><label className={operations.has("archive") ? "checked" : ""}><input type="checkbox" checked={operations.has("archive")} onChange={() => toggleOperation("archive")} /><span><strong>Archivar historial</strong><small>Conserva los mensajes</small></span></label><label className={operations.has("unsubscribe") ? "checked" : ""}><input type="checkbox" checked={operations.has("unsubscribe")} onChange={() => toggleOperation("unsubscribe")} /><span><strong>Solicitar baja</strong><small>Sólo intención simulada</small></span></label></div></div></section>
           </div>
 
-          <aside className="plan-summary panel"><span className="eyebrow">Vista previa</span><h2>Antes de confirmar</h2>{preview ? <PreviewResult preview={preview} /> : <div className="preview-placeholder"><span className="preview-orbit"><Icon name="plan" /></span><p>Calcularemos mensajes incluidos, protecciones excluidas y una muestra segura.</p></div>}{submitError ? <p className="inline-error" role="alert">{submitError}</p> : null}<button className="button button-primary button-wide" type="submit" disabled={submitting || operations.size === 0}>{submitting ? "Calculando…" : preview ? "Recalcular simulación" : "Crear vista previa"}</button><small className="submit-note">No existe un botón de ejecutar en el Hito 0.</small></aside>
+          <aside className="plan-summary panel"><span className="eyebrow">Vista previa</span><h2>Antes de confirmar</h2>{preview ? <PreviewResult preview={preview} /> : <div className="preview-placeholder"><span className="preview-orbit"><Icon name="plan" /></span><p>Calcularemos mensajes incluidos, protecciones excluidas y una muestra segura.</p></div>}{submitError ? <p className="inline-error" role="alert">{submitError}</p> : null}<button className="button button-primary button-wide" type="submit" disabled={submitting || operations.size === 0}>{submitting ? "Calculando…" : preview ? "Recalcular simulación" : "Crear vista previa"}</button><small className="submit-note">Base Segura no contiene un botón de ejecutar.</small></aside>
         </form>
       ) : null}
 

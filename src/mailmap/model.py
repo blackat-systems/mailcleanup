@@ -6,7 +6,7 @@ from enum import StrEnum
 from typing import Any
 
 MODEL_VERSION = 1
-DATASET_VERSION = "hito0-v1"
+DATASET_VERSION = "base-segura-v1"
 
 
 class Rubro(StrEnum):

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
-from mailmap.classifier import assess_messages
+import pytest
+
+from mailmap.classifier import assess_messages, classify_message
 from mailmap.fixtures import REQUIRED_FIXTURE_TAGS, synthetic_messages
 from mailmap.model import Confianza, Intencion, Proteccion
 from mailmap.repository import Repository
@@ -82,6 +85,19 @@ def test_intent_precedence_and_protections_are_not_overruled() -> None:
     assert assessments["orbit-thread-01"].protected
     assert assessments["orbit-thread-02"].protected
     assert assessments["orbit-thread-02"].proteccion is Proteccion.REVISION
+
+
+@pytest.mark.parametrize("label", ["SENT", "DRAFT", "TRASH"])
+def test_system_locations_are_always_protected(label: str) -> None:
+    template = next(
+        message for message in synthetic_messages() if message.id == "obsolete-plan-01"
+    )
+    assessment = classify_message(
+        replace(template, id=f"protected-{label.casefold()}", labels=(label,))
+    )
+
+    assert assessment.protected
+    assert assessment.proteccion is Proteccion.USUARIO
 
 
 def test_plan_excludes_protected_and_keeps_actions_independent(tmp_path: Path) -> None:

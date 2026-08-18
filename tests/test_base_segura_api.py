@@ -33,6 +33,16 @@ def test_navigation_endpoints_expose_only_synthetic_state(tmp_path: Path) -> Non
     assert configuration["oauthAvailable"] is False
     assert configuration["permanentDelete"] is False
     assert configuration["remoteAi"] is False
+    assert set(configuration["protectedLabels"]) == {
+        "DRAFT",
+        "IMPORTANT",
+        "SENT",
+        "STARRED",
+        "TRASH",
+        "Familia",
+        "Pagos",
+        "Trabajo",
+    }
 
 
 def test_filtered_views_are_source_views_not_independent_data(tmp_path: Path) -> None:

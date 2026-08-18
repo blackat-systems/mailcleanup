@@ -22,19 +22,13 @@ dev = [
   "pytest>=8.4,<9",
   "ruff>=0.12,<1",
 ]
-gmail-future = [
-  "google-api-python-client>=2.170,<3",
-  "google-auth>=2.40,<3",
-  "google-auth-httplib2>=0.2,<1",
-  "google-auth-oauthlib>=1.2,<2",
-  "requests>=2.32,<3",
-]
 
 [project.scripts]
 mailmap-local = "mailmap.main:run"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["mailmap*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -43,7 +37,6 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["src/gmail_cleaner"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]

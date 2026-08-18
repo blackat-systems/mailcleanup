@@ -1,6 +1,7 @@
 # Contrato del MVP
 
-Estado: aprobado por Joa para ejecutar el Hito 0 el 18 de agosto de 2026.
+Estado: confirmado por Joa el 18 de agosto de 2026 para desarrollar Base Segura
+mediante portado selectivo y exclusivamente con datos sintéticos.
 
 Este documento prevalece sobre la visión amplia para el desarrollo inicial.
 
@@ -12,7 +13,7 @@ El usuario debe poder comprender las principales fuentes de volumen y preparar u
 
 ## 2. Alcance por hitos
 
-### Hito 0: fundamento sin Gmail
+### Base Segura (Hito 0): fundamento sintético sin Gmail
 
 Objetivo: demostrar el modelo y las reglas sin datos privados ni permisos externos.
 
@@ -30,9 +31,9 @@ Incluye:
 
 No incluye OAuth, Gmail real, desuscripción ni modificación de mensajes.
 
-Puerta de salida: Joa revisa la interfaz y los resultados sintéticos y autoriza el Hito 1.
+Puerta de salida: Joa revisa la interfaz y los resultados sintéticos y autoriza Mapa Total.
 
-### Hito 1: mapa real de sólo lectura
+### Mapa Total (Hito 1): mapa real de sólo lectura
 
 Objetivo: construir el mapa de una cuenta real sin modificarla.
 
@@ -51,9 +52,9 @@ Incluye:
 
 No incluye cuerpos, imágenes remotas, adjuntos descargados ni acciones sobre Gmail.
 
-Puerta de salida: se audita el mapa, se corrigen falsos agrupamientos y Joa autoriza el Hito 2.
+Puerta de salida: se audita el mapa, se corrigen falsos agrupamientos y Joa autoriza Estudio de Limpieza.
 
-### Hito 2: planificación sin efectos
+### Estudio de Limpieza (Hito 2): planificación real sin efectos
 
 Objetivo: preparar operaciones exactas y comprobables.
 
@@ -71,9 +72,10 @@ Incluye:
 
 No incluye todavía modificación de Gmail.
 
-Puerta de salida: una batería sintética demuestra que ningún mensaje protegido entra silenciosamente en un plan y Joa autoriza el Hito 3.
+Puerta de salida: una batería demuestra que ningún mensaje protegido entra
+silenciosamente en un plan y Joa autoriza Limpieza Controlada.
 
-### Hito 3: acciones controladas
+### Limpieza Controlada (Hito 3): acciones reales controladas
 
 Objetivo: ejecutar solamente planes aprobados.
 
@@ -98,7 +100,7 @@ No incluye eliminación definitiva, filtros de Gmail, bloqueo permanente, automa
 4. **Fuentes:** lista, búsqueda, filtros y correcciones.
 5. **Detalle:** remitentes, flujos, evidencias y muestras.
 6. **Plan de limpieza:** selección, condiciones, exclusiones y vista previa.
-7. **Historial:** planes y, desde Hito 3, ejecuciones.
+7. **Historial:** planes y, desde Limpieza Controlada, ejecuciones.
 8. **Configuración:** protecciones, credenciales e índice local.
 
 Suscripciones y Spam aparecen inicialmente como vistas filtradas de Fuentes, no como subsistemas independientes.
@@ -159,7 +161,7 @@ Cada clasificación debe incluir `evidencias[]`. No se mostrarán porcentajes in
 
 ## 5. Invariantes de seguridad
 
-1. Hitos 0, 1 y 2 no realizan llamadas de modificación.
+1. Base Segura, Mapa Total y Estudio de Limpieza no realizan llamadas de modificación.
 2. Enviados, Borradores y Papelera nunca forman parte de un plan ordinario.
 3. Estrella, importancia, protección crítica y protección manual excluyen mensajes por defecto.
 4. Una fuente de confianza baja no se fusiona automáticamente con otra.
@@ -196,7 +198,7 @@ Nunca se usarán correos reales, nombres privados ni tokens en fixtures, logs o 
 
 ## 7. Criterios de aceptación
 
-### Hito 0
+### Base Segura
 
 - Todos los fixtures producen resultados deterministas.
 - Cada agrupación y clasificación muestra sus evidencias.
@@ -206,7 +208,7 @@ Nunca se usarán correos reales, nombres privados ni tokens en fixtures, logs o 
 - Las pruebas unitarias y de integración local pasan.
 - La interfaz se renderiza e inspecciona en resoluciones de escritorio y móvil estrecho.
 
-### Hito 1
+### Mapa Total
 
 - La cuenta mostrada coincide con la autorizada.
 - El escaneo puede interrumpirse y reanudarse.
@@ -215,7 +217,7 @@ Nunca se usarán correos reales, nombres privados ni tokens en fixtures, logs o 
 - El índice puede borrarse completamente.
 - Los errores de cuota y red no corrompen el progreso.
 
-### Hito 2
+### Estudio de Limpieza
 
 - La fecha civil se convierte de forma explícita a instantes.
 - La vista previa enumera alcance, exclusiones y muestras.
@@ -223,7 +225,7 @@ Nunca se usarán correos reales, nombres privados ni tokens en fixtures, logs o 
 - Los IDs futuros no pueden incorporarse a un plan aprobado.
 - El usuario puede cancelar sin efectos.
 
-### Hito 3
+### Limpieza Controlada
 
 - Se solicita permiso de modificación en contexto.
 - Cada lote es idempotente y queda registrado.
@@ -247,7 +249,7 @@ Nunca se usarán correos reales, nombres privados ni tokens en fixtures, logs o 
 
 Estas capacidades permanecen en la visión, pero no son dependencias del MVP.
 
-## 9. Arquitectura confirmada para el Hito 0
+## 9. Arquitectura recomendada para Base Segura
 
 - Plataforma inicial: Windows.
 - Experiencia: aplicación web local abierta en el navegador.
@@ -257,4 +259,7 @@ Estas capacidades permanecen en la visión, pero no son dependencias del MVP.
 - Tokens: almacén seguro del sistema operativo antes de conectar Gmail real.
 - Red: sólo loopback para la aplicación local; OAuth y Gmail como servicios externos esperados.
 
-Joa confirmó explícitamente esta arquitectura. La comparación y sus consecuencias se registran en `docs/adr/0001-arquitectura-hito-0.md`. Esta confirmación autoriza únicamente el Hito 0 con datos sintéticos; no autoriza OAuth, acceso a Gmail ni acciones reales.
+La comparación y sus consecuencias se registran en
+`docs/adr/0001-arquitectura-base-segura.md`. Joa confirmó esta arquitectura después
+de revisar la auditoría de herencia. La confirmación autoriza únicamente el
+Base Segura; no autoriza OAuth, acceso a Gmail ni acciones reales.

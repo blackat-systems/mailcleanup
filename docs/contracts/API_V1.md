@@ -1,10 +1,14 @@
 # Contrato de API local v1
 
-Estado: estable para la columna vertebral del Hito 0.
+Estado: contrato estable y verificado para el candidato de Base Segura. La
+aceptación final del hito por Joa sigue pendiente.
 
 Base: `http://127.0.0.1:8765/api/v1`.
 
-La API se enlaza únicamente a loopback y expone datos sintéticos. No existen rutas de OAuth, Gmail, baja ni modificación de mensajes.
+La API candidata se enlaza únicamente a loopback y expone datos sintéticos. No
+existen rutas de OAuth, Gmail, baja ni modificación de mensajes dentro de
+`src/mailmap`. El prototipo legado con capacidades reales fue retirado del árbol
+activo y permanece solamente en el historial Git.
 
 ## Lecturas
 
@@ -37,9 +41,12 @@ La fecha se interpreta como fecha civil inclusiva en `America/Argentina/Cordoba`
 
 `POST /plans/{plan_id}/revalidate` compara IDs y revisiones actuales con la vista previa. Un cambio de etiqueta vuelve obsoleto el elemento afectado. La ruta tampoco ejecuta efectos.
 
+No existe una ruta de ejecución. Los únicos `POST` habilitados durante Base Segura
+son la creación de la vista previa y su revalidación.
+
 ## Reglas para dependencias futuras
 
 - No duplicar en el frontend las reglas de identidad, clasificación, precedencia o protección.
-- No ampliar este contrato con datos privados durante el Hito 0.
+- No ampliar este contrato con datos privados durante Base Segura.
 - Un cambio incompatible requiere una nueva versión y auditoría de MAIN.
 - Las futuras acciones reales deben usar rutas y modelos separados, con revalidación, idempotencia y registro durable.

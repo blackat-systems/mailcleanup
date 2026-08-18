@@ -64,7 +64,7 @@ export function OverviewPage({ selected, onToggle }: Props) {
             <div><dt>Spam visible</dt><dd>{data.spamMessages}</dd></div>
             <div><dt>Protegidos</dt><dd>{data.protectedMessages}</dd></div>
           </dl>
-          <a className="text-button" href="#/plan">Preparar una simulación <Icon name="arrow" /></a>
+          <a className="text-button" href="#/plan">Abrir Estudio de Limpieza <Icon name="arrow" /></a>
         </section>
       </div>
 

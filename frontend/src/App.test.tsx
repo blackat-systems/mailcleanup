@@ -40,13 +40,13 @@ describe("recorrido principal", () => {
     render(<App />);
     await screen.findByText("Diario Horizonte");
     await user.click(screen.getByRole("checkbox", { name: /sumar al plan/i }));
-    await user.click(screen.getByRole("link", { name: /^plan/i }));
+    await user.click(screen.getByRole("link", { name: /^estudio de limpieza/i }));
 
     expect(await screen.findByRole("heading", { name: /decidir con una vista previa/i })).toBeVisible();
     expect(screen.getByText("Ejecución bloqueada")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Crear vista previa" }));
 
     expect(await screen.findByText("mensajes incluidos")).toBeVisible();
-    expect(screen.getByText("No existe un botón de ejecutar en el Hito 0.")).toBeVisible();
+    expect(screen.getByText("Base Segura no contiene un botón de ejecutar.")).toBeVisible();
   });
 });

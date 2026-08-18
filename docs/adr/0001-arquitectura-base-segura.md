@@ -1,9 +1,9 @@
-# ADR 0001: arquitectura del Hito 0
+# ADR 0001: arquitectura de Base Segura
 
-- Estado: aceptada.
+- Estado: aceptada después de la auditoría de herencia.
 - Fecha: 18 de agosto de 2026.
 - Decisor: Joa.
-- Alcance: Hito 0, exclusivamente con datos sintéticos.
+- Alcance: Base Segura, exclusivamente con datos sintéticos.
 
 ## Contexto
 
@@ -22,7 +22,7 @@ Adoptar una aplicación web local para Windows con:
 - frontend React con TypeScript;
 - SQLite local con migraciones desde la primera versión;
 - comunicación únicamente por loopback durante el uso local;
-- datos sintéticos en el Hito 0;
+- datos sintéticos en Base Segura;
 - separación explícita entre dominio, persistencia, API y presentación.
 
 ## Razones
@@ -37,10 +37,12 @@ Python conserva el conocimiento aprovechable del prototipo sin convertirlo en ar
 
 - MAIN es dueño de los contratos compartidos, la navegación principal, el esquema base y la batería global.
 - El frontend no contiene reglas de clasificación ni de seguridad: sólo presenta resultados y decisiones.
-- La API expone información sintética en el Hito 0 y no incluye endpoints de OAuth ni Gmail.
+- La API expone información sintética en Base Segura y no incluye endpoints de OAuth ni Gmail.
 - Las futuras acciones reales deberán entrar por una puerta de aprobación nueva y una capa separada, revalidable, idempotente y registrable.
 - Ningún worktree especialista se crea hasta que MAIN deje una base limpia, contratos estables y un prompt autosuficiente.
 
 ## Límites de esta aceptación
 
-La decisión no autoriza conectar una cuenta, solicitar credenciales, abrir OAuth, enviar desuscripciones, modificar mensajes ni incorporar datos reales. Tampoco decide todavía el mecanismo de empaquetado de escritorio.
+La aceptación no autoriza conectar una cuenta, solicitar credenciales, abrir
+OAuth, enviar desuscripciones, modificar mensajes ni incorporar datos reales.
+Tampoco decide todavía el mecanismo de empaquetado de escritorio.
