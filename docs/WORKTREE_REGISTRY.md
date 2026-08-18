@@ -91,7 +91,32 @@ contrato: límite máximo de cinco minutos para la autorización, rechazo de
 credenciales ya vencidas y conservación del refresh token previo cuando una
 renovación válida no entrega uno nuevo. La batería global pasó. D2 continúa sin
 adaptadores productivos, rutas API, OAuth real, Gmail, credenciales ni datos
-reales; D3 no fue habilitada.
+reales; D2 por sí sola no habilitó D3.
+
+## D3 — `gmail-readonly-inventory`
+
+| Campo | Estado real |
+|---|---|
+| Proceso | Mapa Total, inventario sintético de sólo metadatos |
+| Estado | `EN DESARROLLO` |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\f1b0\mailcleanup` |
+| Rama | `codex/gmail-readonly-inventory` |
+| Base | `f510db0799c94d944f28d3dd71db8a9bd79ae648` |
+| HEAD al crear | `f510db0799c94d944f28d3dd71db8a9bd79ae648` |
+| Tarea | `01a01570-d229-7fb1-a39e-dd55aa1761bb` — `D3 · Inventario Gmail de sólo lectura` |
+| Prompt | `docs/prompts/D3_GMAIL_READONLY_INVENTORY.md` |
+| Contratos | `SECURITY_PRIVACY_V1.md`, `GMAIL_READONLY_INVENTORY_V1.md`, `GMAIL_SESSION_V1.md` e `INDEX_PERSISTENCE_V1.md` |
+| Alcance | Orquestación de inventario completo y parcial, paginación, metadatos exactos, reanudación, cancelación y errores, todo con dobles sintéticos |
+| Archivos permitidos | `src/mailmap/gmail_inventory_model.py`, `src/mailmap/gmail_inventory.py`, `tests/test_gmail_readonly_inventory.py`, `tests/test_base_segura_safety.py` |
+| OAuth, Gmail, red, credenciales y datos reales | Prohibidos durante desarrollo y pruebas |
+| Adaptador productivo, API y frontend | Prohibidos |
+| Commit del especialista | No autorizado |
+| Integración en `main` | Pendiente de handoff y auditoría independiente de MAIN |
+
+Codex creó inicialmente el checkout en `detached HEAD`. MAIN comprobó que estaba
+limpio, lo adjuntó a la rama indicada y volvió a verificar ruta, rama, base y
+estado antes de habilitar al especialista. La tarea recibió el prompt completo
+con el SHA exacto y la prohibición de conectar Gmail.
 
 ## Reglas de actualización
 

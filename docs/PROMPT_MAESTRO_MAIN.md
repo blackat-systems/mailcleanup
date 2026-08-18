@@ -1,9 +1,10 @@
 # Prompt maestro de MAIN
 
 Estado actual: Base Segura fue aceptada por Joa; D1 y D2 están auditadas e
-integradas. MAIN prepara D3 `gmail-readonly-inventory` con una línea base de
-seguridad reforzada. La revisión visual instrumental de Base Segura continúa
-pendiente. No existe remoto Git.
+integradas. D3 `gmail-readonly-inventory` fue creada desde la base
+`f510db0799c94d944f28d3dd71db8a9bd79ae648` con una línea base de seguridad
+reforzada y trabaja sólo con dobles. La revisión visual instrumental de Base
+Segura continúa pendiente. No existe remoto Git.
 
 ## Identidad y responsabilidad
 

@@ -17,7 +17,7 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Rama | `main` |
 | HEAD de MAIN al integrar D1 | `7720ad4c57c984c7ba6fc2e6bc9c5e02119756a2` |
 | Estado actual | D1 y D2 consolidadas; contratos y prompt de D3 preparados |
-| Worktrees | Tres: MAIN, D1 `real-index-persistence` y D2 `secure-gmail-session` |
+| Worktrees | Cuatro: MAIN, D1, D2 y D3 `gmail-readonly-inventory` |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
@@ -233,7 +233,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Inventariar en sólo lectura IDs, etiquetas, fechas, tamaño y encabezados autorizados; paginar, reanudar y normalizar sin clasificar. |
 | Razón para separarlo | Concentra interacción con Gmail, límites, lotes y recuperación, pero no debe decidir producto ni persistencia. |
-| Estado actual | `LISTA PARA CREAR` con alcance sintético |
+| Estado actual | `EN DESARROLLO` con alcance sintético |
 | Dependencias previas | D1 y D2 integradas; C1 a C5 estables. |
 | Contratos que consume | `SECURITY_PRIVACY_V1.md`, `GMAIL_READONLY_INVENTORY_V1.md`, sesión D2, repositorio D1 y C1-C5. |
 | Resultados que produce | Registros normalizados y eventos de progreso/reanudación; inventario de Spam separado y exclusión de Enviados, Borradores y Papelera. |
@@ -241,7 +241,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Permitido | Orquestación de inventario, paginación/sincronización y pruebas con transporte simulado; sin adaptador productivo. |
 | Prohibido | Cuerpos no autorizados, acciones de escritura, clasificación, correcciones, UI y credenciales reales. |
 | Rama propuesta | `codex/gmail-readonly-inventory` |
-| Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-gmail-readonly-inventory` |
+| Ruta real | `C:\Users\Joaquin\.codex\worktrees\f1b0\mailcleanup` |
 | Commit base requerido | SHA limpio que contenga D1/D2, línea base de privacidad, política ejecutable, contrato y prompt D3. |
 | Verificaciones específicas | Paginación, límites, reintentos, cancelación, checkpoint, 404 de historial, duplicados, etiquetas protegidas, alcance y ausencia de escritura. |
 | Criterios de aceptación | Una interrupción se reanuda sin duplicar; una historia vencida fuerza resincronización segura; sólo se persisten campos permitidos. |

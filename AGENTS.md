@@ -53,11 +53,12 @@ MAIN. Joa autorizó preparar D3 con las barreras de
 `docs/contracts/SECURITY_PRIVACY_V1.md` y
 `docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`. D3 usa solamente dobles
 sintéticos: no están autorizados abrir OAuth, conectar Gmail, solicitar
-credenciales ni usar datos reales. Antes de crear D3 existen tres worktrees:
-MAIN sobre `main`, D1
+credenciales ni usar datos reales. Existen cuatro worktrees: MAIN sobre `main`,
+D1
 `codex/real-index-persistence` y D2 `codex/secure-gmail-session`. D1 está
-consolidada y los worktrees especialistas se conservan como evidencia. No hay
-remoto Git configurado.
+consolidada, esos dos worktrees se conservan como evidencia y D3 trabaja en
+`codex/gmail-readonly-inventory` desde la base exacta registrada. No hay remoto
+Git configurado.
 
 ## Objetivo actual
 
