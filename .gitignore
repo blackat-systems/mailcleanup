@@ -1,7 +1,18 @@
 .venv/
 __pycache__/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
 *.py[cod]
+*.egg-info/
+
+# Frontend y artefactos locales
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Estado local del Hito 0
+data/
 
 # Credenciales y datos privados locales
 credentials.json

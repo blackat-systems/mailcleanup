@@ -1,0 +1,16 @@
+# Ejemplo conservado exclusivamente para el prototipo no auditado en
+# src/gmail_cleaner. No usar con una cuenta real ni durante el Hito 0.
+
+[gmail]
+credentials_file = "credentials.json"
+token_file = "token.json"
+
+[selection]
+query = "older_than:90d (category:promotions OR category:updates OR in:spam)"
+max_messages = 10000
+protected_labels = ["Trabajo", "Familia", "Pagos"]
+protected_senders = []
+
+[unsubscribe]
+enabled = false
+timeout_seconds = 15

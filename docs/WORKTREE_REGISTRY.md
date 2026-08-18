@@ -10,9 +10,9 @@ Este archivo es la fuente durable de coordinación. No reemplaza `git worktree l
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\limpiar_mails` |
 | Rama | `main` |
 | Commit base inicial | `28bfaf3a5d7f0625d509d529105d17dc85e7d879` |
-| Hito autorizado | Gobernanza de MAIN; arquitectura del Hito 0 pendiente de confirmación |
+| Hito autorizado | Hito 0 completo, exclusivamente con datos sintéticos |
 | Gmail real | Prohibido |
-| Estado | Repositorio inicializado; único worktree; arquitectura pendiente |
+| Estado | Candidato del Hito 0 implementado y automatizado; revisión visual de Joa pendiente |
 
 Nota de entorno: las invocaciones Git desde el sandbox deben usar
 `-c safe.directory=C:/Users/Joaquin/Desktop/chatgptprojects/limpiar_mails`.
@@ -24,9 +24,9 @@ Todavía no se creó ningún worktree especialista. Los nombres son orientativos
 
 | Orden | Dependencia posible | Responsabilidad acotada | Estado |
 |---:|---|---|---|
-| 1 | `classification-domain` | Evidencias, taxonomía, precedencia y fixtures | Espera columna vertebral |
-| 2 | `source-map-ui` | Explorador y detalle sobre contratos estables | Espera columna vertebral |
-| 3 | `local-persistence` | SQLite, migraciones y reanudación local | Espera arquitectura |
+| 1 | `classification-domain` | Evidencias, taxonomía, precedencia y fixtures | Cubierto inicialmente por MAIN; no creado |
+| 2 | `source-map-ui` | Explorador y detalle sobre contratos estables | Cubierto inicialmente por MAIN; no creado |
+| 3 | `local-persistence` | SQLite, migraciones y reanudación local | Cubierto inicialmente por MAIN; no creado |
 | 4 | `gmail-readonly` | Adaptador OAuth y metadatos del Hito 1 | Fuera del Hito 0 |
 | 5 | `action-engine` | Planes, revalidación, Papelera y Archivo | Fuera del Hito 0 |
 | 6 | `unsubscribe-security` | Baja RFC 8058 e idempotencia | Fuera del Hito 0 |

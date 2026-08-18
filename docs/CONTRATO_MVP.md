@@ -1,6 +1,6 @@
 # Contrato del MVP
 
-Estado: propuesta auditada pendiente de confirmación de Joa.
+Estado: aprobado por Joa para ejecutar el Hito 0 el 18 de agosto de 2026.
 
 Este documento prevalece sobre la visión amplia para el desarrollo inicial.
 
@@ -247,14 +247,14 @@ Nunca se usarán correos reales, nombres privados ni tokens en fixtures, logs o 
 
 Estas capacidades permanecen en la visión, pero no son dependencias del MVP.
 
-## 9. Arquitectura recomendada pendiente de confirmación
+## 9. Arquitectura confirmada para el Hito 0
 
 - Plataforma inicial: Windows.
 - Experiencia: aplicación web local abierta en el navegador.
 - Backend: Python, preservando únicamente componentes auditados del prototipo.
 - Persistencia: SQLite local con migraciones desde el comienzo.
-- Interfaz: frontend separado y preparado para empaquetado futuro.
+- Interfaz: React con TypeScript en un frontend separado y preparado para empaquetado futuro.
 - Tokens: almacén seguro del sistema operativo antes de conectar Gmail real.
 - Red: sólo loopback para la aplicación local; OAuth y Gmail como servicios externos esperados.
 
-La elección entre una interfaz React/TypeScript y una interfaz server-rendered debe resolverse en un registro de decisión antes de comenzar el Hito 0. La recomendación preliminar es React/TypeScript porque la interacción central incluye filtros, selecciones, vistas previas y estados complejos; el costo adicional debe aceptarse explícitamente.
+Joa confirmó explícitamente esta arquitectura. La comparación y sus consecuencias se registran en `docs/adr/0001-arquitectura-hito-0.md`. Esta confirmación autoriza únicamente el Hito 0 con datos sintéticos; no autoriza OAuth, acceso a Gmail ni acciones reales.

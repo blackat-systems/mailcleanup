@@ -1,0 +1,81 @@
+import type { Dashboard, PlanPreview, SourceRecord } from "../types";
+
+export const source: SourceRecord = {
+  id: "src-diario-horizonte",
+  name: "Diario Horizonte",
+  messageCount: 2,
+  unreadCount: 1,
+  protectedCount: 0,
+  candidateCount: 2,
+  totalBytes: 260000,
+  firstSeen: "2026-08-15T07:30:00-03:00",
+  lastSeen: "2026-08-16T07:30:00-03:00",
+  senders: ["edicion@diariohorizonte.example"],
+  domains: ["diariohorizonte.example"],
+  rubro: "Medios y contenido",
+  rubros: { "Medios y contenido": 2 },
+  dominantIntent: "Informativo o editorial",
+  intents: { "Informativo o editorial": 2 },
+  subscription: "Confirmada",
+  subscriptionStates: { Confirmada: 2 },
+  unsubscribeMethods: { "Un clic autenticado": 2 },
+  confidence: "Alta",
+  ambiguous: false,
+  isSpam: false,
+  isSubscription: true,
+  recommendation: "Candidato a Archivo",
+  flows: [
+    {
+      id: "flow-editorial",
+      name: "Informativo o editorial",
+      messageCount: 2,
+      protectedCount: 0,
+      subscriptionStates: ["Confirmada"],
+    },
+  ],
+  evidence: [
+    {
+      code: "brand-authenticated",
+      label: "Identidad autenticada",
+      detail: "La marca coincide con señales autenticadas.",
+      strength: "fuerte",
+    },
+  ],
+  recentMessages: [],
+};
+
+export const dashboard: Dashboard = {
+  mode: "synthetic",
+  snapshotAt: "2026-08-18T00:00:00-03:00",
+  totalMessages: 21,
+  totalSources: 14,
+  subscriptionSources: 8,
+  spamMessages: 1,
+  protectedMessages: 6,
+  candidateMessages: 13,
+  totalBytes: 1048576,
+  rubros: [{ name: "Medios y contenido", count: 5 }],
+  topSources: [source],
+  fixtureCoverage: { covered: 16, required: 16, missing: [] },
+};
+
+export const preview: PlanPreview = {
+  id: "plan-demo",
+  createdAt: "2026-08-18T10:00:00-03:00",
+  status: "simulated",
+  selection: {
+    sourceIds: [source.id],
+    beforeDate: null,
+    keepLatest: 0,
+    operations: ["trash"],
+    timezone: "America/Argentina/Cordoba",
+  },
+  sourceCount: 1,
+  messageCount: 2,
+  totalBytes: 260000,
+  excludedCount: 0,
+  exclusions: [],
+  sample: [],
+  warnings: ["Simulación local: este plan no puede modificar Gmail."],
+  canExecute: false,
+};

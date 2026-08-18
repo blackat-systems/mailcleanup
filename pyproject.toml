@@ -5,10 +5,24 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "limpiar-mails"
 version = "0.1.0"
-description = "Auditor local y seguro para limpiar newsletters y spam de Gmail"
+description = "Mapa local y seguro de fuentes y flujos de correo"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "fastapi>=0.116,<1",
+  "pydantic>=2.11,<3",
+  "tzdata>=2025.2",
+  "uvicorn>=0.35,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.28,<1",
+  "mypy>=1.17,<2",
+  "pytest>=8.4,<9",
+  "ruff>=0.12,<1",
+]
+gmail-future = [
   "google-api-python-client>=2.170,<3",
   "google-auth>=2.40,<3",
   "google-auth-httplib2>=0.2,<1",
@@ -16,16 +30,25 @@ dependencies = [
   "requests>=2.32,<3",
 ]
 
-[project.optional-dependencies]
-dev = [
-  "pytest>=8.3,<9",
-]
-
 [project.scripts]
-limpiar-mails = "gmail_cleaner.cli:main"
+mailmap-local = "mailmap.main:run"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["src/gmail_cleaner"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["mailmap"]

@@ -1,23 +1,17 @@
-# Copiá este archivo como config.toml. No se sube a Git.
+# Configuración prevista para la aplicación local. En el Hito 0 la interfaz
+# muestra estos valores, pero no admite datos reales ni conexión a Gmail.
 
-[gmail]
-credentials_file = "credentials.json"
-token_file = "token.json"
+[app]
+mode = "synthetic"
+host = "127.0.0.1"
+port = 8765
+timezone = "America/Argentina/Cordoba"
 
-[selection]
-# Gmail admite casi la misma sintaxis que su buscador web.
-# Esta consulta sólo encuentra candidatos; jamás ejecuta cambios por sí sola.
-query = "older_than:90d (category:promotions OR category:updates OR in:spam)"
-max_messages = 10000
+[protection]
+labels = ["Trabajo", "Familia", "Pagos"]
 
-# Protección adicional a STARRED, IMPORTANT, SENT y DRAFT, que siempre se respetan.
-protected_labels = ["Trabajo", "Familia", "Pagos"]
-protected_senders = [
-  # "persona@example.com",
-  # "@banco.example",
-]
-
-[unsubscribe]
-# La baja sólo se ejecuta si además marcás SI para ese remitente en el CSV.
-enabled = true
-timeout_seconds = 15
+[capabilities]
+gmail = false
+oauth = false
+remote_ai = false
+permanent_delete = false
