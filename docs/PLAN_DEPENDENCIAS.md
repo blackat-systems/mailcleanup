@@ -176,7 +176,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Implementar persistencia y migraciones del índice normalizado, checkpoints, estados de sincronización y borrado local conforme a C1 y C4. |
 | Razón para separarlo | Es una frontera local, sin red, con invariantes de migración y recuperación verificables en aislamiento. |
-| Estado actual | `LISTA PARA CREAR` |
+| Estado actual | `EN DESARROLLO` |
 | Dependencias previas | Joa autorizó abrir D1 como infraestructura sintética; C1/C4 quedan estabilizados para ese alcance por `docs/contracts/INDEX_PERSISTENCE_V1.md`. |
 | Contratos que consume | C1, C4, reglas SQLite vigentes. |
 | Resultados que produce | Repositorios y migraciones versionadas para índice, checkpoints y ciclo de borrado. |
@@ -488,7 +488,8 @@ El primer worktree autorizado es D1 `real-index-persistence`. Puede verificarse
 sin red ni credenciales y produce la base consumida por el inventario, pero no
 habilita por sí solo ningún dato real.
 
-Estado actual: `LISTA PARA CREAR` con alcance exclusivamente sintético.
+Estado actual: `EN DESARROLLO` con alcance exclusivamente sintético desde la
+base `c3dc210e69e31eb252443d08558e78f756c719d2`.
 
 La condición original se acotó por instrucción explícita de Joa. Para crear D1
 ahora deben cumplirse todas:

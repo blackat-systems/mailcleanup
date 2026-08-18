@@ -18,7 +18,7 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Base consolidada | El commit que contiene este registro |
 | Estado | Base Git limpia y técnicamente verificada; revisión visual y aceptación de producto pendientes |
 
-## Estado observado el 18 de agosto de 2026
+## Estado al consolidar Base Segura
 
 - Existe un solo worktree: la ruta de MAIN indicada arriba.
 - No existe un worktree especialista.
@@ -27,7 +27,7 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 - El historial de esa referencia sí está presente en el repositorio actual.
 - No hay remoto Git configurado.
 - La consolidación local queda fijada por el commit que contiene este registro.
-- No se creó ni habilitó ningún worktree especialista durante esta intervención.
+- No se creó ni habilitó ningún worktree especialista durante esa intervención.
 
 ## Dependencias futuras
 
@@ -35,9 +35,28 @@ Las propuestas, dependencias, contratos pendientes y condiciones de apertura se
 mantienen en `docs/PLAN_DEPENDENCIAS.md`. Este registro enumera únicamente
 worktrees que existen realmente.
 
-Al preparar la base de D1 el 18 de agosto de 2026 todavía no existe ningún
-worktree especialista. D1 figura `LISTA PARA CREAR` en el plan, pero no se
-registra aquí como existente hasta que la herramienta termine de crearlo.
+## D1 — `real-index-persistence`
+
+| Campo | Estado real |
+|---|---|
+| Proceso | Mapa Total, infraestructura sintética preparatoria |
+| Estado | `EN DESARROLLO` |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\ab1f\mailcleanup` |
+| Rama | `codex/real-index-persistence` |
+| Base | `c3dc210e69e31eb252443d08558e78f756c719d2` |
+| HEAD al crear | `c3dc210e69e31eb252443d08558e78f756c719d2` |
+| Tarea | `01a014bf-5182-7902-a38a-ee62028bdc02` — `D1 · Persistencia del índice` |
+| Prompt | `docs/prompts/D1_REAL_INDEX_PERSISTENCE.md` |
+| Contrato | `docs/contracts/INDEX_PERSISTENCE_V1.md` |
+| Alcance | Modelo cerrado del índice, migración SQLite, checkpoint atómico, consultas y borrado con datos sintéticos |
+| Archivos permitidos | `src/mailmap/index_model.py`, `src/mailmap/repository.py`, `tests/test_index_persistence.py` |
+| Gmail, OAuth y datos reales | Prohibidos |
+| Commit del especialista | No autorizado |
+| Integración en `main` | Pendiente de entrega y auditoría de MAIN |
+
+Codex creó inicialmente el checkout en `detached HEAD`. MAIN comprobó que estaba
+limpio, lo adjuntó a la rama indicada y volvió a verificar rama, HEAD y estado
+antes de habilitar al especialista para editar.
 
 ## Reglas de actualización
 
