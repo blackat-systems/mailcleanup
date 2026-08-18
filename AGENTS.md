@@ -48,27 +48,28 @@ que sea importante, ambiguo o contradictorio.
 visual con herramienta no llegó a verificarse y permanece registrada como tal;
 la aceptación es una decisión de producto, no evidencia visual retroactiva.
 
-Está autorizada la preparación sintética de Mapa Total mediante D2, bajo
-`docs/contracts/GMAIL_SESSION_V1.md`. No están autorizados abrir OAuth, conectar
-Gmail, solicitar credenciales, usar datos reales ni ejecutar D3.
-Existen dos worktrees: MAIN sobre `main` y D1
-`codex/real-index-persistence`. D1 fue auditada e integrada en el árbol de
-trabajo de MAIN con alcance exclusivamente sintético y queda consolidada por el
-commit que contiene esta actualización. No hay remoto Git configurado.
+La preparación sintética de Mapa Total mediante D2 fue auditada e integrada en
+MAIN bajo `docs/contracts/GMAIL_SESSION_V1.md`; queda consolidada por el commit
+que contiene esta actualización. No están autorizados abrir
+OAuth, conectar Gmail, solicitar credenciales, usar datos reales ni ejecutar
+D3. Existen tres worktrees: MAIN sobre `main`, D1
+`codex/real-index-persistence` y D2 `codex/secure-gmail-session`. D1 está
+consolidada y los worktrees especialistas se conservan como evidencia. No hay
+remoto Git configurado.
 
 ## Objetivo actual
 
-Crear D2 `secure-gmail-session` desde un contrato y SHA limpios, exclusivamente
-con dobles sintéticos. D1 ya está integrada. D2 no debe abrir OAuth ni conectar
-una cuenta real y no habilita D3 por sí sola.
+Estabilizar las medidas de seguridad, contratos C1-C5 y prompt autosuficiente
+de D3 antes de crear su worktree. No abrir OAuth, conectar una cuenta real ni
+usar credenciales o datos reales durante esa preparación.
 
 ---
 
 # 2. PRIORIDAD
 
-Construir y auditar D2 sin introducir acceso real a Gmail. Todo cambio debe
-respetar el permiso mínimo, la separación de secretos, la barrera de no
-escritura y el contrato de sesión.
+Conservar la integración sintética auditada de D2 sin introducir acceso real a
+Gmail. Todo cambio debe respetar el permiso mínimo, la separación de secretos,
+la barrera de no escritura y el contrato de sesión.
 
 Mapa Total, Estudio de Limpieza y Limpieza Controlada permanecen detrás de
 puertas de autorización independientes. Las ideas futuras se registran sin
@@ -300,9 +301,9 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 
 # 10. ESPECIALISTAS
 
-El worktree fuente de D1 `real-index-persistence` se conserva como evidencia de
-una entrega ya integrada. D2 `secure-gmail-session` es el único especialista en
-desarrollo; no existe otra dependencia autorizada.
+Los worktrees fuente de D1 `real-index-persistence` y D2
+`secure-gmail-session` se conservan como evidencia de entregas integradas. No
+existe otro especialista en desarrollo ni otra dependencia autorizada.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -323,11 +324,9 @@ alcance, dependencias, prohibiciones, validación y cierre.
 ```text
 Base Segura aceptada por Joa
         ↓
-D1 integrada + contrato de sesión D2
+D1 integrada + D2 integrada con dobles sintéticos
         ↓
-contrato + base limpia + prompt autosuficiente
-        ↓
-especialista → auditoría MAIN → integración
+revisión de Joa; D3 continúa bloqueada
 ```
 
 Las puertas de producto son secuenciales:

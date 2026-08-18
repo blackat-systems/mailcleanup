@@ -40,7 +40,7 @@ worktrees que existen realmente.
 | Campo | Estado real |
 |---|---|
 | Proceso | Mapa Total, infraestructura sintética preparatoria |
-| Estado | `INTEGRADA` en el árbol de trabajo de MAIN; fuente conservada |
+| Estado | `INTEGRADA` y consolidada; fuente conservada |
 | Ruta | `C:\Users\Joaquin\.codex\worktrees\ab1f\mailcleanup` |
 | Rama | `codex/real-index-persistence` |
 | Base | `c3dc210e69e31eb252443d08558e78f756c719d2` |
@@ -68,7 +68,7 @@ de regresión. D1 continúa siendo local, sintética y no apta para datos reales
 | Campo | Estado real |
 |---|---|
 | Proceso | Mapa Total, preparación sintética de sesión |
-| Estado | `EN DESARROLLO` |
+| Estado | `INTEGRADA` en el árbol de trabajo de MAIN; fuente conservada |
 | Ruta | `C:\Users\Joaquin\.codex\worktrees\6d71\mailcleanup` |
 | Rama | `codex/secure-gmail-session` |
 | Base | `889d5f55acf1262aea722ace3d48a9064d06803f` |
@@ -80,11 +80,18 @@ de regresión. D1 continúa siendo local, sintética y no apta para datos reales
 | Archivos permitidos | `src/mailmap/session_model.py`, `src/mailmap/oauth_session.py`, `src/mailmap/windows_secret_store.py`, `tests/test_gmail_session.py`, `tests/test_base_segura_safety.py`, `pyproject.toml` |
 | OAuth real, Gmail, credenciales y datos reales | Prohibidos durante desarrollo y pruebas |
 | Commit del especialista | No autorizado |
-| Integración en `main` | Pendiente de entrega y auditoría de MAIN |
+| Integración en `main` | Auditada e integrada sobre `1c7843876efd2add2b2a6f50baf8e4fa2a5a6a64` por el commit que contiene este registro |
 
 Codex creó inicialmente D2 en `detached HEAD`. MAIN verificó que estaba limpio,
 lo adjuntó a `codex/secure-gmail-session`, confirmó nuevamente ruta, rama, base y
 estado y recién entonces indicó al especialista que comenzara.
+
+MAIN auditó los cinco archivos autorizados y corrigió tres defectos dentro del
+contrato: límite máximo de cinco minutos para la autorización, rechazo de
+credenciales ya vencidas y conservación del refresh token previo cuando una
+renovación válida no entrega uno nuevo. La batería global pasó. D2 continúa sin
+adaptadores productivos, rutas API, OAuth real, Gmail, credenciales ni datos
+reales; D3 no fue habilitada.
 
 ## Reglas de actualización
 

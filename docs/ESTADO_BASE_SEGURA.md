@@ -5,7 +5,8 @@ Fecha del corte: 18 de agosto de 2026.
 Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. La aceptación
 no convierte en verificada la revisión visual que la herramienta no pudo
 completar; ese dato histórico se conserva. Está autorizada la preparación
-sintética de Mapa Total mediante D2, sin abrir OAuth ni conectar datos reales.
+sintética de Mapa Total mediante D2. D2 fue auditada e integrada en el árbol de
+MAIN con dobles, sin abrir OAuth ni conectar datos reales.
 
 ## Qué existe
 
@@ -89,5 +90,5 @@ No hay rutas activas con `oauth`, `gmail`, `execute` o `disconnect`. Los únicos
 
 Las pruebas funcionales y estructurales están verificadas. La revisión visual
 instrumental continúa pendiente como evidencia, aunque Joa aceptó el proceso.
-La autorización posterior permite preparar D2 con dobles, pero no abrir OAuth,
-usar credenciales ni conectar Gmail real.
+La autorización posterior permitió integrar D2 con dobles, pero no abrir OAuth,
+usar credenciales, conectar Gmail real ni comenzar D3.

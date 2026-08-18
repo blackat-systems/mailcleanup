@@ -27,6 +27,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-018 | Integrar D1 en MAIN después de auditoría independiente, corrigiendo la atomicidad de migraciones y sin habilitar consumidores posteriores. | Ejecutada y consolidada en el commit que contiene esta decisión | Auditoría MAIN y autorización explícita de Joa del 18 de agosto de 2026 |
 | D-019 | Aceptar Base Segura pese a que la revisión visual instrumental continúa no verificada. | Confirmada | Aceptación explícita de Joa del 18 de agosto de 2026 |
 | D-020 | Preparar y crear D2 `secure-gmail-session` con `gmail.metadata`, dobles sintéticos, OAuth de escritorio seguro y DPAPI de usuario; sin abrir OAuth ni conectar una cuenta real. | Autorizada | Instrucción explícita de Joa del 18 de agosto de 2026 y contrato `GMAIL_SESSION_V1.md` |
+| D-021 | Integrar D2 en MAIN después de auditoría independiente y corregir vencimientos y conservación del refresh token, sin habilitar adaptadores reales ni D3. | Ejecutada y consolidada por el commit que contiene esta decisión | Instrucción de Joa y auditoría de MAIN del 18 de agosto de 2026 |
 
 ## Decisiones suficientemente definidas
 
@@ -46,7 +47,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 
 Joa respondió afirmativamente y autorizó D-005 + D-006. Posteriormente autorizó
 D-017, D-018, aceptó Base Segura mediante D-019 y habilitó la implementación
-sintética de D2 mediante D-020. Ninguna autorización permite abrir OAuth,
+sintética de D2 mediante D-020 y su integración auditada mediante D-021. Ninguna autorización permite abrir OAuth,
 conectar Gmail, solicitar credenciales, usar datos reales, ejecutar acciones
 externas, iniciar D3, Estudio de Limpieza o Limpieza Controlada.
 
