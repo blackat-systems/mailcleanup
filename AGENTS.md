@@ -94,8 +94,9 @@ Para determinar implementación y estado actual:
 Para coordinación de MAIN y dependencias:
 
 1. `docs/PROMPT_MAESTRO_MAIN.md`;
-2. `docs/WORKTREE_REGISTRY.md`;
-3. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
+2. `docs/PLAN_DEPENDENCIAS.md`;
+3. `docs/WORKTREE_REGISTRY.md`;
+4. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -336,8 +337,9 @@ Estudio de Limpieza
 Limpieza Controlada
 ```
 
-Los dominios tentativos de `docs/WORKTREE_REGISTRY.md` no son contratos ni una
-orden de creación. No paralelizar consumidores de interfaces inestables.
+Las dependencias propuestas de `docs/PLAN_DEPENDENCIAS.md` no son contratos ni
+una orden automática de creación. No paralelizar consumidores de interfaces
+inestables.
 
 ---
 

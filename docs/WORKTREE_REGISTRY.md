@@ -31,25 +31,13 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 
 ## Dependencias futuras
 
-No se crea ninguna hasta que MAIN complete y verifique la columna vertebral,
-Joa revise la base, exista un commit limpio y confirmado, y haya un contrato y
-prompt autosuficiente para el alcance elegido.
+Las propuestas, dependencias, contratos pendientes y condiciones de apertura se
+mantienen en `docs/PLAN_DEPENDENCIAS.md`. Este registro enumera únicamente
+worktrees que existen realmente.
 
-| Orden | Dependencia posible | Responsabilidad acotada | Estado |
-|---:|---|---|---|
-| 1 | `classification-domain` | Fuentes, flujos, grupos sin nombre, evidencia y confianza | Provisional; no creada |
-| 2 | `correction-memory` | Correcciones locales y aprendizaje explicable | Provisional; no creada |
-| 3 | `protection-engine` | Precedencia, exclusiones y contradicciones | Provisional; no creada |
-| 4 | `local-persistence` | SQLite, migraciones y reanudación local | Provisional; no creada |
-| 5 | `cleanup-plans` | Planes simulados, alcance, muestras y revalidación | Provisional; no creada |
-| 6 | `source-map-ui` | Panorama, fuentes, detalle y experiencia visual | Provisional; no creada |
-| 7 | `gmail-readonly` | Inventario y metadatos de Mapa Total | No autorizada |
-| 8 | `action-engine` | Lotes, Archivo y Papelera de Limpieza Controlada | No autorizada |
-| 9 | `manual-unsubscribe` | Presentación segura de mecanismos manuales | Provisional; no creada |
-
-Los nombres y límites son hipótesis de partición. MAIN debe revisar dependencias
-entre dominios antes de proponer el primer worktree y no debe abrirlos todos al
-mismo tiempo.
+Al preparar la base de D1 el 18 de agosto de 2026 todavía no existe ningún
+worktree especialista. D1 figura `LISTA PARA CREAR` en el plan, pero no se
+registra aquí como existente hasta que la herramienta termine de crearlo.
 
 ## Reglas de actualización
 

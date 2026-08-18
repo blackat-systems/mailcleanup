@@ -23,6 +23,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-014 | Las dependencias se habilitan secuencialmente después de integrar y volver a probar aquello que consumen. | Vigente | Instrucción explícita de Joa |
 | D-015 | La nomenclatura activa es Base Segura, Mapa Total, Estudio de Limpieza y Limpieza Controlada. | Vigente | Instrucción explícita de Joa |
 | D-016 | MAIN puede consolidar la base vigente en `main`, crear el commit y hacer push sólo si existe un remoto válido. | Ejecutada localmente | Autorización explícita de Joa |
+| D-017 | Crear D1 `real-index-persistence` como primer worktree, limitado a infraestructura sintética y sin habilitar Gmail, OAuth, credenciales ni datos reales. | Autorizada | Instrucción explícita de Joa del 18 de agosto de 2026 |
 
 ## Decisiones suficientemente definidas
 
