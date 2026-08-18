@@ -4,6 +4,8 @@ Fecha del corte: 18 de agosto de 2026.
 
 Estado: candidato funcional implementado; puerta visual y revisión de Joa pendientes.
 
+Checkpoint funcional de MAIN: `0a90b71403bb176c6fd2457213bcb8b347428a92`.
+
 ## Resultado construido
 
 - aplicación web local para Windows servida sólo en `127.0.0.1`;

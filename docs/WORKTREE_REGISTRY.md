@@ -10,6 +10,7 @@ Este archivo es la fuente durable de coordinación. No reemplaza `git worktree l
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\limpiar_mails` |
 | Rama | `main` |
 | Commit base inicial | `28bfaf3a5d7f0625d509d529105d17dc85e7d879` |
+| Checkpoint funcional Hito 0 | `0a90b71403bb176c6fd2457213bcb8b347428a92` |
 | Hito autorizado | Hito 0 completo, exclusivamente con datos sintéticos |
 | Gmail real | Prohibido |
 | Estado | Candidato del Hito 0 implementado y automatizado; revisión visual de Joa pendiente |
