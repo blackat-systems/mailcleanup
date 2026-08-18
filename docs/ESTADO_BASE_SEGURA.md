@@ -2,9 +2,10 @@
 
 Fecha del corte: 18 de agosto de 2026.
 
-Estado: candidato reconstruido por portado selectivo, técnicamente verificado y
-pendiente de revisión visual y aceptación final de Joa. Mapa Total no está
-autorizado.
+Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. La aceptación
+no convierte en verificada la revisión visual que la herramienta no pudo
+completar; ese dato histórico se conserva. Está autorizada la preparación
+sintética de Mapa Total mediante D2, sin abrir OAuth ni conectar datos reales.
 
 ## Qué existe
 
@@ -79,13 +80,14 @@ No hay rutas activas con `oauth`, `gmail`, `execute` o `disconnect`. Los únicos
 - La experiencia responsive tiene reglas estructurales y pruebas funcionales,
   pero no se considera visualmente aprobada hasta completar el recorrido real.
 
-## Pendientes para aceptar Base Segura
+## Cierre de Base Segura
 
 - recorrer visualmente Panorama, Fuentes, detalle, Plan y Estado en escritorio;
 - repetir el recorrido con un ancho móvil de 390 px;
 - corregir cualquier defecto visual encontrado;
-- recibir la aceptación explícita de Joa.
+- aceptación explícita de Joa: recibida el 18 de agosto de 2026.
 
-Hasta entonces, las pruebas funcionales y estructurales están verificadas; la
-calidad visual es pendiente. Aceptar Base Segura no autorizará Gmail, OAuth,
-credenciales ni Mapa Total.
+Las pruebas funcionales y estructurales están verificadas. La revisión visual
+instrumental continúa pendiente como evidencia, aunque Joa aceptó el proceso.
+La autorización posterior permite preparar D2 con dobles, pero no abrir OAuth,
+usar credenciales ni conectar Gmail real.

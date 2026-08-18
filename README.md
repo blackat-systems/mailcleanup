@@ -8,14 +8,17 @@ fuentes y flujos antes de preparar cualquier limpieza.
 Este repositorio nuevo heredó el historial y un candidato adelantado de Base
 Segura, anteriormente denominada Hito 0.
 MAIN auditó esa herencia y Joa confirmó el portado selectivo. El resultado
-actual es un candidato reconstruido y verificable:
+actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
 
 - el dominio, la API, SQLite y el frontend sintéticos pasan la batería local;
 - el servidor real fue comprobado en `127.0.0.1:8765`;
 - todo plan responde `canExecute: false` y no existe una ruta de ejecución;
-- Gmail, OAuth, credenciales y datos reales siguen prohibidos;
-- la aceptación visual de Joa y el cierre de Base Segura siguen pendientes;
-- no se creó ningún worktree especialista;
+- Joa aceptó Base Segura; la revisión visual instrumental continúa registrada
+  como no verificada;
+- D1 de persistencia sintética fue auditada e integrada;
+- D2 puede implementarse con dobles sintéticos bajo un contrato específico;
+- abrir OAuth, conectar Gmail, solicitar credenciales y usar datos reales siguen
+  prohibidos;
 - esta consolidación queda registrada en el commit que contiene este documento.
 
 El dictamen y la evidencia están en
@@ -58,6 +61,6 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-Completar el recorrido visual pendiente y pedirle a Joa que decida si acepta
-Base Segura. Esa decisión tampoco habilitará Gmail: Mapa Total tiene una puerta
-de autorización independiente.
+Crear y auditar D2 `secure-gmail-session` con dobles sintéticos. La conexión de
+una cuenta real seguirá requiriendo confirmación específica después de integrar
+el módulo y revisar su seguridad.

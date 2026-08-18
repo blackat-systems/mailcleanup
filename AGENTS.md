@@ -44,11 +44,13 @@ que sea importante, ambiguo o contradictorio.
 
 ## Estado actual
 
-`DEVELOPMENT` — Base Segura está consolidada técnicamente con datos sintéticos.
-La revisión visual en escritorio y móvil estrecho, la corrección de cualquier
-defecto visual que aparezca y la aceptación final de Joa siguen pendientes.
+`DEVELOPMENT` — Joa aceptó Base Segura el 18 de agosto de 2026. La revisión
+visual con herramienta no llegó a verificarse y permanece registrada como tal;
+la aceptación es una decisión de producto, no evidencia visual retroactiva.
 
-No están autorizados Gmail, OAuth, credenciales, datos reales ni Mapa Total.
+Está autorizada la preparación sintética de Mapa Total mediante D2, bajo
+`docs/contracts/GMAIL_SESSION_V1.md`. No están autorizados abrir OAuth, conectar
+Gmail, solicitar credenciales, usar datos reales ni ejecutar D3.
 Existen dos worktrees: MAIN sobre `main` y D1
 `codex/real-index-persistence`. D1 fue auditada e integrada en el árbol de
 trabajo de MAIN con alcance exclusivamente sintético y queda consolidada por el
@@ -56,18 +58,17 @@ commit que contiene esta actualización. No hay remoto Git configurado.
 
 ## Objetivo actual
 
-Cerrar Base Segura de manera verificable: conservar la base técnica consolidada,
-completar su revisión visual y obtener una decisión explícita de Joa. La
-infraestructura sintética D1 es una excepción preparatoria ya integrada; no
-habilita Mapa Total ni permite crear D2 o D3.
+Crear D2 `secure-gmail-session` desde un contrato y SHA limpios, exclusivamente
+con dobles sintéticos. D1 ya está integrada. D2 no debe abrir OAuth ni conectar
+una cuenta real y no habilita D3 por sí sola.
 
 ---
 
 # 2. PRIORIDAD
 
-Completar la aceptación de Base Segura sin introducir acceso real a Gmail ni
-ampliar el producto. Todo cambio debe sostener la base sintética, corregir un
-defecto comprobado, completar la revisión visual o mantener fuentes durables.
+Construir y auditar D2 sin introducir acceso real a Gmail. Todo cambio debe
+respetar el permiso mínimo, la separación de secretos, la barrera de no
+escritura y el contrato de sesión.
 
 Mapa Total, Estudio de Limpieza y Limpieza Controlada permanecen detrás de
 puertas de autorización independientes. Las ideas futuras se registran sin
@@ -99,6 +100,8 @@ Para coordinación de MAIN y dependencias:
 2. `docs/PLAN_DEPENDENCIAS.md`;
 3. `docs/WORKTREE_REGISTRY.md`;
 4. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
+
+Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -297,9 +300,9 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 
 # 10. ESPECIALISTAS
 
-Existe un único worktree especialista, D1 `real-index-persistence`. Su entrega
-fue auditada e integrada en el árbol de trabajo de MAIN; el worktree fuente se
-conserva hasta cerrar la integración. No existe otro especialista habilitado.
+El worktree fuente de D1 `real-index-persistence` se conserva como evidencia de
+una entrega ya integrada. D2 `secure-gmail-session` es la única dependencia
+habilitada para crear; no existe otro especialista autorizado.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -318,11 +321,9 @@ alcance, dependencias, prohibiciones, validación y cierre.
 # 11. DEPENDENCIAS
 
 ```text
-Base Segura técnicamente consolidada
+Base Segura aceptada por Joa
         ↓
-revisión visual y aceptación explícita de Joa
-        ↓
-primera dependencia definida por MAIN
+D1 integrada + contrato de sesión D2
         ↓
 contrato + base limpia + prompt autosuficiente
         ↓
@@ -419,8 +420,9 @@ Una tarea de MailCleanup está terminada sólo si:
 - el diff no contiene secretos, bases, cachés ni dependencias descargadas;
 - Git y el registro de worktrees reflejan el estado real.
 
-Base Segura no queda aceptada porque compile: requiere revisión visual y
-aceptación explícita de Joa.
+Base Segura no queda aceptada porque compile. Joa ya otorgó la aceptación
+explícita; la revisión visual instrumental continúa registrada como evidencia
+no verificada y deberá completarse antes de cerrar la experiencia de Mapa Total.
 
 ---
 

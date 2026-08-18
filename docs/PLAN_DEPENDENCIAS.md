@@ -1,7 +1,7 @@
 # Plan de dependencias y worktrees
 
-Estado del plan: ejecución controlada; D1 está `INTEGRADA` localmente y las
-demás dependencias conservan sus bloqueos.
+Estado del plan: ejecución controlada; D1 está `INTEGRADA`, D2 está
+`LISTA PARA CREAR` y las demás dependencias conservan sus bloqueos.
 
 Fecha de inspección: 18 de agosto de 2026.
 
@@ -20,8 +20,8 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Worktrees | Dos: MAIN y D1 `real-index-persistence` |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
-| Base Segura | Consolidada técnicamente; revisión visual en escritorio y 390 px y aceptación de Joa pendientes |
-| Capacidades autorizadas | Base Segura sintética y preparación/implementación sintética de D1; ningún acceso real ni proceso operativo posterior |
+| Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
+| Capacidades autorizadas | Implementación de D2 con dobles sintéticos; ninguna conexión Gmail, OAuth abierto, credencial o dato real |
 
 El SHA anterior es la base de MAIN sobre la que se integró D1, no un commit de
 integración. Cada dependencia posterior requiere un SHA limpio nuevo que
@@ -108,7 +108,9 @@ Debe decidir si quedan prohibidos o admitidos, con justificación separada:
 - encabezados de autenticación completos;
 - cualquier fragmento de cuerpo.
 
-Estado: `BLOQUEADA POR AUTORIZACIÓN` y decisión de privacidad de Joa.
+Estado: estabilizada para D2 y el futuro D3 por
+`docs/contracts/GMAIL_SESSION_V1.md`: permiso único `gmail.metadata`, sin `q`,
+sin cuerpos, snippets, MIME ni adjuntos. La conexión real sigue bloqueada.
 
 ### C3. Sesión, credenciales y revocación
 
@@ -117,7 +119,10 @@ almacén seguro del sistema operativo, renovación, cierre de sesión, revocaci�
 errores y garantía de no versionado. No se elige el mecanismo de Windows por
 suposición.
 
-Estado: `BLOQUEADA POR AUTORIZACIÓN` de Gmail y OAuth.
+Estado: estabilizada para implementar D2 con dobles por
+`docs/contracts/GMAIL_SESSION_V1.md`: navegador externo, loopback numérico,
+PKCE S256, DPAPI de usuario y revocación separada. Abrir OAuth o usar
+credenciales reales sigue bloqueado.
 
 ### C4. Índice privado y sincronización
 
@@ -201,21 +206,21 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Implementar autorización de una cuenta en modo de sólo lectura, identidad de cuenta, almacenamiento seguro, renovación, desconexión y revocación. |
 | Razón para separarlo | Las credenciales forman una frontera de seguridad distinta del inventario y requieren pruebas negativas propias. |
-| Estado actual | `BLOQUEADA POR AUTORIZACIÓN` |
-| Dependencias previas | Aceptación de Base Segura; autorización específica de Gmail/OAuth y Mapa Total; C2/C3 aprobados. |
-| Contratos que consume | C2, C3 y puerto de sesión definido por MAIN. |
+| Estado actual | `LISTA PARA CREAR` |
+| Dependencias previas | Base Segura aceptada; D1 integrada; implementación sintética autorizada por D-020; C2/C3 aprobados. |
+| Contratos que consume | `docs/contracts/GMAIL_SESSION_V1.md`, C2 y C3. |
 | Resultados que produce | Sesión de sólo lectura y estados de conexión sin exponer tokens. |
 | Consumidores posteriores | D3 y composición de MAIN. |
 | Permitido | Nuevos módulos de sesión Gmail, almacén de credenciales y pruebas sintéticas con dobles; configuración ignorada por Git. |
 | Prohibido | Inventario completo, clasificación, SQLite del mapa, frontend, `gmail.modify`, credenciales reales en pruebas o commits. |
 | Rama propuesta | `codex/secure-gmail-session` |
-| Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-secure-gmail-session` |
-| Commit base requerido | SHA futuro limpio que contenga C2/C3 y dependencias autorizadas. |
+| Ruta propuesta | Worktree aislado generado por Codex y registrado después de su creación real. |
+| Commit base requerido | SHA limpio que contenga `GMAIL_SESSION_V1.md`, D-019, D-020 y el prompt D2. |
 | Verificaciones específicas | Pruebas de scopes, cuenta esperada, renovación, revocación, errores, permisos de archivos, secretos y barrera de no escritura. |
 | Criterios de aceptación | No usa contraseña, no registra tokens, no pide permisos de modificación y permite revocar y borrar el estado local. |
 | Riesgos de integración | Alcance excesivo, almacenamiento inseguro, filtrado en logs y dependencia directa del SDK en el dominio. |
 | Paralelización real | Puede coexistir con D1 si sus interfaces están congeladas y no modifica archivos compartidos. |
-| Condición exacta de desbloqueo | Joa autoriza Gmail, OAuth y Mapa Total con el alcance explicado; MAIN aprueba C2/C3, dependencias y prompt, pasa la batería y fija un SHA limpio. |
+| Condición exacta de desbloqueo | Cumplida para crear el worktree sintético. La ejecución real continúa bloqueada hasta una autorización específica posterior a la auditoría e integración de D2. |
 
 ### D3 — `gmail-readonly-inventory`
 
@@ -430,15 +435,13 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 ## 7. Grafo de dependencias y puertas
 
 ```text
-MAIN: revisión visual de Base Segura
+Joa: Base Segura aceptada + preparación sintética D2 autorizada
              ↓
-Joa: aceptación de Base Segura
+MAIN: GMAIL_SESSION_V1 + batería + SHA limpio
              ↓
-Joa: autorización independiente de Mapa Total, Gmail y OAuth
-             ↓
-MAIN: C1 + C2 + C3 + C4 + C5 para operación real
-             ↓
-             D2
+             D2 con dobles, sin abrir OAuth
+             ↓ auditoría e integración MAIN
+Joa: autorización específica para conexión real + MAIN: C1-C5 operativos
              ↓
              D3  ←── D1 integrada
              ↓
@@ -479,8 +482,8 @@ MAIN: contrato C1/C4 sintético + batería + SHA limpio
 ```
 
 Orden de apertura recomendado: D1, D2, D3, D4, D5, D6, D7, D8, D9 y D10.
-El orden expresa consumo real. D1 ya fue integrada localmente. D2 permanece
-bloqueada por autorización y no se habilita por esta integración. D8 puede adelantarse con fixtures
+El orden expresa consumo real. D1 ya fue integrada y D2 está lista para crear
+con dobles sintéticos. D3 permanece bloqueada. D8 puede adelantarse con fixtures
 solamente si C6 y la API están congelados; su integración siempre espera D7.
 
 ## 8. Primer worktree creado e integrado
@@ -505,8 +508,8 @@ se cumplieron:
    `docs/prompts/PLANTILLA_DEPENDENCIA.md`;
 6. `docs/WORKTREE_REGISTRY.md` registró D1 después de su creación real.
 
-La revisión visual y la autorización de Gmail, OAuth y datos reales siguen
-pendientes y no forman parte de D1.
+La revisión visual instrumental y la autorización para abrir OAuth, conectar
+Gmail o usar datos reales siguen pendientes. D2 sólo prepara esa frontera.
 
 ## 9. Protocolo obligatorio de creación e integración
 
@@ -538,11 +541,11 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
 
 | Bloqueo | Afecta | Autoridad necesaria |
 |---|---|---|
-| Revisión visual y aceptación de Base Segura | D2-D10; permanece pendiente durante D1 sintético por excepción D-017 | Joa |
-| Autorización de Mapa Total, Gmail y OAuth | D2-D6; D1 no la consume en su alcance sintético | Joa, por puertas separadas cuando corresponda |
+| Revisión visual instrumental | D6 y aceptación visual final de Mapa Total; Base Segura ya fue aceptada por Joa | MAIN y Joa |
+| Autorización para abrir OAuth, conectar Gmail y usar datos reales | D3-D6; D2 sólo implementa con dobles | Joa, después de auditoría D2 |
 | Metadatos exactos frente a fragmentos, MIME o adjuntos | C1, C2, D3, D4, D10 | MAIN propone; Joa decide privacidad |
-| `gmail.metadata` frente a `gmail.readonly` y uso de `q` | C2, D2, D3 | MAIN demuestra necesidad; Joa autoriza el alcance |
-| Almacén seguro de credenciales en Windows | C3, D2 | MAIN propone; Joa autoriza arquitectura/privacidad |
+| Uso real de `gmail.metadata` sin `q` | D3 | Joa autoriza la conexión; MAIN conserva inventario completo y filtrado local |
+| Validación física de DPAPI y ubicación local | D2 antes de datos reales | MAIN audita; Joa autoriza la conexión |
 | Protección, retención y borrado del índice local | C4, D1 | MAIN propone; Joa decide si cambia el tratamiento de datos |
 | Identidad estable de fuente/flujo y migración de correcciones | C1, D4, D5, D7 | MAIN |
 | API posterior a v1 sintética | C5 y C6, D3-D8 | MAIN |
