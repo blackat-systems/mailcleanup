@@ -16,12 +16,12 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\mailcleanup` |
 | Rama | `main` |
 | HEAD de MAIN al integrar D1 | `7720ad4c57c984c7ba6fc2e6bc9c5e02119756a2` |
-| Estado actual | D1 consolidada; D2 auditada e integrada por el commit que contiene este estado |
+| Estado actual | D1 y D2 consolidadas; contratos y prompt de D3 preparados |
 | Worktrees | Tres: MAIN, D1 `real-index-persistence` y D2 `secure-gmail-session` |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
-| Capacidades autorizadas | D2 integrada con dobles sintéticos; ninguna conexión Gmail, OAuth abierto, credencial, dato real ni D3 |
+| Capacidades autorizadas | D3 con dobles sintéticos; ninguna conexión Gmail, OAuth abierto, credencial ni dato real |
 
 El SHA anterior es la base de MAIN sobre la que se integró D1, no un commit de
 integración. Cada dependencia posterior requiere un SHA limpio nuevo que
@@ -88,9 +88,8 @@ sintéticas como `source_hint` y `flow_hint`. Define campos, nulabilidad,
 procedencia, evidencia, versión, identificadores de mensaje, conversación,
 fuente y flujo, y cómo sobreviven las correcciones a una nueva sincronización.
 
-Estado: estabilizada para la persistencia sintética de D1 por
-`docs/contracts/INDEX_PERSISTENCE_V1.md`; `BLOQUEADA POR AUTORIZACIÓN` para
-registros reales y consumidores posteriores.
+Estado: estabilizada para D3 sintética por `INDEX_PERSISTENCE_V1.md` y
+`GMAIL_READONLY_INVENTORY_V1.md`; bloqueada para registros reales.
 
 ### C2. Límite de lectura
 
@@ -109,9 +108,10 @@ Debe decidir si quedan prohibidos o admitidos, con justificación separada:
 - encabezados de autenticación completos;
 - cualquier fragmento de cuerpo.
 
-Estado: estabilizada para D2 y el futuro D3 por
-`docs/contracts/GMAIL_SESSION_V1.md`: permiso único `gmail.metadata`, sin `q`,
-sin cuerpos, snippets, MIME ni adjuntos. La conexión real sigue bloqueada.
+Estado: estabilizada para D3 sintética por `GMAIL_SESSION_V1.md`,
+`SECURITY_PRIVACY_V1.md` y `GMAIL_READONLY_INVENTORY_V1.md`: permiso único,
+encabezados exactos, sin `q`, cuerpos, snippets, MIME ni adjuntos. La conexión
+real sigue bloqueada.
 
 ### C3. Sesión, credenciales y revocación
 
@@ -133,8 +133,9 @@ parcial de Gmail usa `historyId`; si el registro ya no está disponible, la API
 responde 404 y obliga a una sincronización completa. Ese caso debe formar parte
 del contrato antes de implementar.
 
-Estado: estabilizada para migraciones, checkpoint y borrado sintéticos de D1;
-`BLOQUEADA POR AUTORIZACIÓN` para ubicación, permisos y cifrado de datos reales.
+Estado: estabilizada para migraciones, checkpoint, reanudación y borrado
+sintéticos de D3. Sigue bloqueada para datos reales hasta implementar ubicación
+por usuario, ACL, cifrado autenticado, retención, respaldo y borrado verificable.
 
 ### C5. API de Mapa Total
 
@@ -142,7 +143,8 @@ Debe separar conexión, sincronización, índice, mapa y correcciones; versionar
 todo cambio incompatible con la API v1 sintética y conservar estados de carga,
 reanudación, error y desconexión.
 
-Estado: `BLOQUEADA POR CONTRATO`; consume C1 a C4.
+Estado: interfaz interna de progreso estabilizada para D3. La API pública de
+Mapa Total permanece `BLOQUEADA POR CONTRATO` y no se modifica en D3.
 
 ### C6. Plan real
 
@@ -231,21 +233,21 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Inventariar en sólo lectura IDs, etiquetas, fechas, tamaño y encabezados autorizados; paginar, reanudar y normalizar sin clasificar. |
 | Razón para separarlo | Concentra interacción con Gmail, límites, lotes y recuperación, pero no debe decidir producto ni persistencia. |
-| Estado actual | `BLOQUEADA POR AUTORIZACIÓN` |
+| Estado actual | `LISTA PARA CREAR` con alcance sintético |
 | Dependencias previas | D1 y D2 integradas; C1 a C5 estables. |
-| Contratos que consume | Sesión D2, repositorio D1, C1/C2/C4/C5. |
+| Contratos que consume | `SECURITY_PRIVACY_V1.md`, `GMAIL_READONLY_INVENTORY_V1.md`, sesión D2, repositorio D1 y C1-C5. |
 | Resultados que produce | Registros normalizados y eventos de progreso/reanudación; inventario de Spam separado y exclusión de Enviados, Borradores y Papelera. |
 | Consumidores posteriores | D4, D5, D6 y composición de MAIN. |
-| Permitido | Adaptador de inventario Gmail, paginación/sincronización y pruebas con API simulada. |
+| Permitido | Orquestación de inventario, paginación/sincronización y pruebas con transporte simulado; sin adaptador productivo. |
 | Prohibido | Cuerpos no autorizados, acciones de escritura, clasificación, correcciones, UI y credenciales reales. |
 | Rama propuesta | `codex/gmail-readonly-inventory` |
 | Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-gmail-readonly-inventory` |
-| Commit base requerido | SHA limpio posterior a la integración auditada de D1 y D2. |
+| Commit base requerido | SHA limpio que contenga D1/D2, línea base de privacidad, política ejecutable, contrato y prompt D3. |
 | Verificaciones específicas | Paginación, límites, reintentos, cancelación, checkpoint, 404 de historial, duplicados, etiquetas protegidas, alcance y ausencia de escritura. |
 | Criterios de aceptación | Una interrupción se reanuda sin duplicar; una historia vencida fuerza resincronización segura; sólo se persisten campos permitidos. |
 | Riesgos de integración | Confundir conversación con mensaje, excluir datos antes de protegerlos, cuotas, cambios durante el escaneo y scope insuficiente. |
 | Paralelización real | No con D1/D2 antes de integrarlas; luego puede coexistir sólo con UI basada en contrato y fixtures, no con cambios de C1/C5. |
-| Condición exacta de desbloqueo | D1/D2 integradas y auditadas; C1-C5 congelados; batería global verde; MAIN fija SHA limpio y prompt; autorización de Mapa Total sigue vigente. |
+| Condición exacta de desbloqueo | Cumplida para crear D3 sintética cuando la batería global pase y MAIN fije el SHA. OAuth, Gmail, credenciales, índice real y adaptador productivo siguen bloqueados. |
 
 ### D4 — `real-classification-domain`
 
@@ -442,7 +444,7 @@ MAIN: GMAIL_SESSION_V1 + batería + SHA limpio
              ↓
              D2 con dobles, sin abrir OAuth
              ↓ auditoría e integración MAIN
-Joa: autorización específica para conexión real + MAIN: C1-C5 operativos
+Joa: autorización para D3 sintética + MAIN: C1-C5 acotados y seguridad v1
              ↓
              D3  ←── D1 integrada
              ↓
@@ -484,7 +486,7 @@ MAIN: contrato C1/C4 sintético + batería + SHA limpio
 
 Orden de apertura recomendado: D1, D2, D3, D4, D5, D6, D7, D8, D9 y D10.
 El orden expresa consumo real. D1 y D2 ya fueron integradas con alcance
-sintético. D3 permanece bloqueada. D8 puede adelantarse con fixtures
+sintético. D3 puede crearse sólo con dobles. D8 puede adelantarse con fixtures
 solamente si C6 y la API están congelados; su integración siempre espera D7.
 
 ## 8. Primer worktree creado e integrado

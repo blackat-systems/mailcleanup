@@ -13,8 +13,10 @@ ACTIVE_PACKAGE = PROJECT_ROOT / "src" / "mailmap"
 OAUTH_SESSION_PATH = ACTIVE_PACKAGE / "oauth_session.py"
 SESSION_MODEL_PATH = ACTIVE_PACKAGE / "session_model.py"
 WINDOWS_SECRET_STORE_PATH = ACTIVE_PACKAGE / "windows_secret_store.py"
-D2_IMPORT_ALLOWLIST = {
+GMAIL_READONLY_POLICY_PATH = ACTIVE_PACKAGE / "gmail_readonly_policy.py"
+SAFE_STDLIB_URL_IMPORT_ALLOWLIST = {
     OAUTH_SESSION_PATH: {"urllib.parse"},
+    GMAIL_READONLY_POLICY_PATH: {"urllib.parse"},
 }
 FORBIDDEN_IMPORT_PREFIXES = {
     "google",
@@ -81,7 +83,7 @@ def _matches_forbidden_import(module: str) -> bool:
 def test_active_package_has_no_external_mail_or_network_clients() -> None:
     findings: list[str] = []
     for path in sorted(ACTIVE_PACKAGE.rglob("*.py")):
-        allowed_imports = D2_IMPORT_ALLOWLIST.get(path, set())
+        allowed_imports = SAFE_STDLIB_URL_IMPORT_ALLOWLIST.get(path, set())
         forbidden_imports = {
             module
             for module in _import_modules(path)
@@ -116,7 +118,10 @@ def test_no_shippable_code_contains_write_scopes_routes_or_credential_files() ->
 
 
 def test_d2_allowlist_is_exact_and_contains_no_real_transport_or_browser() -> None:
-    assert {OAUTH_SESSION_PATH: {"urllib.parse"}} == D2_IMPORT_ALLOWLIST
+    assert {
+        OAUTH_SESSION_PATH: {"urllib.parse"},
+        GMAIL_READONLY_POLICY_PATH: {"urllib.parse"},
+    } == SAFE_STDLIB_URL_IMPORT_ALLOWLIST
     oauth_imports = _import_modules(OAUTH_SESSION_PATH)
     assert "urllib.parse" in oauth_imports
     assert all(

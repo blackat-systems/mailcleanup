@@ -49,27 +49,29 @@ visual con herramienta no llegó a verificarse y permanece registrada como tal;
 la aceptación es una decisión de producto, no evidencia visual retroactiva.
 
 La preparación sintética de Mapa Total mediante D2 fue auditada e integrada en
-MAIN bajo `docs/contracts/GMAIL_SESSION_V1.md`; queda consolidada por el commit
-que contiene esta actualización. No están autorizados abrir
-OAuth, conectar Gmail, solicitar credenciales, usar datos reales ni ejecutar
-D3. Existen tres worktrees: MAIN sobre `main`, D1
+MAIN. Joa autorizó preparar D3 con las barreras de
+`docs/contracts/SECURITY_PRIVACY_V1.md` y
+`docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`. D3 usa solamente dobles
+sintéticos: no están autorizados abrir OAuth, conectar Gmail, solicitar
+credenciales ni usar datos reales. Antes de crear D3 existen tres worktrees:
+MAIN sobre `main`, D1
 `codex/real-index-persistence` y D2 `codex/secure-gmail-session`. D1 está
 consolidada y los worktrees especialistas se conservan como evidencia. No hay
 remoto Git configurado.
 
 ## Objetivo actual
 
-Estabilizar las medidas de seguridad, contratos C1-C5 y prompt autosuficiente
-de D3 antes de crear su worktree. No abrir OAuth, conectar una cuenta real ni
-usar credenciales o datos reales durante esa preparación.
+Crear y auditar D3 `gmail-readonly-inventory` desde un SHA limpio, con puertos y
+datos sintéticos. No abrir OAuth, conectar una cuenta real, persistir metadatos
+privados ni usar credenciales durante esa implementación.
 
 ---
 
 # 2. PRIORIDAD
 
-Conservar la integración sintética auditada de D2 sin introducir acceso real a
-Gmail. Todo cambio debe respetar el permiso mínimo, la separación de secretos,
-la barrera de no escritura y el contrato de sesión.
+Implementar D3 contra dobles sin introducir acceso real a Gmail. Todo cambio
+debe respetar el permiso mínimo, la allowlist de lectura, la separación de
+secretos, la barrera de no escritura y los contratos de seguridad e inventario.
 
 Mapa Total, Estudio de Limpieza y Limpieza Controlada permanecen detrás de
 puertas de autorización independientes. Las ideas futuras se registran sin
@@ -102,7 +104,9 @@ Para coordinación de MAIN y dependencias:
 3. `docs/WORKTREE_REGISTRY.md`;
 4. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
 
-Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`.
+Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
+`docs/contracts/SECURITY_PRIVACY_V1.md` y
+`docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -302,8 +306,9 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 # 10. ESPECIALISTAS
 
 Los worktrees fuente de D1 `real-index-persistence` y D2
-`secure-gmail-session` se conservan como evidencia de entregas integradas. No
-existe otro especialista en desarrollo ni otra dependencia autorizada.
+`secure-gmail-session` se conservan como evidencia de entregas integradas. D3
+`gmail-readonly-inventory` es la única dependencia autorizada para crearse y
+trabajar; no habilita otra dependencia.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -324,9 +329,9 @@ alcance, dependencias, prohibiciones, validación y cierre.
 ```text
 Base Segura aceptada por Joa
         ↓
-D1 integrada + D2 integrada con dobles sintéticos
+D1 integrada + D2 integrada + contratos de privacidad e inventario
         ↓
-revisión de Joa; D3 continúa bloqueada
+D3 con dobles sintéticos → auditoría MAIN → integración
 ```
 
 Las puertas de producto son secuenciales:
@@ -427,7 +432,7 @@ no verificada y deberá completarse antes de cerrar la experiencia de Mapa Total
 
 # 17. SEGURIDAD Y PRIVACIDAD
 
-- No conectar Gmail ni abrir OAuth durante Base Segura.
+- No conectar Gmail ni abrir OAuth durante D3 sintética.
 - No solicitar ni almacenar `credentials.json`, `token.json`, contraseñas o
   tokens.
 - No usar mensajes, nombres ni direcciones reales en fixtures, pruebas, logs,
@@ -435,7 +440,11 @@ no verificada y deberá completarse antes de cerrar la experiencia de Mapa Total
 - No renderizar HTML ni cargar imágenes o recursos remotos de correos.
 - No enviar datos de correo a IA externa ni otros servicios.
 - Mantener la aplicación en loopback.
-- No introducir clientes Gmail o de red en `src/mailmap` durante Base Segura.
+- No introducir clientes Gmail o de red productivos durante D3.
+- Aplicar `SECURITY_PRIVACY_V1.md`: origen, métodos, endpoints, encabezados,
+  tamaños y reintentos se deniegan por defecto salvo allowlist expresa.
+- No usar el índice SQLite vigente con datos reales: todavía no tiene cifrado
+  autenticado, ACL, retención y borrado verificable definidos.
 - Mantener entornos, bases, cachés y dependencias descargadas fuera de Git.
 - No implementar eliminación definitiva ni vaciado de Papelera.
 - Toda futura acción real debe revalidarse, ser idempotente, registrable,
