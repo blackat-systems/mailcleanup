@@ -9,10 +9,14 @@ Este archivo es la fuente durable de coordinación. No reemplaza `git worktree l
 | Rol | Dueño integral, columna vertebral, auditoría e integración |
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\limpiar_mails` |
 | Rama | `main` |
-| Commit base | Pendiente del primer commit |
-| Hito autorizado | Preparación documental previa al Hito 0 |
+| Commit base inicial | `28bfaf3a5d7f0625d509d529105d17dc85e7d879` |
+| Hito autorizado | Gobernanza de MAIN; arquitectura del Hito 0 pendiente de confirmación |
 | Gmail real | Prohibido |
-| Estado | Preparando repositorio y arquitectura |
+| Estado | Repositorio inicializado; único worktree; arquitectura pendiente |
+
+Nota de entorno: las invocaciones Git desde el sandbox deben usar
+`-c safe.directory=C:/Users/Joaquin/Desktop/chatgptprojects/limpiar_mails`.
+No modificar la configuración global de Git para evitar este control.
 
 ## Dependencias planificadas
 
