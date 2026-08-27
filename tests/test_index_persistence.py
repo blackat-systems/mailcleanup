@@ -222,7 +222,7 @@ def test_new_database_reaches_latest_version_with_foreign_keys_and_indexes(
 ) -> None:
     repository = Repository(tmp_path / "new.db")
 
-    assert repository.schema_version() == len(MIGRATIONS) == 2
+    assert repository.schema_version() == len(MIGRATIONS)
     assert {
         "schema_migrations",
         "app_meta",
@@ -256,7 +256,7 @@ def test_migration_from_v1_preserves_message_and_plan(tmp_path: Path) -> None:
     repository = Repository(path)
     Repository(fresh_path)
 
-    assert repository.schema_version() == 2
+    assert repository.schema_version() == len(MIGRATIONS)
     assert [message.id for message in repository.messages()] == [message_id]
     assert repository.plan(plan_id) == {
         "id": plan_id,

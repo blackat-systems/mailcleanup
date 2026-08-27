@@ -1,9 +1,11 @@
 # Contrato de memoria de políticas locales v1
 
-Estado: contrato aprobado por Joa el 27 de agosto de 2026. D5
-`local-policy-memory` permanece bloqueada por autorización: su worktree no fue
-creado y su implementación no comenzó. La puerta técnica de descriptores
-públicos D4 definida en la sección 3.1 se consolida junto con este contrato.
+Estado: contrato aprobado por Joa el 27 de agosto de 2026. Joa autorizó a MAIN a
+consolidar el prompt autosuficiente y crear un único worktree D5
+`local-policy-memory` para implementar este alcance. La puerta técnica de
+descriptores públicos D4 definida en la sección 3.1 ya está consolidada. El
+estado operativo del worktree se registra únicamente en
+`docs/WORKTREE_REGISTRY.md`.
 
 Autoridad: contrato del MVP, D1, D3 y D4 consolidadas, la planificación durable
 de D5 y la aprobación de Joa para que MAIN defina y explique este contrato
@@ -129,6 +131,48 @@ representación o error muestra direcciones, `List-ID` o IDs remotos.
 Esta ampliación no cambia las agrupaciones, taxonomías, IDs ni evidencias de D4.
 La batería de la columna vertebral debe permanecer verde antes de preparar el
 prompt especialista de D5.
+
+### 3.2. Preparación tipada antes de persistir
+
+Un `PolicyDecisionCommand` por sí solo no demuestra que su objetivo exista en
+la clasificación actual, que una partición cubra exactamente sus anclas ni qué
+binding observó Joa al decidir. Por eso toda decisión nueva atraviesa primero
+una frontera pura y tipada equivalente a:
+
+```python
+prepare_policy_decision(
+    *,
+    account_key: str,
+    records: Iterable[IndexedMessageRecord],
+    classification: ClassificationResult,
+    active_policies: Iterable[ActivePolicy],
+    command: PolicyDecisionCommand,
+) -> PreparedPolicyDecision
+```
+
+`PreparedPolicyDecision` es un modelo cerrado, inmutable, con `slots` y
+versionado distinto del comando crudo. Contiene:
+
+- el `PolicyDecisionCommand` original, sin mutarlo;
+- los selectores y anclas canónicos que resolvieron en la entrada actual;
+- el `observed_effective_id` y los IDs automáticos observados aplicables;
+- los `structural_decision_ids` activos que formaban el objetivo;
+- las relaciones tipadas de reemplazo y contexto estructural necesarias para
+  reconstruir el binding histórico.
+
+La preparación materializa y valida completamente registros, clasificación y
+políticas activas. Debe comprobar la misma cuenta, versiones conocidas,
+existencia y unicidad del objetivo, cobertura exacta de una partición,
+participantes de una unión y conflictos visibles. Un objetivo inexistente
+produce `target_not_found`; una entrada o partición inválida produce el error
+controlado correspondiente. Ninguno de esos casos llega al repositorio.
+
+La preparación no consulta SQLite, no persiste, no usa reloj ni aleatoriedad y
+no crea identificadores implícitos. El repositorio no importa D4 ni intenta
+reclasificar: recibe la decisión preparada y vuelve a validar su estructura,
+versiones y consistencia interna antes de escribir. `UndoPolicy` no usa esta
+frontera porque su objetivo es una decisión persistida; el repositorio valida
+su existencia, cuenta y estado activo dentro de la transacción.
 
 ## 4. Identidad durable y selectores
 
@@ -288,19 +332,19 @@ D4.
 
 ## 6. Comandos, revisiones e idempotencia
 
-Todo comando contiene como mínimo:
+Todo `LocalPolicyCommand` contiene:
 
 - `command_id` opaco para idempotencia;
 - `account_key` opaca;
-- tipo y selector cerrados;
+- tipo cerrado;
 - instante UTC con zona horaria;
-- `expected_revision`;
-- valor tipado propio del comando.
+- `expected_revision`.
 
-Un comando que crea una política agrega un `decision_id` opaco, nuevo e
-inmutable. Cuando reemplaza políticas activas enumera todas en
-`supersedes_decision_ids`. `UndoPolicy` no crea una política nueva: identifica
-la decisión activa mediante `target_decision_id`.
+Un `PolicyDecisionCommand` agrega un selector cerrado, el valor tipado propio de
+su clase y un `decision_id` opaco, nuevo e inmutable. Cuando reemplaza políticas
+activas enumera todas en `supersedes_decision_ids`. `UndoPolicy` no contiene un
+selector ni un valor ficticios y no crea una política nueva: identifica la
+decisión activa mediante `target_decision_id`.
 
 `expected_revision` refiere a una revisión monotónica del flujo de políticas de
 la cuenta, que vale cero cuando todavía no existen eventos. Cada comando nuevo
@@ -421,6 +465,7 @@ habilitar una acción.
 diccionarios arbitrarios:
 
 - comandos tipados de la sección 2;
+- `PreparedPolicyDecision` y sus anclas y relaciones tipadas;
 - `PolicyEvent`;
 - `PolicyTargetSelector`, `EffectiveSourceSelector`, `EffectiveFlowSelector` y
   anclas tipadas;
@@ -445,6 +490,12 @@ invalid_transition
 unknown_policy_version
 ```
 
+La representación y el mensaje público del error exponen únicamente su
+`PolicyErrorCode`. Si la implementación necesita contexto programático, debe
+modelarlo mediante campos cerrados y expresamente enumerados, con `repr=False`;
+no admite texto libre, diccionarios, IDs, selectores, revisiones ni valores del
+usuario.
+
 `target_not_found` rechaza un comando cuyo selector nunca fue válido en la
 entrada actual; una política anteriormente válida que pierde su objetivo
 produce `ORPHANED`. `policy_conflict` rechaza un comando incoherente antes de
@@ -457,13 +508,22 @@ reconciliación, no excepciones ni motivos para descartar historia.
 El repositorio ofrece operaciones tipadas equivalentes a:
 
 ```python
-record_policy(command: PolicyDecisionCommand) -> PolicyEvent
+policy_event_for_command(command: LocalPolicyCommand) -> PolicyEvent | None
+record_policy(prepared: PreparedPolicyDecision) -> PolicyEvent
 undo_policy(command: UndoPolicy) -> PolicyEvent
 policy_history(account_key: str) -> tuple[PolicyEvent, ...]
 active_policies(account_key: str) -> tuple[ActivePolicy, ...]
 ```
 
-Las operaciones validan el comando completo antes de escribir. Registrar un
+`policy_event_for_command` es la puerta de replay anterior a la preparación. Si
+encuentra `(account_key, command_id)` y el comando canónico completo coincide,
+devuelve el evento previo; si el contenido difiere produce
+`command_id_conflict`; si no existe devuelve `None`. Esta lectura permite
+reintentar una decisión aun cuando su objetivo o clasificación hayan cambiado,
+pero no demuestra ausencia frente a una carrera concurrente.
+
+`record_policy` no acepta un `PolicyDecisionCommand` crudo para una decisión
+nueva. Valida el objeto preparado completo antes de escribir. Registrar un
 evento, todas sus anclas y sus relaciones usa una sola transacción. Un fallo
 revierte el conjunto completo. Las consultas tienen orden determinista y aíslan
 cuentas.
@@ -472,8 +532,40 @@ La búsqueda de un `command_id` previo, su comparación de contenido, la
 validación de `expected_revision`, la detección de reemplazos o conflictos, la
 inserción de evento, anclas y relaciones y el avance de revisión deben ocurrir
 dentro de la misma transacción `BEGIN IMMEDIATE`. Dos comandos concurrentes con
-la misma revisión esperada no pueden ser aceptados: exactamente uno avanza la
-revisión y el otro termina en `revision_conflict` sin escritura parcial.
+`command_id` distintos y la misma revisión esperada no pueden ser aceptados:
+exactamente uno avanza la revisión y el otro termina en `revision_conflict` sin
+escritura parcial. Un mismo `command_id` se resuelve antes como replay exacto o
+`command_id_conflict`.
+
+La búsqueda idempotente dentro de `record_policy` ocurre antes de comparar la
+revisión o el binding preparado y repite obligatoriamente la puerta de replay
+bajo el lock. Si ya existe `(account_key, command_id)`, se compara el contenido
+canónico completo del `PolicyDecisionCommand` original: si es idéntico se
+devuelve el evento guardado, aunque la cuenta haya avanzado o una nueva
+preparación observe otros IDs; si es distinto se produce
+`command_id_conflict`. Un reintento nunca reemplaza las anclas históricas
+guardadas por la primera aceptación.
+
+`undo_policy` aplica el mismo orden dentro de su propia transacción: primero
+replay exacto, después revisión y finalmente existencia, cuenta y estado activo
+de la decisión objetivo. Un undo idéntico devuelve su evento aunque el objetivo
+ya esté inactivo; un comando diferente con el mismo `command_id` produce
+`command_id_conflict`.
+
+Ninguna operación D5 crea `indexed_accounts` ni llama al helper D1 que la crea.
+`record_policy` y `undo_policy` comienzan `BEGIN IMMEDIATE`, comprueban que la
+cuenta indexada ya existe y sólo entonces continúan. Una decisión preparada para
+una cuenta inexistente produce `target_not_found`; un undo nuevo sobre una
+cuenta inexistente produce `invalid_transition`, siempre sin escribir.
+`policy_event_for_command`, `policy_history` y `active_policies` tampoco crean
+cuentas.
+
+`delete_account_index` es una frontera terminal de privacidad: elimina por
+cascada políticas, historia y ledger de idempotencia. Un preparado, retry o undo
+anterior no puede recrear la cuenta y deja de ser un replay después del olvido.
+La carrera entre borrado y escritura queda serializada por `BEGIN IMMEDIATE`: si
+el borrado gana, la escritura falla sin recrear; si la escritura gana, el borrado
+posterior elimina todo y el estado final permanece olvidado.
 
 ## 11. Migración acumulativa v3
 
@@ -552,36 +644,43 @@ La futura entrega debe demostrar con datos sintéticos:
 
 1. esquema equivalente en base nueva y migrada desde v2;
 2. rollback conjunto de evento, anclas y relaciones;
-3. idempotencia y conflicto de `command_id`, incluido el caso concurrente en
+3. preparación tipada que rechaza un objetivo inexistente, una unión inválida o
+   una partición incompleta antes de persistir, y repositorio que rechaza una
+   decisión nueva sin preparación;
+4. replay exacto anterior a la preparación, comparación del comando original y
+   repetición de esa comprobación dentro de `BEGIN IMMEDIATE`;
+5. idempotencia y conflicto de `command_id`, incluido el caso concurrente en
    que una sola revisión avanza y el perdedor obtiene `revision_conflict` sin
    escritura parcial;
-4. historial append-only, reemplazo explícito y undo lógico;
-5. binding histórico, `EXACT`, `REBOUND` por cambio aislado de ID y revisión si
+6. historial append-only, reemplazo explícito y undo lógico, incluido replay de
+   un undo ya aplicado;
+7. binding histórico, `EXACT`, `REBOUND` por cambio aislado de ID y revisión si
    cambia el selector sin migración versionada;
-6. crecimiento normal de mensajes sin invalidación y revisión ante cambios de
+8. crecimiento normal de mensajes sin invalidación y revisión ante cambios de
    anclas, expansión, reducción, fusión o división estructural;
-7. estados huérfano, ambiguo y conflicto sin aplicación silenciosa;
-8. corrección de nombre, rubro e intención sin mutar D4;
-9. unión y partición exactas, completas y deterministas, con IDs efectivos e
-   invariantes relacionales;
-10. nombre, rubro, intención y protección dirigidos a fuentes unidas, grupos
+9. estados huérfano, ambiguo y conflicto sin aplicación silenciosa;
+10. corrección de nombre, rubro e intención sin mutar D4;
+11. unión y partición exactas, completas y deterministas, con IDs efectivos e
+    invariantes relacionales;
+12. nombre, rubro, intención y protección dirigidos a fuentes unidas, grupos
     partidos y flujos fragmentados mediante selectores efectivos;
-11. undo o reemplazo estructural que deja esas políticas en revisión en vez de
+13. undo o reemplazo estructural que deja esas políticas en revisión en vez de
     trasladarlas;
-12. no generalización por nombre, dominio o similitud;
-13. aislamiento entre cuentas;
-14. protección automática, por remitente, etiqueta, fuente, flujo y mensaje;
-15. conversación mixta y contradicción protegidas;
-16. undo manual incapaz de rebajar una protección automática;
-17. escaneo completo que conserva políticas;
-18. borrado de cuenta que elimina índice, políticas e historia sólo de esa
-    cuenta;
-19. modelos, errores y representaciones redactados;
-20. ausencia de red, Gmail, OAuth, credenciales, datos reales y capacidades de
+14. no generalización por nombre, dominio o similitud;
+15. aislamiento entre cuentas;
+16. protección automática, por remitente, etiqueta, fuente, flujo y mensaje;
+17. conversación mixta y contradicción protegidas;
+18. undo manual incapaz de rebajar una protección automática;
+19. escaneo completo que conserva políticas;
+20. borrado de cuenta que elimina índice, políticas e historia sólo de esa
+    cuenta, y preparado, retry o undo anteriores que no pueden recrearla,
+    incluido el orden concurrente entre borrado y escritura;
+21. modelos, errores y representaciones redactados;
+22. ausencia de red, Gmail, OAuth, credenciales, datos reales y capacidades de
     ejecución;
-21. composición conservadora de rubro, intención, confianza y evidencia;
-22. consumo de descriptores públicos D4 sin duplicar su normalización privada;
-23. compatibilidad con toda la batería de Base Segura, D1, D2, D3 y D4.
+23. composición conservadora de rubro, intención, confianza y evidencia;
+24. consumo de descriptores públicos D4 sin duplicar su normalización privada;
+25. compatibilidad con toda la batería de Base Segura, D1, D2, D3 y D4.
 
 ## 15. Puntos de detención
 
@@ -591,6 +690,9 @@ La implementación no puede comenzar ni continuar si:
 - `main` no tiene un commit base limpio posterior a este contrato;
 - la identidad propuesta depende sólo de `source_id` o `flow_id`;
 - se pretende rebajar una protección automática;
+- una decisión nueva podría llegar a persistencia sin
+  `PreparedPolicyDecision`;
+- una operación D5 podría crear o recrear `indexed_accounts`;
 - hace falta modificar D4, C1, C4 o C5 silenciosamente;
 - aparece una migración concurrente;
 - se requieren Gmail, OAuth, red, credenciales, datos reales, API o UI;
@@ -604,15 +706,19 @@ D5 estará entregada para auditoría cuando:
    resultados actuales;
 2. implemente solamente los comandos, modelos, reconciliación y persistencia de
    este contrato;
-3. D4 permanezca pura e inmutable durante la entrega D5;
-4. sólo `EXACT` y `REBOUND` se reapliquen automáticamente;
-5. la protección nunca disminuya;
-6. historial, undo, idempotencia y aislamiento estén probados;
-7. las migraciones sean acumulativas y atómicas;
-8. pasen pruebas específicas, pytest completo, Ruff, mypy y la barrera de
+3. toda decisión nueva se prepare y valide contra D4 antes de persistir y todo
+   replay cuyo ledger siga existiendo se resuelva sin exigir que su objetivo
+   siga existiendo; después de `delete_account_index` rige la frontera terminal
+   de privacidad de la sección 10;
+4. D4 permanezca pura e inmutable durante la entrega D5;
+5. sólo `EXACT` y `REBOUND` se reapliquen automáticamente;
+6. la protección nunca disminuya;
+7. historial, undo, idempotencia y aislamiento estén probados;
+8. las migraciones sean acumulativas y atómicas;
+9. pasen pruebas específicas, pytest completo, Ruff, mypy y la barrera de
    seguridad;
-9. el diff contenga únicamente los cinco archivos autorizados;
-10. no existan red, Gmail, OAuth, credenciales, datos reales ni artefactos.
+10. el diff contenga únicamente los cinco archivos autorizados;
+11. no existan red, Gmail, OAuth, credenciales, datos reales ni artefactos.
 
 La entrega especialista no se integra ni habilita D6 por sí sola. MAIN debe
 auditarla, repetir la batería y obtener las autorizaciones que correspondan.

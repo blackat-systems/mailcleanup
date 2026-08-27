@@ -5,7 +5,8 @@ consolidadas. D4 `real-classification-domain` fue auditada e integrada en el
 árbol de MAIN con registros normalizados sintéticos, correcciones conservadoras
 y sin consumidores productivos; quedó consolidada en `0fe5111`. El contrato de
 D5 fue aprobado por Joa y MAIN agregó los descriptores públicos de identidad D4
-que requiere; su implementación y su worktree no están autorizados. La revisión visual
+que requiere, consolidados en `9f55b93`. Joa autorizó consolidar el prompt D5 y
+crear un único worktree especialista para implementarlo. La revisión visual
 instrumental de Base Segura continúa pendiente. No existe remoto Git.
 
 ## Identidad y responsabilidad
@@ -41,9 +42,9 @@ Para seguridad de Mapa Total prevalecen:
 Para D4 prevalece `docs/contracts/CLASSIFICATION_DOMAIN_V1.md` y la taxonomía
 compacta de `docs/CONTRATO_MVP.md`.
 
-Para preparar D5 prevalece `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`, aprobado
-por Joa. Su aprobación no autoriza por sí sola crear el worktree ni implementar
-la dependencia.
+Para D5 prevalece `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`, aprobado por Joa.
+La autorización vigente alcanza un único worktree sintético y no habilita
+Gmail, OAuth, credenciales, datos reales ni D6.
 
 ## Procesos y puertas
 
@@ -62,11 +63,10 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Consolidar el contrato aprobado de D5 y la columna vertebral pública de
-descriptores D4 sin cambiar la semántica de clasificación. Mantener el worktree
-D5 bloqueado hasta una autorización explícita posterior de Joa y la preparación
-de un prompt autosuficiente desde el SHA limpio. No componer todavía rutas API,
-UI, persistencia de clasificación ni adaptadores productivos.
+Consolidar el prompt autosuficiente de D5 sobre el contrato aprobado, crear un
+único worktree desde ese SHA y entregarle el prompt completo. MAIN no implementa
+D5 en su árbol. No componer rutas API o UI, persistir clasificación automática
+ni agregar adaptadores productivos.
 
 ## Línea base de privacidad
 
@@ -137,9 +137,8 @@ MAIN debe:
 - No crear rutas Gmail en la API ni cambiar `oauthAvailable: false`.
 - Mantener `canExecute: false` y ausencia de operaciones de escritura.
 - No agregar dependencias para D4 o D5.
-- No habilitar D5 antes de que MAIN consolide en un SHA limpio los descriptores
-  públicos D4 y `LOCAL_POLICY_MEMORY_V1.md`, Joa autorice D5 de forma separada y
-  MAIN prepare el prompt especialista.
+- Crear como máximo un worktree D5, sólo después de consolidar el prompt en un
+  SHA limpio; D6 permanece bloqueada.
 - No hacer push sin remoto válido y destino verificado.
 
 ## Cierre de MAIN

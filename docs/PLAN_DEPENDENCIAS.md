@@ -1,8 +1,8 @@
 # Plan de dependencias y worktrees
 
 Estado del plan: ejecución controlada; D1, D2, D3 y D4 están consolidadas. Joa
-aprobó el contrato de D5 y MAIN incorporó la columna vertebral pública de
-identidad D4. D5 sigue bloqueada por autorización y todavía no tiene worktree.
+aprobó el contrato de D5, MAIN incorporó la columna vertebral pública de
+identidad D4 y Joa autorizó consolidar el prompt y crear un único worktree D5.
 Las demás dependencias conservan sus bloqueos.
 
 Fecha de inspección: 27 de agosto de 2026.
@@ -17,18 +17,18 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 |---|---|
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\mailcleanup` |
 | Rama | `main` |
-| HEAD limpio con D4 consolidada | `0fe5111674243a4ebcd10b99be9d720ebe922cdd` |
+| HEAD limpio con D4 y su columna vertebral consolidadas | `9f55b939d8e6aa6efa334fd86f2bf420ba4cd717` |
 | Estado actual | D1, D2, D3 y D4 sintéticas consolidadas |
 | Worktrees | Cinco: MAIN, D1, D2, D3 y D4 `real-classification-domain` |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
-| Capacidades autorizadas | Contrato D5 y columna vertebral D4; ninguna conexión Gmail, OAuth abierto, credencial ni dato real; implementación D5 no autorizada |
+| Capacidades autorizadas | Un único worktree D5 sintético; ninguna conexión Gmail, OAuth abierto, credencial, dato real ni D6 |
 
-El SHA anterior consolida la entrega D4 original. La columna vertebral y el
-contrato D5 quedan fijados por el commit que contiene este estado. Su eventual
-worktree requerirá ese SHA limpio, autorización específica y un prompt
-autosuficiente.
+El SHA anterior consolida D4, su columna vertebral pública y el contrato D5. El
+prompt y el ajuste previo de regresión de migraciones se consolidan en el commit
+que contiene este estado; el único worktree D5 autorizado debe partir de ese SHA
+exacto.
 
 ## 2. Inventario de lo que ya existe
 
@@ -98,8 +98,8 @@ fuente y flujo, y cómo sobreviven las correcciones a una nueva sincronización.
 Estado: estabilizada para D3 y D4 sintéticas por `INDEX_PERSISTENCE_V1.md`,
 `GMAIL_READONLY_INVENTORY_V1.md` y `CLASSIFICATION_DOMAIN_V1.md`. La identidad
 durable de correcciones quedó definida en `LOCAL_POLICY_MEMORY_V1.md`, aprobado
-por Joa, y D4 expone sus descriptores públicos de identidad. La implementación
-D5 y los registros reales continúan bloqueados.
+por Joa, y D4 expone sus descriptores públicos de identidad. D5 sintética está
+autorizada mediante D-031; los registros reales continúan bloqueados.
 
 ### C2. Límite de lectura
 
@@ -281,7 +281,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Criterios de aceptación | No presenta inferencias como hechos; cada resultado conserva evidencia; no fusiona confianza baja; las reglas actuales siguen cubiertas. |
 | Riesgos de integración | La sobreagrupación entre dominios fue corregida. Un cambio futuro de membresía puede cambiar IDs inferidos; el descriptor público permite que D5 detecte el cambio, pero D5 todavía debe reconciliarlo sin generalizar ni dejar políticas huérfanas. |
 | Paralelización real | Puede prepararse con fixtures después de congelar C1/C2, pero no integrarse antes de D3; no en paralelo con cambios a taxonomías. |
-| Condición exacta de desbloqueo | D4 sintética y su columna vertebral pública fueron auditadas e integradas. El contrato D5 está aprobado; cualquier implementación D5 o dato real continúa bloqueado hasta una autorización separada. |
+| Condición exacta de desbloqueo | Cumplida para D5 sintética mediante D-031; cualquier dato real continúa bloqueado hasta una autorización separada. |
 
 ### D5 — `local-policy-memory`
 
@@ -291,7 +291,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Persistir nombres, separaciones/uniones, categorías y protecciones decididas por Joa, con precedencia y trazabilidad. |
 | Razón para separarlo | Une corrección y protección manual porque ambas son políticas del usuario sobre la misma identidad estable; separarlas duplicaría precedencia y persistencia. |
-| Estado actual | `BLOQUEADA POR AUTORIZACIÓN`; contrato y dependencias técnicas listos, sin worktree |
+| Estado actual | `LISTA PARA CREAR`; prompt auditado y un único worktree autorizado, todavía sin implementación |
 | Dependencias previas | D1, D3 y D4 integradas; descriptores públicos D4 incorporados sin cambiar su proyección semántica. |
 | Contratos que consume | `LOCAL_POLICY_MEMORY_V1.md`, C1, resultados D4, repositorio D1 y reglas globales de protección. |
 | Resultados que produce | Comandos y consultas de política local, auditoría de decisiones y reaplicación determinista. |
@@ -300,12 +300,12 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Prohibido | Gmail/OAuth, heurísticas nuevas, API pública no acordada, UI y acciones reales. |
 | Rama propuesta | `codex/local-policy-memory` |
 | Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-local-policy-memory` |
-| Commit base requerido | SHA limpio que consolida D4, sus descriptores públicos y el contrato aprobado de D5. |
+| Commit base requerido | SHA limpio del commit que contiene este prompt, la frontera `PreparedPolicyDecision` y la regresión de migraciones acumulativas. |
 | Verificaciones específicas | Persistencia atómica, reaplicación `EXACT`/`REBOUND`, undo lógico, protección acumulativa, estados de revisión, cambio de IDs, migraciones y no generalización silenciosa. |
 | Criterios de aceptación | La decisión de Joa prevalece según contrato, queda explicada y no convierte una corrección puntual en regla global accidental. |
-| Riesgos de integración | Conflicto con reglas automáticas, correcciones huérfanas y migraciones simultáneas. |
+| Riesgos de integración | Conflicto con reglas automáticas, correcciones huérfanas, migraciones simultáneas y recreación indebida de una cuenta ya olvidada; el contrato la prohíbe. |
 | Paralelización real | No con D1 ni D4; D6 puede empezar sólo sobre un API congelado y fixtures después de definir salidas. |
-| Condición exacta de desbloqueo | Joa autoriza explícitamente la implementación D5; MAIN confirma el SHA limpio, repite la batería y prepara un prompt autosuficiente desde ese SHA exacto. |
+| Condición exacta de desbloqueo | Cumplida: Joa autorizó crear un único worktree D5; MAIN debe usar el SHA limpio que contiene este estado y registrar la ruta real al crearlo. |
 
 ### D6 — `mapa-total-ui`
 
@@ -464,8 +464,8 @@ agrupa e infiere con evidencia, sin datos reales
 MAIN expone descriptores públicos de identidad D4
 y Joa aprueba la memoria de políticas locales
         ↓ columna vertebral consolidada
-Contrato D5 listo, sin worktree ni implementación
-        ↓ autorización específica
+Prompt D5 auditado y un único worktree autorizado
+        ↓ consolidación limpia + creación y registro
 Memoria local de correcciones y protecciones (D5)
 recuerda decisiones sin reescribir ni debilitar la inferencia automática
         ↓ auditoría e integración MAIN

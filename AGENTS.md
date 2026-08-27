@@ -56,22 +56,22 @@ D4 `real-classification-domain` fue auditada e integrada en el árbol de trabajo
 de MAIN con correcciones conservadoras de agrupación, baja, confianza y sus
 regresiones; quedó consolidada en `0fe5111`. MAIN redactó
 `LOCAL_POLICY_MEMORY_V1.md`, Joa aprobó ese contrato y autorizó a MAIN a agregar
-los descriptores públicos de identidad D4 que requiere. La columna vertebral se
-consolida sin cambiar agrupaciones, IDs, taxonomías ni evidencias. D5 sigue
-bloqueada por autorización y no tiene worktree. No están autorizados abrir
-OAuth, conectar Gmail, solicitar credenciales, usar datos reales ni implementar
-D5.
+los descriptores públicos de identidad D4 que requiere. Esa columna vertebral
+quedó consolidada en `9f55b93` sin cambiar agrupaciones, IDs, taxonomías ni
+evidencias. Joa autorizó la creación del prompt autosuficiente y después un único
+worktree para implementar D5 desde un SHA limpio. No están autorizados abrir
+OAuth, conectar Gmail, solicitar credenciales ni usar datos reales.
 Existen cinco worktrees: MAIN sobre `main` y las
 fuentes D1, D2, D3 y D4 conservadas como evidencia. No hay remoto Git
 configurado.
 
 ## Objetivo actual
 
-Consolidar el contrato aprobado de D5 `local-policy-memory` y los descriptores
-públicos de identidad D4 como una base limpia y auditada. Mantener el worktree
-D5 bloqueado hasta una autorización explícita posterior de Joa y la preparación
-de su prompt desde el SHA consolidado. No implementar D5, abrir OAuth, conectar
-una cuenta real, persistir metadatos privados ni usar credenciales.
+Consolidar el prompt autosuficiente D5 `local-policy-memory`, crear un único
+worktree desde ese SHA exacto y delegar allí la implementación de la frontera
+tipada y la memoria local. MAIN no implementa D5 en su propio árbol. No abrir
+OAuth, conectar una cuenta real, persistir metadatos privados ni usar
+credenciales.
 
 ---
 
@@ -117,8 +117,9 @@ Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/SECURITY_PRIVACY_V1.md` y
 `docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`. Para D4 prevalece
 `docs/contracts/CLASSIFICATION_DOMAIN_V1.md`. Para preparar D5 prevalece el
-contrato aprobado `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`; su aprobación no
-autoriza por sí sola crear el worktree ni implementar D5.
+contrato aprobado `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`. Joa autorizó un
+único worktree D5 sintético; esa autorización no habilita Gmail, OAuth, datos
+reales ni consumidores posteriores.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -320,8 +321,9 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 Los worktrees fuente de D1 `real-index-persistence`, D2
 `secure-gmail-session`, D3 `gmail-readonly-inventory` y D4
 `real-classification-domain` se conservan como evidencia de entregas
-integradas. No hay una dependencia especialista nueva autorizada; el contrato
-de D5 está aprobado, pero D5 y D6 siguen bloqueadas.
+integradas. D5 es la única implementación especialista nueva autorizada y debe
+ejecutarse en un único worktree desde el SHA limpio del prompt. D6 sigue
+bloqueada.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
