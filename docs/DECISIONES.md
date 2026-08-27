@@ -37,7 +37,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-028 | Autorizar a MAIN a crear y auditar el prompt autosuficiente D5, sin crear todavía su worktree ni comenzar la implementación. | Ejecutada y consolidada por el commit que contiene esta decisión | Autorización explícita de Joa del 27 de agosto de 2026 |
 | D-029 | Toda decisión D5 nueva se valida contra registros, clasificación y políticas activas mediante `PreparedPolicyDecision` antes de persistir; el replay exacto se consulta antes de preparar y se repite bajo `BEGIN IMMEDIATE`. | Ejecutada y consolidada por el commit que contiene esta decisión | Auditoría MAIN de la coherencia entre `target_not_found`, binding histórico, idempotencia y la firma del repositorio |
 | D-030 | D5 nunca crea ni recrea `indexed_accounts`; borrar el índice de una cuenta elimina por cascada memoria y replay, e invalida preparados, retries y undos anteriores. | Ejecutada y consolidada por el commit que contiene esta decisión | Auditoría de privacidad y lifecycle previa al prompt D5 |
-| D-031 | Consolidar la base del prompt y crear un único worktree D5 `local-policy-memory`, entregándole el prompt autosuficiente desde ese SHA exacto. | Autorizada | Confirmación explícita de Joa del 27 de agosto de 2026 |
+| D-031 | Consolidar la base del prompt y crear un único worktree D5 `local-policy-memory`, entregándole el prompt autosuficiente desde ese SHA exacto. | Ejecutada: base `663d8a9`, worktree `9623` | Confirmación explícita de Joa del 27 de agosto de 2026 y verificación Git posterior |
 
 ## Decisiones suficientemente definidas
 

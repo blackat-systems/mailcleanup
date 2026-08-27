@@ -161,6 +161,37 @@ inferidos siguen pudiendo cambiar si cambia la membresía de una fuente; D5 debe
 resolver la migración de correcciones antes de consumirlos. D4 no habilita
 Gmail real, OAuth, red, credenciales, datos reales, D5 ni D6.
 
+## D5 — `local-policy-memory`
+
+| Campo | Estado real |
+|---|---|
+| Proceso | Mapa Total, memoria local sintética de decisiones y protecciones |
+| Estado | `EN DESARROLLO`; sin entrega ni integración |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\9623\mailcleanup` |
+| Rama | `codex/local-policy-memory` |
+| Base | `663d8a99e94da9c40b5787bfb5f7a6b1e5f595b8` |
+| HEAD al crear | `663d8a99e94da9c40b5787bfb5f7a6b1e5f595b8` |
+| Tarea | `01a04539-09b7-7780-bf93-1ca8172c63a2` — `Local Policy Memory` |
+| Prompt | `docs/prompts/D5_LOCAL_POLICY_MEMORY.md` |
+| Contrato | `docs/contracts/LOCAL_POLICY_MEMORY_V1.md` |
+| Alcance | Preparación tipada, replay, historial append-only, undo, reconciliación conservadora, protección acumulativa y migración SQLite v3 |
+| Archivos permitidos | `src/mailmap/policy_model.py`, `src/mailmap/policy_domain.py`, `src/mailmap/repository.py`, `tests/test_local_policy_memory.py`, ampliación acotada de `tests/test_base_segura_safety.py` |
+| Gmail, OAuth, red, credenciales y datos reales | Prohibidos |
+| API, servicio, frontend, UI, acciones y D6 | Prohibidos |
+| Commit del especialista | No autorizado |
+| Integración en `main` | Pendiente de entrega y auditoría independiente de MAIN |
+
+Codex creó inicialmente el checkout en `detached HEAD` sobre la base exacta.
+MAIN comprobó que estaba limpio, creó la rama `codex/local-policy-memory` sin
+mover el commit y volvió a verificar ruta, rama, HEAD y estado. La tarea recibió
+el SHA exacto, el prompt durable completo y una aclaración para repetir la Puerta
+0 después de adjuntar la rama.
+
+D5 no puede crear ni recrear `indexed_accounts`. El borrado de cuenta debe ser
+terminal y la entrega debe probar que preparados, retries y undos anteriores no
+resucitan memoria borrada. El worktree permanece exclusivamente sintético y no
+habilita Gmail, OAuth, credenciales, datos reales ni D6.
+
 ## Reglas de actualización
 
 Al crear, entregar, integrar o descartar un worktree se registran ruta, rama,

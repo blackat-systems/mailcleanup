@@ -5,9 +5,10 @@ consolidadas. D4 `real-classification-domain` fue auditada e integrada en el
 árbol de MAIN con registros normalizados sintéticos, correcciones conservadoras
 y sin consumidores productivos; quedó consolidada en `0fe5111`. El contrato de
 D5 fue aprobado por Joa y MAIN agregó los descriptores públicos de identidad D4
-que requiere, consolidados en `9f55b93`. Joa autorizó consolidar el prompt D5 y
-crear un único worktree especialista para implementarlo. La revisión visual
-instrumental de Base Segura continúa pendiente. No existe remoto Git.
+que requiere, consolidados en `9f55b93`. MAIN consolidó el prompt D5 en
+`663d8a9` y creó un único worktree especialista, actualmente `EN DESARROLLO`.
+La revisión visual instrumental de Base Segura continúa pendiente. No existe
+remoto Git.
 
 ## Identidad y responsabilidad
 
@@ -63,10 +64,10 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Consolidar el prompt autosuficiente de D5 sobre el contrato aprobado, crear un
-único worktree desde ese SHA y entregarle el prompt completo. MAIN no implementa
-D5 en su árbol. No componer rutas API o UI, persistir clasificación automática
-ni agregar adaptadores productivos.
+Esperar la entrega D5 y auditar su diff completo, archivos no rastreados,
+migración v3, frontera de preparación, replay, olvido terminal y batería global.
+MAIN no implementa D5 en su árbol ni habilita D6. No componer rutas API o UI,
+persistir clasificación automática ni agregar adaptadores productivos.
 
 ## Línea base de privacidad
 

@@ -3,7 +3,7 @@
 Estado del plan: ejecución controlada; D1, D2, D3 y D4 están consolidadas. Joa
 aprobó el contrato de D5, MAIN incorporó la columna vertebral pública de
 identidad D4 y Joa autorizó consolidar el prompt y crear un único worktree D5.
-Las demás dependencias conservan sus bloqueos.
+D5 está `EN DESARROLLO`; las demás dependencias conservan sus bloqueos.
 
 Fecha de inspección: 27 de agosto de 2026.
 
@@ -19,11 +19,11 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Rama | `main` |
 | HEAD limpio con D4 y su columna vertebral consolidadas | `9f55b939d8e6aa6efa334fd86f2bf420ba4cd717` |
 | Estado actual | D1, D2, D3 y D4 sintéticas consolidadas |
-| Worktrees | Cinco: MAIN, D1, D2, D3 y D4 `real-classification-domain` |
+| Worktrees | Seis: MAIN, D1-D4 conservadas y D5 `local-policy-memory` activa |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
-| Capacidades autorizadas | Un único worktree D5 sintético; ninguna conexión Gmail, OAuth abierto, credencial, dato real ni D6 |
+| Capacidades autorizadas | Implementación D5 sintética en su único worktree; ninguna conexión Gmail, OAuth abierto, credencial, dato real ni D6 |
 
 El SHA anterior consolida D4, su columna vertebral pública y el contrato D5. El
 prompt y el ajuste previo de regresión de migraciones se consolidan en el commit
@@ -291,7 +291,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Persistir nombres, separaciones/uniones, categorías y protecciones decididas por Joa, con precedencia y trazabilidad. |
 | Razón para separarlo | Une corrección y protección manual porque ambas son políticas del usuario sobre la misma identidad estable; separarlas duplicaría precedencia y persistencia. |
-| Estado actual | `LISTA PARA CREAR`; prompt auditado y un único worktree autorizado, todavía sin implementación |
+| Estado actual | `EN DESARROLLO`; worktree creado y prompt entregado, sin integración |
 | Dependencias previas | D1, D3 y D4 integradas; descriptores públicos D4 incorporados sin cambiar su proyección semántica. |
 | Contratos que consume | `LOCAL_POLICY_MEMORY_V1.md`, C1, resultados D4, repositorio D1 y reglas globales de protección. |
 | Resultados que produce | Comandos y consultas de política local, auditoría de decisiones y reaplicación determinista. |
@@ -305,7 +305,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Criterios de aceptación | La decisión de Joa prevalece según contrato, queda explicada y no convierte una corrección puntual en regla global accidental. |
 | Riesgos de integración | Conflicto con reglas automáticas, correcciones huérfanas, migraciones simultáneas y recreación indebida de una cuenta ya olvidada; el contrato la prohíbe. |
 | Paralelización real | No con D1 ni D4; D6 puede empezar sólo sobre un API congelado y fixtures después de definir salidas. |
-| Condición exacta de desbloqueo | Cumplida: Joa autorizó crear un único worktree D5; MAIN debe usar el SHA limpio que contiene este estado y registrar la ruta real al crearlo. |
+| Condición exacta de desbloqueo | Cumplida: worktree creado desde `663d8a99e94da9c40b5787bfb5f7a6b1e5f595b8`; D6 espera entrega, auditoría e integración D5. |
 
 ### D6 — `mapa-total-ui`
 
@@ -464,8 +464,8 @@ agrupa e infiere con evidencia, sin datos reales
 MAIN expone descriptores públicos de identidad D4
 y Joa aprueba la memoria de políticas locales
         ↓ columna vertebral consolidada
-Prompt D5 auditado y un único worktree autorizado
-        ↓ consolidación limpia + creación y registro
+Prompt D5 consolidado en `663d8a9`
+        ↓ worktree creado y prompt entregado
 Memoria local de correcciones y protecciones (D5)
 recuerda decisiones sin reescribir ni debilitar la inferencia automática
         ↓ auditoría e integración MAIN
