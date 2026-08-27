@@ -5,8 +5,9 @@ Fecha del corte: 18 de agosto de 2026.
 Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. La aceptación
 no convierte en verificada la revisión visual que la herramienta no pudo
 completar; ese dato histórico se conserva. Está autorizada la preparación
-sintética de Mapa Total mediante D2. D2 fue auditada e integrada en el árbol de
-MAIN con dobles, sin abrir OAuth ni conectar datos reales.
+sintética de Mapa Total mediante D2, D3 y D4. Las tres fueron auditadas e
+integradas con dobles o registros sintéticos, sin abrir OAuth ni conectar datos
+reales. D4 queda consolidada por el commit que contiene este estado.
 
 ## Qué existe
 
@@ -93,9 +94,11 @@ instrumental continúa pendiente como evidencia, aunque Joa aceptó el proceso.
 La autorización posterior permitió integrar D2 y D3 con dobles sintéticos. MAIN
 amplió la persistencia D1 para que altas, actualizaciones, bajas y checkpoint de
 una página sean atómicos y para que un escaneo completo nuevo reemplace de forma
-controlada el índice anterior. La batería global pasó con 124 pruebas Python
-aprobadas; el roundtrip DPAPI real pudo ejecutarse bajo el perfil de usuario
-actual. También aprobaron Ruff, mypy, ESLint, 4 pruebas Vitest y el build Vite.
-Esta integración queda consolidada por el commit que contiene este estado y no
+controlada el índice anterior. La integración D4 agrega clasificación pura y
+explicable sobre registros normalizados sintéticos, sin consumidor productivo.
+MAIN corrigió agrupación entre dominios, validación de baja y confianza de
+identidades aisladas. La batería global pasó con 162 pruebas Python aprobadas;
+el roundtrip DPAPI real pudo ejecutarse bajo el perfil de usuario actual. También
+aprobaron Ruff, mypy, ESLint, 4 pruebas Vitest y el build Vite. Este estado no
 autoriza abrir OAuth, usar credenciales, conectar Gmail real, persistir
-metadatos privados ni comenzar D4.
+metadatos privados ni comenzar D5.

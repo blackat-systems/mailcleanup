@@ -22,9 +22,9 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
   estado;
 - abrir OAuth, conectar Gmail, solicitar credenciales y usar datos reales siguen
   prohibidos;
-- D4 de clasificación sobre registros normalizados está en desarrollo en un
-  worktree aislado, únicamente con un corpus sintético y sin consumidores
-  productivos;
+- D4 de clasificación sobre registros normalizados fue auditada e integrada en
+  MAIN con corpus sintético y sin consumidores productivos; queda consolidada
+  por el commit que contiene este estado;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -66,6 +66,8 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-Crear y auditar D4 `real-classification-domain` con registros sintéticos. La
-conexión de una cuenta real seguirá requiriendo una autorización específica
-posterior y decisiones pendientes sobre protección del índice local.
+Definir y revisar el contrato de D5 `local-policy-memory`: cómo sobreviven las
+correcciones cuando una nueva sincronización cambia la membresía o el ID
+inferido de una fuente. Su worktree no se crea hasta una revisión posterior de
+Joa. La conexión de una cuenta real seguirá requiriendo autorización específica
+y decisiones pendientes sobre la protección del índice local.

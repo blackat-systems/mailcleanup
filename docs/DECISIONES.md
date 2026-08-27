@@ -31,6 +31,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-022 | Reforzar la privacidad, consolidar contratos C1-C5 para alcance sintético y crear D3 `gmail-readonly-inventory` con dobles, sin OAuth, Gmail, credenciales, datos reales ni adaptador productivo. | Autorizada | Instrucción explícita de Joa del 18 de agosto de 2026 y contratos `SECURITY_PRIVACY_V1.md` y `GMAIL_READONLY_INVENTORY_V1.md` |
 | D-023 | Ampliar D1 para aplicar altas, actualizaciones, bajas y checkpoint en una transacción e iniciar un escaneo completo reemplazando controladamente el índice anterior; adaptar e integrar D3 con regresiones de rollback y registros obsoletos. | Ejecutada y consolidada por el commit que contiene esta decisión | Instrucción explícita de Joa y auditoría MAIN del 18 de agosto de 2026 |
 | D-024 | Preparar y crear D4 `real-classification-domain` sobre registros normalizados exclusivamente sintéticos, con identidad conservadora, flujos separados, taxonomía MVP y evidencia; sin Gmail, OAuth, red, datos reales, persistencia, API ni UI. | Autorizada | Instrucción explícita de Joa del 27 de agosto de 2026 y `CLASSIFICATION_DOMAIN_V1.md` |
+| D-025 | Integrar D4 en MAIN después de auditoría independiente, corrigiendo sobreagrupación entre dominios, validación de baja y cálculo de confianza; mantener D5 bloqueada hasta definir migración de correcciones ante cambios de agrupación o IDs. | Ejecutada y consolidada por el commit que contiene esta decisión | Handoff especialista, auditoría MAIN y aprobación de Joa del 27 de agosto de 2026 |
 
 ## Decisiones suficientemente definidas
 
@@ -52,7 +53,8 @@ Joa respondió afirmativamente y autorizó D-005 + D-006. Posteriormente autoriz
 D-017, D-018, aceptó Base Segura mediante D-019, habilitó la implementación
 sintética de D2 mediante D-020 y su integración auditada mediante D-021,
 autorizó D3 sintética mediante D-022, resolvió su bloqueo transaccional mediante
-D-023 y autorizó preparar D4 sintética mediante D-024. Ninguna autorización
+D-023, autorizó preparar D4 sintética mediante D-024 y MAIN ejecutó su
+integración auditada mediante D-025. Ninguna autorización
 permite abrir OAuth, conectar Gmail, solicitar credenciales, usar datos reales,
 ejecutar acciones externas, iniciar D5, Estudio de Limpieza o Limpieza
 Controlada.

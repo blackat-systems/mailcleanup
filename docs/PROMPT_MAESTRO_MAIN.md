@@ -1,9 +1,10 @@
 # Prompt maestro de MAIN
 
-Estado actual: Base Segura fue aceptada por Joa; D1, D2 y D3 están auditadas e
-integradas. D4 `real-classification-domain` está activa en un worktree aislado,
-únicamente con registros normalizados sintéticos y sin consumidores
-productivos. La revisión visual instrumental de Base Segura continúa pendiente.
+Estado actual: Base Segura fue aceptada por Joa; D1, D2 y D3 están auditadas y
+consolidadas. D4 `real-classification-domain` fue auditada e integrada en el
+árbol de MAIN con registros normalizados sintéticos, correcciones conservadoras
+y sin consumidores productivos; queda consolidada por el commit que contiene
+este estado. La revisión visual instrumental de Base Segura continúa pendiente.
 No existe remoto Git.
 
 ## Identidad y responsabilidad
@@ -44,7 +45,7 @@ compacta de `docs/CONTRATO_MVP.md`.
 ```text
 Base Segura aceptada
         ↓ preparación sintética autorizada
-Mapa Total: D1 integrada → D2 integrada → D3 integrada → D4 sintética
+Mapa Total: D1 integrada → D2 integrada → D3 integrada → D4 integrada sin consumidor
         ↓ aceptación independiente de Joa
 Estudio de Limpieza
         ↓ autorización independiente de Joa
@@ -56,10 +57,10 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Crear, auditar e integrar D4 con registros sintéticos normalizados para
-demostrar identidad conservadora de fuentes, separación de flujos, taxonomía
-MVP, confianza y evidencia sin ayudas de fixtures. No componer todavía rutas
-API, UI, persistencia de clasificación ni adaptadores productivos.
+Definir el contrato de D5 y mantener su worktree bloqueado hasta que MAIN
+explique y Joa revise precedencia, comandos y migración de correcciones frente a
+cambios de agrupación o IDs. No componer todavía rutas API, UI, persistencia de
+clasificación ni adaptadores productivos.
 
 ## Línea base de privacidad
 
@@ -130,7 +131,8 @@ MAIN debe:
 - No crear rutas Gmail en la API ni cambiar `oauthAvailable: false`.
 - Mantener `canExecute: false` y ausencia de operaciones de escritura.
 - No agregar dependencias para D4.
-- No habilitar D5 antes de auditar e integrar D4.
+- No habilitar D5 antes de consolidar D4 y estabilizar el contrato de memoria
+  ante cambios de agrupación o IDs.
 - No hacer push sin remoto válido y destino verificado.
 
 ## Cierre de MAIN

@@ -7,6 +7,7 @@ from typing import Any
 
 from mailmap import main as mailmap_main
 from mailmap.api import create_app
+from mailmap.model import Confianza, Intencion, Rubro, Suscripcion
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ACTIVE_PACKAGE = PROJECT_ROOT / "src" / "mailmap"
@@ -16,6 +17,8 @@ WINDOWS_SECRET_STORE_PATH = ACTIVE_PACKAGE / "windows_secret_store.py"
 GMAIL_READONLY_POLICY_PATH = ACTIVE_PACKAGE / "gmail_readonly_policy.py"
 GMAIL_INVENTORY_MODEL_PATH = ACTIVE_PACKAGE / "gmail_inventory_model.py"
 GMAIL_INVENTORY_PATH = ACTIVE_PACKAGE / "gmail_inventory.py"
+CLASSIFICATION_MODEL_PATH = ACTIVE_PACKAGE / "classification_model.py"
+CLASSIFICATION_DOMAIN_PATH = ACTIVE_PACKAGE / "classification_domain.py"
 SAFE_STDLIB_URL_IMPORT_ALLOWLIST = {
     OAUTH_SESSION_PATH: {"urllib.parse"},
     GMAIL_READONLY_POLICY_PATH: {"urllib.parse"},
@@ -62,6 +65,47 @@ PACKAGED_FORBIDDEN_SUFFIXES = {
     ".tmp",
 }
 EMAIL_LITERAL = re.compile(r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9.-]+")
+D4_FORBIDDEN_IMPORT_PREFIXES = {
+    *FORBIDDEN_IMPORT_PREFIXES,
+    "anthropic",
+    "logging",
+    "openai",
+    "os",
+    "pathlib",
+    "playwright",
+    "random",
+    "selenium",
+    "sqlite3",
+    "time",
+}
+D4_FORBIDDEN_FIELD_MARKERS = {
+    "brand" + "_hint",
+    "rubro" + "_hint",
+    "flow" + "_hint",
+    "personal" + "_signal",
+    "fixture" + "_tags",
+}
+D4_IMPORT_ALLOWLIST = {
+    CLASSIFICATION_MODEL_PATH: {
+        "__future__",
+        "dataclasses",
+        "enum",
+        "mailmap.model",
+        "re",
+    },
+    CLASSIFICATION_DOMAIN_PATH: {
+        "__future__",
+        "collections",
+        "collections.abc",
+        "dataclasses",
+        "hashlib",
+        "mailmap.classification_model",
+        "mailmap.index_model",
+        "mailmap.model",
+        "re",
+        "unicodedata",
+    },
+}
 
 
 def _import_modules(path: Path) -> set[str]:
@@ -163,6 +207,92 @@ def test_d3_inventory_has_no_external_transport_network_browser_or_scope_literal
                 "installedappflow",
             )
         )
+
+
+def test_d4_classification_is_local_closed_and_has_no_product_consumer() -> None:
+    for path in (CLASSIFICATION_MODEL_PATH, CLASSIFICATION_DOMAIN_PATH):
+        imports = _import_modules(path)
+        assert imports == D4_IMPORT_ALLOWLIST[path]
+        assert all(
+            not any(
+                module == prefix or module.startswith(f"{prefix}.")
+                for prefix in D4_FORBIDDEN_IMPORT_PREFIXES
+            )
+            for module in imports
+        )
+        text = path.read_text(encoding="utf-8").casefold()
+        assert all(marker not in text for marker in D4_FORBIDDEN_FIELD_MARKERS)
+        assert all(
+            marker not in text
+            for marker in (
+                "fastapi",
+                "apirouter",
+                "urlopen(",
+                "webbrowser.",
+                "socket.",
+                "requests.",
+                "httpx.",
+                "print(",
+                "basicconfig(",
+            )
+        )
+
+    consumer_findings: list[str] = []
+    for path in sorted(ACTIVE_PACKAGE.rglob("*.py")):
+        if path in (CLASSIFICATION_MODEL_PATH, CLASSIFICATION_DOMAIN_PATH):
+            continue
+        text = path.read_text(encoding="utf-8").casefold()
+        if any(
+            marker in text
+            for marker in (
+                "classification_domain",
+                "classification_model",
+                "classify_indexed_records",
+            )
+        ):
+            consumer_findings.append(str(path.relative_to(PROJECT_ROOT)))
+    assert consumer_findings == []
+
+
+def test_d4_does_not_expand_shared_taxonomies() -> None:
+    assert tuple((item.name, item.value) for item in Rubro) == (
+        ("MEDIOS", "Medios y contenido"),
+        ("SOFTWARE", "Software y servicios digitales"),
+        ("COMERCIO", "Comercio y compras"),
+        ("FINANZAS", "Finanzas"),
+        ("TRABAJO", "Trabajo y educación"),
+        ("SALUD", "Salud y gobierno"),
+        ("VIAJES", "Viajes y entretenimiento"),
+        ("SOCIAL", "Social y comunidades"),
+        ("DOMESTICOS", "Servicios domésticos"),
+        ("PERSONAL", "Personal"),
+        ("DESCONOCIDO", "Desconocido"),
+    )
+    assert tuple((item.name, item.value) for item in Intencion) == (
+        ("SEGURIDAD", "Seguridad"),
+        ("DOCUMENTO", "Documento o comprobante"),
+        ("OPERATIVO", "Operativo o soporte"),
+        ("NOTIFICACION", "Notificación"),
+        ("EDITORIAL", "Informativo o editorial"),
+        ("PROMOCIONAL", "Promocional o venta"),
+        ("PERSONAL", "Comunicación personal"),
+        ("SOSPECHOSO", "Sospechoso"),
+        ("DESCONOCIDO", "Desconocido"),
+    )
+    assert tuple((item.name, item.value) for item in Suscripcion) == (
+        ("CONFIRMADA", "Confirmada"),
+        ("PROBABLE", "Probable"),
+        ("NO_CORRESPONDE", "No corresponde"),
+        ("BAJA_SOLICITADA", "Baja solicitada"),
+        ("POSIBLE_INCUMPLIMIENTO", "Posible incumplimiento"),
+        ("DESCONOCIDO", "Desconocido"),
+    )
+    assert tuple((item.name, item.value) for item in Confianza) == (
+        ("ALTA", "Alta"),
+        ("MEDIA", "Media"),
+        ("BAJA", "Baja"),
+        ("CONTRADICTORIA", "Contradictoria"),
+    )
 
 
 def test_metadata_scope_and_dpapi_are_confined_to_exact_d2_files() -> None:

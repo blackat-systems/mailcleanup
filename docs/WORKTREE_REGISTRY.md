@@ -130,7 +130,7 @@ sintética y no habilita Gmail, OAuth, credenciales, datos reales ni D4.
 | Campo | Estado real |
 |---|---|
 | Proceso | Mapa Total, clasificación explicable sobre registros normalizados sintéticos |
-| Estado | `EN DESARROLLO` |
+| Estado | `INTEGRADA` y consolidada por el commit que contiene este registro; fuente conservada |
 | Ruta | `C:\Users\Joaquin\.codex\worktrees\460d\mailcleanup` |
 | Rama | `codex/real-classification-domain` |
 | Base | `ba1efb4eeb2c80c0c973ee2c7c6dce12089576f2` |
@@ -143,13 +143,23 @@ sintética y no habilita Gmail, OAuth, credenciales, datos reales ni D4.
 | Gmail, OAuth, red, credenciales y datos reales | Prohibidos |
 | Persistencia, API, UI, protección, planes, D5 y D6 | Prohibidos |
 | Commit del especialista | No autorizado |
-| Integración en `main` | Pendiente de handoff y auditoría independiente de MAIN |
+| Integración en `main` | Auditoría e integración semántica completadas sobre `d1671bfef0b7217de170f3c9da7aae0dbdadf14d`; consolidada por el commit que contiene este registro |
 
 Codex creó el checkout en `detached HEAD` sobre la base exacta. MAIN comprobó
 que estaba limpio, lo adjuntó a `codex/real-classification-domain` y volvió a
 verificar rama, base y limpieza antes de habilitar la implementación. El prompt
 fue entregado al crear la tarea con los archivos autorizados, validaciones y
-stop points completos. D4 no habilita Gmail real ni D5.
+stop points completos.
+
+MAIN leyó el contrato y los cuatro archivos completos, reprodujo defectos que
+las pruebas originales no cubrían y corrigió dentro del alcance: impedimento de
+fusionar dominios distintos sólo por nombre, validación local de mecanismos de
+baja, agrupación de señales de confianza por familias independientes y límite
+de confianza baja para identidades aisladas. La batería global pasó con 162
+pruebas Python, Ruff, mypy, ESLint, 4 pruebas Vitest y build Vite. Los IDs
+inferidos siguen pudiendo cambiar si cambia la membresía de una fuente; D5 debe
+resolver la migración de correcciones antes de consumirlos. D4 no habilita
+Gmail real, OAuth, red, credenciales, datos reales, D5 ni D6.
 
 ## Reglas de actualización
 

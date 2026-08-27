@@ -49,33 +49,31 @@ visual con herramienta no llegó a verificarse y permanece registrada como tal;
 la aceptación es una decisión de producto, no evidencia visual retroactiva.
 
 La preparación sintética de Mapa Total mediante D2 fue auditada e integrada en
-MAIN. D3 `gmail-readonly-inventory` fue auditada e integrada en el árbol de
-trabajo de MAIN después de ampliar D1 para aplicar altas, actualizaciones,
-bajas y checkpoint en una transacción e iniciar un escaneo completo reemplazando
-de forma controlada el índice anterior. La integración queda consolidada por el
-commit que contiene este estado. Joa autorizó preparar D4
-`real-classification-domain` exclusivamente con registros sintéticos y el
-contrato `CLASSIFICATION_DOMAIN_V1.md`. No están autorizados abrir OAuth,
-conectar Gmail, solicitar credenciales ni usar datos reales. Existen cinco
-worktrees: MAIN sobre `main`, las fuentes D1, D2 y D3 conservadas como evidencia
-y D4 activa en `codex/real-classification-domain`. No hay remoto Git
-configurado.
+MAIN. D3 `gmail-readonly-inventory` fue auditada e integrada después de ampliar
+D1 para aplicar altas, actualizaciones, bajas y checkpoint en una transacción e
+iniciar un escaneo completo reemplazando de forma controlada el índice anterior.
+D4 `real-classification-domain` fue auditada e integrada en el árbol de trabajo
+de MAIN con correcciones conservadoras de agrupación, baja, confianza y sus
+regresiones; queda consolidada por el commit que contiene este estado. No están autorizados
+abrir OAuth, conectar Gmail, solicitar credenciales, usar datos reales ni
+iniciar D5. Existen cinco worktrees: MAIN sobre `main` y las fuentes D1, D2, D3
+y D4 conservadas como evidencia. No hay remoto Git configurado.
 
 ## Objetivo actual
 
-Preparar y coordinar D4 sintética desde un contrato estable, sin que el
-especialista modifique taxonomías, composición o arquitectura. No iniciar D5,
-abrir OAuth, conectar una cuenta real, persistir metadatos privados ni usar
-credenciales.
+Definir el contrato de D5 `local-policy-memory`: precedencia, trazabilidad y
+migración de correcciones ante cambios de agrupación e IDs. Explicárselo a Joa y
+detenerse antes de crear su worktree. No iniciar D5, abrir OAuth, conectar una
+cuenta real, persistir metadatos privados ni usar credenciales.
 
 ---
 
 # 2. PRIORIDAD
 
-Conservar verde y auditable la integración D3 consolidada. Todo cambio
-debe respetar el permiso mínimo, la allowlist de lectura, la atomicidad del
-índice, la separación de secretos, la barrera de no escritura y los contratos
-de seguridad e inventario.
+Conservar verdes y auditables D3 y D4 sintéticas consolidadas. Todo cambio debe
+respetar el permiso mínimo, la allowlist de lectura,
+la atomicidad del índice, la clasificación conservadora, la separación de
+secretos y la barrera de no escritura.
 
 Mapa Total, Estudio de Limpieza y Limpieza Controlada permanecen detrás de
 puertas de autorización independientes. Las ideas futuras se registran sin
@@ -110,7 +108,8 @@ Para coordinación de MAIN y dependencias:
 
 Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/SECURITY_PRIVACY_V1.md` y
-`docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`.
+`docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`. Para D4 prevalece
+`docs/contracts/CLASSIFICATION_DOMAIN_V1.md`.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -310,9 +309,10 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 # 10. ESPECIALISTAS
 
 Los worktrees fuente de D1 `real-index-persistence`, D2
-`secure-gmail-session` y D3 `gmail-readonly-inventory` se conservan como
-evidencia de entregas integradas. D4 `real-classification-domain` es la única
-dependencia autorizada para crearse y trabajar; no habilita D5 ni D6.
+`secure-gmail-session`, D3 `gmail-readonly-inventory` y D4
+`real-classification-domain` se conservan como evidencia de entregas
+integradas. No hay una dependencia especialista nueva autorizada; D5 y D6
+siguen bloqueadas.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,

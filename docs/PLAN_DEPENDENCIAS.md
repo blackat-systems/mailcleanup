@@ -1,9 +1,9 @@
 # Plan de dependencias y worktrees
 
-Estado del plan: ejecución controlada; D1, D2 y D3 están consolidadas. Las demás
-dependencias conservan sus bloqueos.
+Estado del plan: ejecución controlada; D1, D2, D3 y D4 están consolidadas. Las
+demás dependencias conservan sus bloqueos.
 
-Fecha de inspección: 18 de agosto de 2026.
+Fecha de inspección: 27 de agosto de 2026.
 
 Este documento define fronteras, dependencias, puertas y orden de integración.
 No autoriza capacidades, no crea worktrees y no reemplaza contratos funcionales
@@ -16,12 +16,12 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\mailcleanup` |
 | Rama | `main` |
 | HEAD de MAIN al integrar D1 | `7720ad4c57c984c7ba6fc2e6bc9c5e02119756a2` |
-| Estado actual | D1, D2 y D3 consolidadas; D4 sintética en desarrollo |
+| Estado actual | D1, D2, D3 y D4 sintéticas consolidadas |
 | Worktrees | Cinco: MAIN, D1, D2, D3 y D4 `real-classification-domain` |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
-| Capacidades autorizadas | D4 puede crearse sólo con registros sintéticos normalizados; ninguna conexión Gmail, OAuth abierto, credencial ni dato real; D5 no autorizada |
+| Capacidades autorizadas | D4 sintética integrada; ninguna conexión Gmail, OAuth abierto, credencial ni dato real; D5 no autorizada |
 
 El SHA anterior es la base de MAIN sobre la que se integró D1, no un commit de
 integración. Cada dependencia posterior requiere un SHA limpio nuevo que
@@ -257,7 +257,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Adaptar y ampliar la clasificación explicable para registros normalizados con forma real pero valores sintéticos, sin `source_hint` ni `flow_hint`, conservando desconocidos y evidencia. |
 | Razón para separarlo | Es una ampliación concreta del dominio existente y puede probarse con corpus sintético normalizado sin red ni UI. |
-| Estado actual | `EN DESARROLLO` con alcance exclusivamente sintético |
+| Estado actual | `INTEGRADA` y consolidada, con alcance exclusivamente sintético |
 | Dependencias previas | D3 integrada; C1/C2 y taxonomías confirmadas. |
 | Contratos que consume | `CLASSIFICATION_DOMAIN_V1.md`, registros normalizados D3, taxonomías MVP y límites C1/C2. |
 | Resultados que produce | Agrupación conservadora, identidad, fuentes y flujos sin ayudas de fixtures, confianza, evidencia y desconocidos estables. |
@@ -265,13 +265,13 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Permitido | Módulos de clasificación/dominio y pruebas sintéticas específicas. |
 | Prohibido | OAuth, API Gmail, persistencia, API pública, UI, mutaciones y servicios externos. |
 | Rama propuesta | `codex/real-classification-domain` |
-| Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-real-classification-domain` |
+| Ruta real | `C:\Users\Joaquin\.codex\worktrees\460d\mailcleanup` |
 | Commit base requerido | SHA limpio posterior a D3 y al contrato de identidad estable. |
 | Verificaciones específicas | Baja confianza separada, contradicción bloqueante, multi-remitente/multi-fuente, infraestructura compartida, varios flujos y ausencia de ayudas sintéticas. |
 | Criterios de aceptación | No presenta inferencias como hechos; cada resultado conserva evidencia; no fusiona confianza baja; las reglas actuales siguen cubiertas. |
-| Riesgos de integración | IDs cambiantes, sobreagrupación, taxonomías superpuestas y dependencia accidental de encabezados no autorizados. |
+| Riesgos de integración | La sobreagrupación entre dominios fue corregida. Un cambio futuro de membresía puede cambiar IDs inferidos; D5 debe migrar correcciones sin generalizarlas ni dejarlas huérfanas. |
 | Paralelización real | Puede prepararse con fixtures después de congelar C1/C2, pero no integrarse antes de D3; no en paralelo con cambios a taxonomías. |
-| Condición exacta de desbloqueo | Cumplida para crear D4 sintética: D3 integrada, contrato y corpus fijados por MAIN, autorización D-024, batería verde, SHA limpio y prompt completo. D5 y cualquier dato real siguen bloqueados. |
+| Condición exacta de desbloqueo | D4 sintética fue creada, auditada, integrada y consolidada. La definición de precedencia y migración de correcciones sigue siendo una puerta para D5; cualquier dato real continúa bloqueado. |
 
 ### D5 — `local-policy-memory`
 
@@ -282,7 +282,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Responsabilidad única | Persistir nombres, separaciones/uniones, categorías y protecciones decididas por Joa, con precedencia y trazabilidad. |
 | Razón para separarlo | Une corrección y protección manual porque ambas son políticas del usuario sobre la misma identidad estable; separarlas duplicaría precedencia y persistencia. |
 | Estado actual | `BLOQUEADA POR AUTORIZACIÓN` |
-| Dependencias previas | D1, D3 y D4 integradas; identidad y precedencia estables. |
+| Dependencias previas | D1, D3 y D4 integradas; falta estabilizar precedencia y migración de correcciones ante cambios de agrupación o IDs. |
 | Contratos que consume | C1, resultados D4, repositorio D1 y reglas globales de protección. |
 | Resultados que produce | Comandos y consultas de política local, auditoría de decisiones y reaplicación determinista. |
 | Consumidores posteriores | D6, D7 y D9. |
@@ -295,7 +295,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Criterios de aceptación | La decisión de Joa prevalece según contrato, queda explicada y no convierte una corrección puntual en regla global accidental. |
 | Riesgos de integración | Conflicto con reglas automáticas, correcciones huérfanas y migraciones simultáneas. |
 | Paralelización real | No con D1 ni D4; D6 puede empezar sólo sobre un API congelado y fixtures después de definir salidas. |
-| Condición exacta de desbloqueo | D4 integrada; MAIN aprueba precedencia, comandos, migración y API; batería verde, base limpia y prompt completo. |
+| Condición exacta de desbloqueo | D4 consolidada por commit; MAIN aprueba precedencia, comandos, migración ante cambios de IDs y API; Joa autoriza D5; batería verde, base limpia y prompt completo. |
 
 ### D6 — `mapa-total-ui`
 
