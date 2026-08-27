@@ -59,12 +59,14 @@ regresiones; quedó consolidada en `0fe5111`. MAIN redactó
 los descriptores públicos de identidad D4 que requiere. Esa columna vertebral
 quedó consolidada en `9f55b93` sin cambiar agrupaciones, IDs, taxonomías ni
 evidencias. Joa autorizó la creación del prompt autosuficiente y un único
-worktree D5. MAIN consolidó la base `663d8a9` y creó D5 en
+worktree D5. MAIN consolidó la base `663d8a9`, creó D5 en
 `C:\Users\Joaquin\.codex\worktrees\9623\mailcleanup`, rama
-`codex/local-policy-memory`, actualmente `EN DESARROLLO`. No están autorizados
-abrir OAuth, conectar Gmail, solicitar credenciales ni usar datos reales.
-Existen seis worktrees: MAIN, las fuentes D1-D4 conservadas como evidencia y D5
-activa. `origin` apunta al repositorio privado
+`codex/local-policy-memory`, y auditó su entrega. La integración en el árbol de
+MAIN quedó aprobada con una corrección conservadora: los fragmentos de un flujo
+particionado conservan la confianza automática original de D4. D5 queda
+consolidada por el commit que contiene este estado. No están autorizados abrir OAuth, conectar Gmail,
+solicitar credenciales ni usar datos reales. Existen seis worktrees: MAIN y las
+fuentes D1-D5 conservadas como evidencia. `origin` apunta al repositorio privado
 `https://github.com/blackat-systems/mailcleanup.git`. Sólo MAIN puede publicar
 `main` después de verificar destino, alcance y autorización; los worktrees
 especialistas no publican ramas ni usan el remoto para ampliar su alcance.
@@ -72,10 +74,9 @@ La primera publicación de `main` quedó verificada desde `6310c76`.
 
 ## Objetivo actual
 
-Esperar el handoff especialista D5 y después auditar independientemente sus cinco
-archivos autorizados, migración v3, transacciones, privacidad y batería global.
-MAIN no implementa D5 en su propio árbol ni habilita D6. No abrir OAuth,
-conectar una cuenta real, persistir metadatos privados ni usar credenciales.
+Estabilizar la composición backend y el contrato C5 antes de proponer D6. D6
+continúa bloqueada y no debe crearse. No abrir OAuth, conectar
+una cuenta real, persistir metadatos privados ni usar credenciales.
 
 ---
 
@@ -120,10 +121,9 @@ Para coordinación de MAIN y dependencias:
 Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/SECURITY_PRIVACY_V1.md` y
 `docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`. Para D4 prevalece
-`docs/contracts/CLASSIFICATION_DOMAIN_V1.md`. Para preparar D5 prevalece el
-contrato aprobado `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`. Joa autorizó un
-único worktree D5 sintético; esa autorización no habilita Gmail, OAuth, datos
-reales ni consumidores posteriores.
+`docs/contracts/CLASSIFICATION_DOMAIN_V1.md`. Para D5 prevalece el contrato
+aprobado `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`. Su integración sintética no
+habilita Gmail, OAuth, datos reales ni consumidores posteriores.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -323,10 +323,10 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 # 10. ESPECIALISTAS
 
 Los worktrees fuente de D1 `real-index-persistence`, D2
-`secure-gmail-session`, D3 `gmail-readonly-inventory` y D4
-`real-classification-domain` se conservan como evidencia de entregas
-integradas. D5 es la única implementación especialista activa, en el worktree y
-base exactos registrados en `docs/WORKTREE_REGISTRY.md`. D6 sigue bloqueada.
+`secure-gmail-session`, D3 `gmail-readonly-inventory`, D4
+`real-classification-domain` y D5 `local-policy-memory` se conservan como
+evidencia de entregas integradas o preparadas para consolidación. No existe una
+implementación especialista activa. D6 sigue bloqueada.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,

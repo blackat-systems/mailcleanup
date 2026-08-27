@@ -19,7 +19,7 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
 | Base consolidada | El commit que contiene este registro |
-| Estado | Base Segura aceptada y técnicamente verificada; revisión visual instrumental pendiente; D5 activa |
+| Estado | Base Segura aceptada y técnicamente verificada; revisión visual instrumental pendiente; D5 integrada y consolidada por el commit que contiene este registro |
 
 ## Estado al consolidar Base Segura
 
@@ -160,16 +160,16 @@ fusionar dominios distintos sólo por nombre, validación local de mecanismos de
 baja, agrupación de señales de confianza por familias independientes y límite
 de confianza baja para identidades aisladas. La batería global pasó con 162
 pruebas Python, Ruff, mypy, ESLint, 4 pruebas Vitest y build Vite. Los IDs
-inferidos siguen pudiendo cambiar si cambia la membresía de una fuente; D5 debe
-resolver la migración de correcciones antes de consumirlos. D4 no habilita
-Gmail real, OAuth, red, credenciales, datos reales, D5 ni D6.
+inferidos siguen pudiendo cambiar si cambia la membresía de una fuente. D5 ya
+resuelve esa variación mediante bindings conservadores y revisión explícita. D4
+no habilita Gmail real, OAuth, red, credenciales, datos reales ni D6.
 
 ## D5 — `local-policy-memory`
 
 | Campo | Estado real |
 |---|---|
 | Proceso | Mapa Total, memoria local sintética de decisiones y protecciones |
-| Estado | `EN DESARROLLO`; sin entrega ni integración |
+| Estado | `INTEGRADA` y consolidada por el commit que contiene este registro; fuente conservada |
 | Ruta | `C:\Users\Joaquin\.codex\worktrees\9623\mailcleanup` |
 | Rama | `codex/local-policy-memory` |
 | Base | `663d8a99e94da9c40b5787bfb5f7a6b1e5f595b8` |
@@ -182,7 +182,7 @@ Gmail real, OAuth, red, credenciales, datos reales, D5 ni D6.
 | Gmail, OAuth, red, credenciales y datos reales | Prohibidos |
 | API, servicio, frontend, UI, acciones y D6 | Prohibidos |
 | Commit del especialista | No autorizado |
-| Integración en `main` | Pendiente de entrega y auditoría independiente de MAIN |
+| Integración en `main` | Auditoría independiente e integración semántica completadas sobre `c479522cac3f3260111901b103dc16743585c16f`; consolidada por el commit que contiene este registro |
 
 Codex creó inicialmente el checkout en `detached HEAD` sobre la base exacta.
 MAIN comprobó que estaba limpio, creó la rama `codex/local-policy-memory` sin
@@ -190,10 +190,19 @@ mover el commit y volvió a verificar ruta, rama, HEAD y estado. La tarea recibi
 el SHA exacto, el prompt durable completo y una aclaración para repetir la Puerta
 0 después de adjuntar la rama.
 
-D5 no puede crear ni recrear `indexed_accounts`. El borrado de cuenta debe ser
-terminal y la entrega debe probar que preparados, retries y undos anteriores no
-resucitan memoria borrada. El worktree permanece exclusivamente sintético y no
-habilita Gmail, OAuth, credenciales, datos reales ni D6.
+D5 no crea ni recrea `indexed_accounts`. MAIN verificó que el borrado de cuenta
+es terminal y que preparados, retries y undos anteriores no resucitan memoria
+borrada. También verificó migración v3 acumulativa, replay bajo
+`BEGIN IMMEDIATE`, historial append-only, aislamiento por cuenta y protección
+acumulativa.
+
+La auditoría detectó un defecto contractual: una partición podía mejorar la
+confianza automática de un fragmento respecto del flujo D4 original. MAIN lo
+corrigió para conservar `automatic_flow.confianza` y agregó una regresión. En
+MAIN pasaron 56 pruebas D5, 12 de seguridad, 128 de regresión D1/D4/D5 y 225
+pruebas Python globales, además de Ruff, mypy, ESLint, 4 pruebas Vitest y build
+Vite mediante `scripts/check.ps1`. La integración permanece exclusivamente
+sintética y no habilita Gmail, OAuth, credenciales, datos reales ni D6.
 
 El remoto privado fue agregado por MAIN después de la Puerta 0 de D5. Esa
 aparición posterior es una variación de infraestructura conocida: no habilita al

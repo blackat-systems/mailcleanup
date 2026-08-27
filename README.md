@@ -25,9 +25,11 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
 - D4 de clasificación sobre registros normalizados fue auditada e integrada en
   MAIN con corpus sintético y sin consumidores productivos; queda consolidada
   en `0fe5111`;
-- Joa aprobó el contrato de D5 y MAIN agregó a D4 los descriptores públicos de
-  identidad que permiten detectar cambios estructurales sin alterar la
-  clasificación existente. Todavía no existe implementación ni worktree D5;
+- D5 de memoria local fue auditada e integrada en el árbol de MAIN con comandos
+  tipados, historial, undo, reconciliación conservadora, protección acumulativa
+  y SQLite v3. MAIN corrigió una regresión para que particionar un flujo nunca
+  mejore la confianza automática de D4; queda consolidada por el commit que
+  contiene este estado;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -69,9 +71,7 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso posible es preparar D5 desde esta columna vertebral: el contrato
-aprobado define cómo sobreviven las correcciones cuando una nueva sincronización
-cambia membresía o IDs, cómo se deshacen y por qué nunca pueden rebajar una
-protección automática. D5 no se crea hasta una autorización posterior de Joa.
-La conexión de una cuenta real seguirá requiriendo una autorización independiente
-y resolver la protección del índice local.
+El próximo paso técnico es que MAIN defina la composición backend y el contrato
+C5 que consumirá la futura interfaz de Mapa Total. D6 no se crea todavía: siguen pendientes C5, la puerta visual y una
+autorización específica. Conectar una cuenta real también requiere una
+autorización independiente y resolver la protección del índice local.

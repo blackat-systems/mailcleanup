@@ -19,6 +19,9 @@ GMAIL_INVENTORY_MODEL_PATH = ACTIVE_PACKAGE / "gmail_inventory_model.py"
 GMAIL_INVENTORY_PATH = ACTIVE_PACKAGE / "gmail_inventory.py"
 CLASSIFICATION_MODEL_PATH = ACTIVE_PACKAGE / "classification_model.py"
 CLASSIFICATION_DOMAIN_PATH = ACTIVE_PACKAGE / "classification_domain.py"
+POLICY_MODEL_PATH = ACTIVE_PACKAGE / "policy_model.py"
+POLICY_DOMAIN_PATH = ACTIVE_PACKAGE / "policy_domain.py"
+REPOSITORY_PATH = ACTIVE_PACKAGE / "repository.py"
 SAFE_STDLIB_URL_IMPORT_ALLOWLIST = {
     OAUTH_SESSION_PATH: {"urllib.parse"},
     GMAIL_READONLY_POLICY_PATH: {"urllib.parse"},
@@ -104,6 +107,29 @@ D4_IMPORT_ALLOWLIST = {
         "mailmap.model",
         "re",
         "unicodedata",
+    },
+}
+D5_IMPORT_ALLOWLIST = {
+    POLICY_MODEL_PATH: {
+        "__future__",
+        "dataclasses",
+        "datetime",
+        "enum",
+        "mailmap.classification_model",
+        "mailmap.model",
+        "re",
+        "typing",
+    },
+    POLICY_DOMAIN_PATH: {
+        "__future__",
+        "collections",
+        "collections.abc",
+        "dataclasses",
+        "hashlib",
+        "mailmap.classification_model",
+        "mailmap.index_model",
+        "mailmap.model",
+        "mailmap.policy_model",
     },
 }
 
@@ -239,7 +265,12 @@ def test_d4_classification_is_local_closed_and_has_no_product_consumer() -> None
 
     consumer_findings: list[str] = []
     for path in sorted(ACTIVE_PACKAGE.rglob("*.py")):
-        if path in (CLASSIFICATION_MODEL_PATH, CLASSIFICATION_DOMAIN_PATH):
+        if path in (
+            CLASSIFICATION_MODEL_PATH,
+            CLASSIFICATION_DOMAIN_PATH,
+            POLICY_MODEL_PATH,
+            POLICY_DOMAIN_PATH,
+        ):
             continue
         text = path.read_text(encoding="utf-8").casefold()
         if any(
@@ -252,6 +283,71 @@ def test_d4_classification_is_local_closed_and_has_no_product_consumer() -> None
         ):
             consumer_findings.append(str(path.relative_to(PROJECT_ROOT)))
     assert consumer_findings == []
+
+
+def test_d5_policy_memory_is_local_closed_and_has_only_authorized_consumers() -> None:
+    for path in (POLICY_MODEL_PATH, POLICY_DOMAIN_PATH):
+        imports = _import_modules(path)
+        assert imports == D5_IMPORT_ALLOWLIST[path]
+        assert "mailmap.classification_domain" not in imports
+        assert all(
+            not any(
+                module == prefix or module.startswith(f"{prefix}.")
+                for prefix in D4_FORBIDDEN_IMPORT_PREFIXES
+            )
+            for module in imports
+        )
+        lowered = path.read_text(encoding="utf-8").casefold()
+        assert all(marker not in lowered for marker in D4_FORBIDDEN_FIELD_MARKERS)
+        assert all(
+            marker not in lowered
+            for marker in (
+                "fastapi",
+                "apirouter",
+                "classify_indexed_records",
+                "urlopen(",
+                "webbrowser.",
+                "socket.",
+                "requests.",
+                "httpx.",
+                "print(",
+                "basicconfig(",
+                "payload_json",
+                "credentials.json",
+                "token.json",
+            )
+        )
+
+    repository_imports = _import_modules(REPOSITORY_PATH)
+    assert "mailmap.policy_model" in repository_imports
+    assert "mailmap.policy_domain" not in repository_imports
+    assert "mailmap.classification_model" not in repository_imports
+    assert "mailmap.classification_domain" not in repository_imports
+
+    policy_model_consumers: list[Path] = []
+    policy_domain_consumers: list[Path] = []
+    for path in sorted(ACTIVE_PACKAGE.rglob("*.py")):
+        if path in (POLICY_MODEL_PATH, POLICY_DOMAIN_PATH):
+            continue
+        imports = _import_modules(path)
+        if "mailmap.policy_model" in imports:
+            policy_model_consumers.append(path)
+        if "mailmap.policy_domain" in imports:
+            policy_domain_consumers.append(path)
+    assert policy_model_consumers == [REPOSITORY_PATH]
+    assert policy_domain_consumers == []
+
+    repository_tree = ast.parse(
+        REPOSITORY_PATH.read_text(encoding="utf-8"), filename=str(REPOSITORY_PATH)
+    )
+    d5_writers = {
+        node.name: ast.unparse(node)
+        for node in ast.walk(repository_tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name in {"record_policy", "undo_policy"}
+    }
+    assert set(d5_writers) == {"record_policy", "undo_policy"}
+    assert all("_ensure_index_account" not in source for source in d5_writers.values())
 
 
 def test_d4_does_not_expand_shared_taxonomies() -> None:

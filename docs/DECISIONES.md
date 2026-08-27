@@ -39,6 +39,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-030 | D5 nunca crea ni recrea `indexed_accounts`; borrar el índice de una cuenta elimina por cascada memoria y replay, e invalida preparados, retries y undos anteriores. | Ejecutada y consolidada por el commit que contiene esta decisión | Auditoría de privacidad y lifecycle previa al prompt D5 |
 | D-031 | Consolidar la base del prompt y crear un único worktree D5 `local-policy-memory`, entregándole el prompt autosuficiente desde ese SHA exacto. | Ejecutada: base `663d8a9`, worktree `9623` | Confirmación explícita de Joa del 27 de agosto de 2026 y verificación Git posterior |
 | D-032 | Usar un repositorio GitHub privado `blackat-systems/mailcleanup` como `origin` y publicar únicamente `main`; las ramas especialistas, secretos, bases, datos locales y `grafo.txt` permanecen fuera. | Ejecutada: primer push verificado desde `6310c76` | Autorización explícita de Joa del 27 de agosto de 2026, destino privado verificado y auditoría preventiva del historial |
+| D-033 | Integrar D5 en MAIN después de auditoría independiente, corrigiendo que una partición pudiera mejorar la confianza automática del flujo D4 y manteniendo D6 y toda capacidad real bloqueadas. | Ejecutada y consolidada por el commit que contiene esta decisión | Handoff especialista y auditorías independientes de dominio, seguridad y persistencia del 27 de agosto de 2026 |
 
 ## Decisiones suficientemente definidas
 
@@ -64,9 +65,10 @@ D-023, autorizó preparar D4 sintética mediante D-024 y MAIN ejecutó su
 integración auditada mediante D-025. Joa aprobó después el contrato de D5
 mediante D-026, autorizó la columna vertebral pública D4 mediante D-027 y la
 preparación del prompt D5 mediante D-028 y finalmente un único worktree e
-implementación D5 mediante D-031. Ninguna autorización permite abrir OAuth,
-conectar Gmail, solicitar credenciales, usar datos reales, ejecutar acciones
-externas, iniciar D6, Estudio de Limpieza o Limpieza Controlada.
+implementación D5 mediante D-031. MAIN auditó e integró esa entrega mediante
+D-033. Ninguna autorización permite abrir
+OAuth, conectar Gmail, solicitar credenciales, usar datos reales, ejecutar
+acciones externas, iniciar D6, Estudio de Limpieza o Limpieza Controlada.
 
 ## Resultado de la implementación autorizada
 

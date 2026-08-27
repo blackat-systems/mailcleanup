@@ -4,16 +4,16 @@ Fecha del corte: 18 de agosto de 2026.
 
 Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. La aceptación
 no convierte en verificada la revisión visual que la herramienta no pudo
-completar; ese dato histórico se conserva. Está autorizada la preparación
-sintética de Mapa Total mediante D2, D3 y D4. Las tres fueron auditadas e
-integradas con dobles o registros sintéticos, sin abrir OAuth ni conectar datos
-reales. D4 queda consolidada por el commit que contiene este estado.
+completar; ese dato histórico se conserva. La preparación sintética de Mapa
+Total mediante D2, D3, D4 y D5 fue auditada e integrada con dobles o registros
+sintéticos, sin abrir OAuth ni conectar datos reales. D5 queda consolidada por
+el commit que contiene este estado.
 
 ## Qué existe
 
 - una aplicación Python/FastAPI en `src/mailmap`;
 - una interfaz React/TypeScript en `frontend`;
-- SQLite local con una migración inicial;
+- SQLite local con migraciones acumulativas v1-v3;
 - 22 mensajes sintéticos y 15 fuentes en el dataset actual;
 - vistas de panorama, fuentes, detalle, plan simulado, historial y estado;
 - un contrato de API v1 verificado para Base Segura;
@@ -97,14 +97,14 @@ una página sean atómicos y para que un escaneo completo nuevo reemplace de for
 controlada el índice anterior. La integración D4 agrega clasificación pura y
 explicable sobre registros normalizados sintéticos, sin consumidor productivo.
 MAIN corrigió agrupación entre dominios, validación de baja y confianza de
-identidades aisladas. La ampliación pública D4 conservó la proyección semántica
-y la batería global pasó con 168 pruebas Python aprobadas;
-el roundtrip DPAPI real pudo ejecutarse bajo el perfil de usuario actual. También
-aprobaron Ruff, mypy, ESLint, 4 pruebas Vitest y el build Vite. Este estado no
-autoriza abrir OAuth, usar credenciales, conectar Gmail real, persistir
-metadatos privados ni comenzar D5. MAIN redactó
-`LOCAL_POLICY_MEMORY_V1.md`, Joa aprobó el contrato y autorizó la columna
-vertebral de descriptores públicos D4. Esa ampliación conserva la semántica de
-clasificación y no modifica el estado de privacidad de Base Segura. D5 no tiene
-worktree ni implementación y permanece bloqueada hasta una autorización
-específica posterior de Joa.
+identidades aisladas. D5 agrega memoria local tipada, historial append-only,
+undo lógico, reconciliación conservadora, protección acumulativa y migración
+SQLite v3 sin crear cuentas ni consumidores productivos. Durante la auditoría,
+MAIN corrigió que una partición pudiera mejorar la confianza automática de un
+flujo D4 y agregó la regresión correspondiente.
+
+La batería global actual pasó con 225 pruebas Python, Ruff, mypy estricto sobre
+19 archivos, ESLint, 4 pruebas Vitest y build Vite. El roundtrip DPAPI real pudo
+ejecutarse bajo el perfil de usuario actual en una verificación anterior. Este
+estado no autoriza abrir OAuth, usar credenciales, conectar Gmail real, persistir
+metadatos privados ni comenzar D6.
