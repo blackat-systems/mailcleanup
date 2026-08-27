@@ -1,7 +1,8 @@
 # Contrato de clasificación de registros normalizados v1
 
-Estado: aprobado por MAIN para implementar D4 exclusivamente con registros
-sintéticos que respeten la forma de `IndexedMessageRecord`.
+Estado: D4 auditada e integrada. La ampliación pública de identidad fue
+autorizada por Joa el 27 de agosto de 2026 y mantiene el alcance exclusivamente
+sintético de este contrato.
 
 Autoridad: autorización explícita de Joa del 27 de agosto de 2026, el contrato
 del MVP y la planificación durable de D4.
@@ -63,6 +64,36 @@ cada flujo pertenece a una única fuente.
 Las representaciones y errores deben redactar direcciones, asuntos, IDs,
 valores de `List-ID` y cabeceras de baja. Ningún identificador local contiene
 esos valores en texto claro.
+
+### 3.1. Descriptores públicos de identidad
+
+La versión 2 de `ClassificationResult` agrega una descripción estructural y
+versionada de la identidad que D4 ya utilizaba internamente. No cambia las
+agrupaciones, taxonomías, IDs, inferencias ni evidencias de D4.
+
+`SourceIdentityDescriptor`, versión 1, usa exactamente una de estas anclas:
+
+- `senders`: una tupla no vacía, canónica, ordenada y sin duplicados de
+  direcciones normalizadas;
+- `isolated_message`: ninguna dirección y un único ID remoto de mensaje para
+  una fuente que D4 mantuvo aislada por falta de remitente.
+
+`FlowIdentityDescriptor`, versión 1, incluye el descriptor de su fuente, la
+intención automática y exactamente una de estas anclas:
+
+- `list_intent`: `List-ID` canónico;
+- `sender_intent`: dirección normalizada perteneciente a la fuente;
+- `isolated_message`: ID remoto único cuando la contradicción o ausencia de
+  remitente obliga a aislar el flujo.
+
+`ClassifiedSource.identity_descriptor` y
+`ClassifiedFlow.identity_descriptor` son públicos y cerrados. El resultado
+valida que cada descriptor coincida con su entidad, que el descriptor de cada
+flujo referencie al de su fuente y que no existan descriptores duplicados.
+
+Los descriptores pueden contener metadatos privados para permitir una futura
+reconciliación exacta. Sus representaciones y errores siempre los redactan; no
+son anónimos, no se persisten en esta ampliación y no autorizan datos reales.
 
 ## 4. Taxonomías vigentes
 
@@ -216,9 +247,9 @@ y cubren como mínimo:
 14. ausencia completa de hints sintéticos y campos prohibidos;
 15. representaciones y errores redactados.
 
-## 12. Terminado
+## 12. Criterio histórico de entrega e integración
 
-D4 está entregada para auditoría cuando:
+La entrega especialista original de D4 estuvo lista para auditoría cuando:
 
 1. implementa la operación y modelos cerrados del contrato;
 2. todas las agrupaciones e inferencias conservan evidencia;
@@ -230,5 +261,9 @@ D4 está entregada para auditoría cuando:
 7. el diff contiene exclusivamente los cuatro archivos autorizados;
 8. no existen red, Gmail, OAuth, credenciales, datos reales ni artefactos.
 
-La entrega especialista no queda integrada por sí sola. MAIN debe auditar el
-diff completo, repetir la batería y decidir la integración.
+Ese alcance especialista contenía cuatro archivos y no se integraba por sí
+solo. MAIN auditó, corrigió e integró esa entrega. La ampliación pública de
+identidad fue un cambio posterior de columna vertebral realizado por MAIN sobre
+modelo, dominio, pruebas y documentación. Todo cambio futuro debe conservar las
+mismas puertas: diff completo, batería global, privacidad y decisión explícita
+de integración.

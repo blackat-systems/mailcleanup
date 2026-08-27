@@ -24,7 +24,10 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
   prohibidos;
 - D4 de clasificación sobre registros normalizados fue auditada e integrada en
   MAIN con corpus sintético y sin consumidores productivos; queda consolidada
-  por el commit que contiene este estado;
+  en `0fe5111`;
+- Joa aprobó el contrato de D5 y MAIN agregó a D4 los descriptores públicos de
+  identidad que permiten detectar cambios estructurales sin alterar la
+  clasificación existente. Todavía no existe implementación ni worktree D5;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -66,8 +69,9 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-Definir y revisar el contrato de D5 `local-policy-memory`: cómo sobreviven las
-correcciones cuando una nueva sincronización cambia la membresía o el ID
-inferido de una fuente. Su worktree no se crea hasta una revisión posterior de
-Joa. La conexión de una cuenta real seguirá requiriendo autorización específica
-y decisiones pendientes sobre la protección del índice local.
+El próximo paso posible es preparar D5 desde esta columna vertebral: el contrato
+aprobado define cómo sobreviven las correcciones cuando una nueva sincronización
+cambia membresía o IDs, cómo se deshacen y por qué nunca pueden rebajar una
+protección automática. D5 no se crea hasta una autorización posterior de Joa.
+La conexión de una cuenta real seguirá requiriendo una autorización independiente
+y resolver la protección del índice local.

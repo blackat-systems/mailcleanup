@@ -7,6 +7,8 @@ import pytest
 
 from mailmap.classification_domain import classify_indexed_records
 from mailmap.classification_model import (
+    CLASSIFICATION_MODEL_VERSION,
+    IDENTITY_DESCRIPTOR_VERSION,
     ClassificationError,
     ClassificationErrorCode,
     ClassificationEvidence,
@@ -17,6 +19,10 @@ from mailmap.classification_model import (
     EvidenceCode,
     EvidenceOrigin,
     EvidenceStrength,
+    FlowAnchorKind,
+    FlowIdentityDescriptor,
+    SourceAnchorKind,
+    SourceIdentityDescriptor,
 )
 from mailmap.index_model import IndexedMessageRecord
 from mailmap.model import Confianza, Intencion, Rubro, Suscripcion
@@ -71,6 +77,313 @@ def evidence_codes(
     value: ClassifiedMessage | ClassifiedSource | ClassifiedFlow,
 ) -> set[EvidenceCode]:
     return {item.code for item in value.evidence}
+
+
+def test_identity_descriptor_models_are_closed_frozen_and_versioned() -> None:
+    source = SourceIdentityDescriptor(
+        kind=SourceAnchorKind.SENDERS,
+        sender_addresses=("sender@descriptor.example",),
+        isolated_message_id=None,
+    )
+    flow = FlowIdentityDescriptor(
+        kind=FlowAnchorKind.SENDER_INTENT,
+        source=source,
+        list_id=None,
+        sender_address="sender@descriptor.example",
+        automatic_intention=Intencion.NOTIFICACION,
+        isolated_message_id=None,
+    )
+
+    assert CLASSIFICATION_MODEL_VERSION == 2
+    assert IDENTITY_DESCRIPTOR_VERSION == 1
+    assert tuple(item.value for item in SourceAnchorKind) == (
+        "senders",
+        "isolated_message",
+    )
+    assert tuple(item.value for item in FlowAnchorKind) == (
+        "list_intent",
+        "sender_intent",
+        "isolated_message",
+    )
+    assert tuple(item.name for item in fields(SourceIdentityDescriptor)) == (
+        "kind",
+        "sender_addresses",
+        "isolated_message_id",
+        "version",
+    )
+    assert tuple(item.name for item in fields(FlowIdentityDescriptor)) == (
+        "kind",
+        "source",
+        "list_id",
+        "sender_address",
+        "automatic_intention",
+        "isolated_message_id",
+        "version",
+    )
+    assert not hasattr(source, "__dict__")
+    assert not hasattr(flow, "__dict__")
+
+    with pytest.raises(FrozenInstanceError):
+        source.kind = SourceAnchorKind.ISOLATED_MESSAGE  # type: ignore[misc]
+    with pytest.raises(TypeError):
+        SourceIdentityDescriptor(  # type: ignore[call-arg]
+            kind=SourceAnchorKind.SENDERS,
+            sender_addresses=("sender@descriptor.example",),
+            isolated_message_id=None,
+            arbitrary="not-allowed",
+        )
+    with pytest.raises(ValueError, match="version"):
+        replace(source, version=True)
+    with pytest.raises(ValueError, match="version"):
+        replace(source, version=1.0)  # type: ignore[arg-type]
+    with pytest.raises(ValueError, match="version"):
+        replace(flow, version=IDENTITY_DESCRIPTOR_VERSION + 1)
+    with pytest.raises(ValueError, match="version"):
+        replace(flow, version=1.0)  # type: ignore[arg-type]
+
+    result = classify_indexed_records((indexed_record("descriptor-version"),))
+    with pytest.raises(ValueError, match="version"):
+        replace(result, version=2.0)  # type: ignore[arg-type]
+
+
+def test_source_identity_descriptor_enforces_kind_invariants() -> None:
+    isolated = SourceIdentityDescriptor(
+        kind=SourceAnchorKind.ISOLATED_MESSAGE,
+        sender_addresses=(),
+        isolated_message_id="isolated-provider-id",
+    )
+    assert isolated.isolated_message_id == "isolated-provider-id"
+
+    invalid_values = (
+        {
+            "kind": SourceAnchorKind.SENDERS,
+            "sender_addresses": (),
+            "isolated_message_id": None,
+        },
+        {
+            "kind": SourceAnchorKind.SENDERS,
+            "sender_addresses": ("sender@descriptor.example",),
+            "isolated_message_id": "unexpected-id",
+        },
+        {
+            "kind": SourceAnchorKind.ISOLATED_MESSAGE,
+            "sender_addresses": ("sender@descriptor.example",),
+            "isolated_message_id": None,
+        },
+        {
+            "kind": SourceAnchorKind.SENDERS,
+            "sender_addresses": (
+                "second@descriptor.example",
+                "first@descriptor.example",
+            ),
+            "isolated_message_id": None,
+        },
+        {
+            "kind": SourceAnchorKind.SENDERS,
+            "sender_addresses": ("Sender@descriptor.example",),
+            "isolated_message_id": None,
+        },
+    )
+    for value in invalid_values:
+        with pytest.raises((TypeError, ValueError)):
+            SourceIdentityDescriptor(**value)  # type: ignore[arg-type]
+
+
+def test_flow_identity_descriptor_enforces_kind_invariants() -> None:
+    source = SourceIdentityDescriptor(
+        kind=SourceAnchorKind.SENDERS,
+        sender_addresses=("sender@descriptor.example",),
+        isolated_message_id=None,
+    )
+    list_flow = FlowIdentityDescriptor(
+        kind=FlowAnchorKind.LIST_INTENT,
+        source=source,
+        list_id="weekly.descriptor.example",
+        sender_address=None,
+        automatic_intention=Intencion.EDITORIAL,
+        isolated_message_id=None,
+    )
+    isolated_flow = FlowIdentityDescriptor(
+        kind=FlowAnchorKind.ISOLATED_MESSAGE,
+        source=source,
+        list_id=None,
+        sender_address=None,
+        automatic_intention=Intencion.SOSPECHOSO,
+        isolated_message_id="isolated-flow-id",
+    )
+    assert list_flow.list_id == "weekly.descriptor.example"
+    assert isolated_flow.isolated_message_id == "isolated-flow-id"
+
+    with pytest.raises(ValueError, match="List-ID"):
+        replace(list_flow, list_id="<Weekly.Descriptor.Example>")
+    with pytest.raises(ValueError, match="invalid anchors"):
+        replace(list_flow, sender_address="sender@descriptor.example")
+    with pytest.raises(ValueError, match="does not belong"):
+        FlowIdentityDescriptor(
+            kind=FlowAnchorKind.SENDER_INTENT,
+            source=source,
+            list_id=None,
+            sender_address="other@descriptor.example",
+            automatic_intention=Intencion.NOTIFICACION,
+            isolated_message_id=None,
+        )
+    isolated_source = SourceIdentityDescriptor(
+        kind=SourceAnchorKind.ISOLATED_MESSAGE,
+        sender_addresses=(),
+        isolated_message_id="source-isolated-id",
+    )
+    with pytest.raises(ValueError, match="requires a sender source"):
+        replace(list_flow, source=isolated_source)
+    with pytest.raises(ValueError, match="same message"):
+        replace(isolated_flow, source=isolated_source)
+    with pytest.raises(TypeError, match="automatic_intention"):
+        replace(list_flow, automatic_intention="Editorial")  # type: ignore[arg-type]
+
+
+def test_public_descriptors_follow_current_source_and_flow_identity() -> None:
+    multi_source = classify_indexed_records(
+        (
+            indexed_record(
+                "descriptor-multi-01",
+                sender_name="Plataforma Software",
+                sender_address="alertas@plataforma-software.example",
+                authenticated_domain="plataforma-software.example",
+            ),
+            indexed_record(
+                "descriptor-multi-02",
+                sender_name="Plataforma Software",
+                sender_address="facturacion@plataforma-software.example",
+                authenticated_domain="plataforma-software.example",
+            ),
+        )
+    ).sources[0]
+    assert multi_source.identity_descriptor.kind is SourceAnchorKind.SENDERS
+    assert (
+        multi_source.identity_descriptor.sender_addresses
+        == multi_source.sender_addresses
+    )
+
+    missing = classify_indexed_records(
+        (
+            indexed_record(
+                "descriptor-missing",
+                sender_name=None,
+                sender_address=None,
+                subject=None,
+                authenticated_domain=None,
+                dkim_result=None,
+                dmarc_result=None,
+            ),
+        )
+    )
+    assert missing.sources[0].identity_descriptor.kind is SourceAnchorKind.ISOLATED_MESSAGE
+    assert (
+        missing.sources[0].identity_descriptor.isolated_message_id
+        == "descriptor-missing"
+    )
+    assert missing.flows[0].identity_descriptor.kind is FlowAnchorKind.ISOLATED_MESSAGE
+
+    listed = classify_indexed_records(
+        (
+            indexed_record(
+                "descriptor-list",
+                subject="Resumen semanal",
+                list_id="<Weekly.Software-Norte.Example>",
+                list_unsubscribe="<https://unsubscribe.software-norte.example/weekly>",
+            ),
+        )
+    )
+    assert listed.flows[0].identity_descriptor.kind is FlowAnchorKind.LIST_INTENT
+    assert listed.flows[0].identity_descriptor.list_id == "weekly.software-norte.example"
+
+    sender_flow = classify_indexed_records((indexed_record("descriptor-sender"),))
+    assert (
+        sender_flow.flows[0].identity_descriptor.kind
+        is FlowAnchorKind.SENDER_INTENT
+    )
+    assert (
+        sender_flow.flows[0].identity_descriptor.sender_address
+        == "avisos@software-norte.example"
+    )
+
+    contradictory = classify_indexed_records(
+        (
+            indexed_record(
+                "descriptor-contradiction",
+                sender_address="alertas@identity-a.example",
+                authenticated_domain="identity-b.example",
+            ),
+        )
+    )
+    assert (
+        contradictory.flows[0].identity_descriptor.kind
+        is FlowAnchorKind.ISOLATED_MESSAGE
+    )
+    for result in (missing, listed, sender_flow, contradictory):
+        flow = result.flows[0]
+        source = next(item for item in result.sources if item.source_id == flow.source_id)
+        assert flow.identity_descriptor.source == source.identity_descriptor
+        assert flow.identity_descriptor.automatic_intention is flow.intencion
+
+
+def test_descriptor_changes_when_membership_changes_even_if_source_id_does_not() -> None:
+    first = indexed_record(
+        "descriptor-membership-01",
+        sender_name="Plataforma Software",
+        sender_address="alertas@plataforma-software.example",
+        authenticated_domain="plataforma-software.example",
+    )
+    second = indexed_record(
+        "descriptor-membership-02",
+        sender_name="Plataforma Software",
+        sender_address="facturacion@plataforma-software.example",
+        authenticated_domain="plataforma-software.example",
+    )
+
+    original = classify_indexed_records((first,)).sources[0]
+    expanded = classify_indexed_records((first, second)).sources[0]
+
+    assert original.source_id == expanded.source_id
+    assert original.identity_descriptor != expanded.identity_descriptor
+    assert expanded.identity_descriptor.sender_addresses == (
+        "alertas@plataforma-software.example",
+        "facturacion@plataforma-software.example",
+    )
+
+
+def test_public_descriptors_preserve_a_literal_d4_semantic_baseline() -> None:
+    result = classify_indexed_records((indexed_record("descriptor-regression"),))
+    message = result.messages[0]
+    source = result.sources[0]
+    flow = result.flows[0]
+
+    assert source.source_id == "source-v1-6ffcec499ca5e64671a0fa6b"
+    assert flow.flow_id == "flow-v1-855a37aba8864e1fca7aa3c6"
+    assert (
+        message.source_id,
+        message.flow_id,
+        message.rubro,
+        message.intencion,
+        message.suscripcion,
+        message.confianza,
+    ) == (
+        source.source_id,
+        flow.flow_id,
+        Rubro.SOFTWARE,
+        Intencion.NOTIFICACION,
+        Suscripcion.DESCONOCIDO,
+        Confianza.MEDIA,
+    )
+    assert tuple(item.code.value for item in message.evidence) == (
+        "authentication.dkim_passed",
+        "authentication.dmarc_passed",
+        "authentication.domain_coherent",
+        "flow.sender_intent",
+        "intent.notification",
+        "rubro.generic_signal",
+        "source.authenticated",
+        "subscription.unknown",
+    )
 
 
 def test_empty_input_and_same_sender_identity_are_stable() -> None:
@@ -508,6 +821,8 @@ def test_accounts_are_isolated_and_mixed_input_is_rejected() -> None:
 
     assert first.sources[0].source_id != second.sources[0].source_id
     assert first.flows[0].flow_id != second.flows[0].flow_id
+    assert first.sources[0].identity_descriptor == second.sources[0].identity_descriptor
+    assert first.flows[0].identity_descriptor == second.flows[0].identity_descriptor
 
     with pytest.raises(ClassificationError) as error:
         classify_indexed_records(
@@ -724,6 +1039,8 @@ def test_models_are_closed_immutable_and_do_not_depend_on_fixture_fields() -> No
         result.messages[0],
         result.sources[0],
         result.flows[0],
+        result.sources[0].identity_descriptor,
+        result.flows[0].identity_descriptor,
         result.messages[0].evidence[0],
     )
     assert all(not hasattr(value, "__dict__") for value in values)
@@ -788,6 +1105,38 @@ def test_public_result_rejects_semantically_inconsistent_aggregates() -> None:
             result,
             sources=(replace(source, confianza=Confianza.ALTA),),
         )
+    with pytest.raises(ValueError, match="isolated source descriptor"):
+        replace(
+            source,
+            identity_descriptor=replace(
+                source.identity_descriptor,
+                isolated_message_id="other-provider-message",
+            ),
+        )
+    sender_source_descriptor = SourceIdentityDescriptor(
+        kind=SourceAnchorKind.SENDERS,
+        sender_addresses=("sender@aggregate.example",),
+        isolated_message_id=None,
+    )
+    with pytest.raises(ValueError, match="isolated flow descriptor"):
+        replace(
+            flow,
+            identity_descriptor=replace(
+                flow.identity_descriptor,
+                source=sender_source_descriptor,
+                isolated_message_id="other-provider-message",
+            ),
+        )
+
+    foreign_flow = replace(
+        flow,
+        identity_descriptor=replace(
+            flow.identity_descriptor,
+            source=sender_source_descriptor,
+        ),
+    )
+    with pytest.raises(ValueError, match="flow identity descriptor"):
+        replace(result, flows=(foreign_flow,))
 
 
 def test_public_models_reject_non_opaque_local_identifiers() -> None:
@@ -841,6 +1190,8 @@ def test_local_ids_and_representations_redact_all_input_metadata() -> None:
             *result.messages,
             *result.sources,
             *result.flows,
+            *(source.identity_descriptor for source in result.sources),
+            *(flow.identity_descriptor for flow in result.flows),
             *(item for message in result.messages for item in message.evidence),
         )
     ).casefold()

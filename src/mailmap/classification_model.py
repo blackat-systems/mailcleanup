@@ -6,9 +6,14 @@ from enum import StrEnum
 
 from mailmap.model import Confianza, Intencion, Rubro, Suscripcion
 
-CLASSIFICATION_MODEL_VERSION = 1
+CLASSIFICATION_MODEL_VERSION = 2
+IDENTITY_DESCRIPTOR_VERSION = 1
 _SOURCE_IDENTIFIER = re.compile(r"^source-v1-[0-9a-f]{24}$")
 _FLOW_IDENTIFIER = re.compile(r"^flow-v1-[0-9a-f]{24}$")
+_CANONICAL_ADDRESS = re.compile(
+    r"^[^@\s<>]+@[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$"
+)
+_LIST_ID_COMPONENT = re.compile(r"^(?:[a-z0-9]|[a-z0-9][a-z0-9_+-]*[a-z0-9])$")
 
 
 def _non_empty(value: str, field_name: str) -> str:
@@ -25,6 +30,46 @@ def _optional_account_key(value: str | None) -> str | None:
     _non_empty(value, "account_key")
     if "@" in value:
         raise ValueError("account_key must be opaque")
+    return value
+
+
+def _optional_non_empty(value: str | None, field_name: str) -> str | None:
+    if value is None:
+        return None
+    return _non_empty(value, field_name)
+
+
+def _exact_version(value: int, expected: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value != expected:
+        raise ValueError(f"version must be {expected}")
+    return value
+
+
+def _canonical_address(value: str, field_name: str) -> str:
+    _non_empty(value, field_name)
+    if value != value.casefold() or _CANONICAL_ADDRESS.fullmatch(value) is None:
+        raise ValueError(f"{field_name} must be a canonical address")
+    return value
+
+
+def _canonical_addresses(
+    value: tuple[str, ...], field_name: str
+) -> tuple[str, ...]:
+    _string_tuple(value, field_name, allow_empty=True)
+    for item in value:
+        _canonical_address(item, f"{field_name} item")
+    return value
+
+
+def _canonical_list_id(value: str, field_name: str) -> str:
+    _non_empty(value, field_name)
+    components = value.split(".")
+    if (
+        value != value.casefold()
+        or len(components) < 2
+        or any(_LIST_ID_COMPONENT.fullmatch(component) is None for component in components)
+    ):
+        raise ValueError(f"{field_name} must be a canonical List-ID")
     return value
 
 
@@ -85,6 +130,17 @@ def _string_tuple(
     if value != tuple(sorted(value)):
         raise ValueError(f"{field_name} must be ordered")
     return value
+
+
+class SourceAnchorKind(StrEnum):
+    SENDERS = "senders"
+    ISOLATED_MESSAGE = "isolated_message"
+
+
+class FlowAnchorKind(StrEnum):
+    LIST_INTENT = "list_intent"
+    SENDER_INTENT = "sender_intent"
+    ISOLATED_MESSAGE = "isolated_message"
 
 
 class EvidenceStrength(StrEnum):
@@ -206,6 +262,102 @@ class ClassificationEvidence:
 
 
 @dataclass(frozen=True, slots=True)
+class SourceIdentityDescriptor:
+    kind: SourceAnchorKind
+    sender_addresses: tuple[str, ...] = field(repr=False)
+    isolated_message_id: str | None = field(repr=False)
+    version: int = IDENTITY_DESCRIPTOR_VERSION
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.kind, SourceAnchorKind):
+            raise TypeError("kind must be a SourceAnchorKind")
+        _canonical_addresses(self.sender_addresses, "sender_addresses")
+        _optional_non_empty(self.isolated_message_id, "isolated_message_id")
+        _exact_version(self.version, IDENTITY_DESCRIPTOR_VERSION)
+        if self.kind is SourceAnchorKind.SENDERS:
+            if not self.sender_addresses or self.isolated_message_id is not None:
+                raise ValueError("senders source descriptor has invalid anchors")
+        elif self.sender_addresses or self.isolated_message_id is None:
+            raise ValueError("isolated source descriptor has invalid anchors")
+
+    def __repr__(self) -> str:
+        return (
+            "SourceIdentityDescriptor("
+            f"kind={self.kind.value!r}, sender_count={len(self.sender_addresses)}, "
+            f"has_isolated_message={self.isolated_message_id is not None}, "
+            f"version={self.version})"
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class FlowIdentityDescriptor:
+    kind: FlowAnchorKind
+    source: SourceIdentityDescriptor
+    list_id: str | None = field(repr=False)
+    sender_address: str | None = field(repr=False)
+    automatic_intention: Intencion
+    isolated_message_id: str | None = field(repr=False)
+    version: int = IDENTITY_DESCRIPTOR_VERSION
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.kind, FlowAnchorKind):
+            raise TypeError("kind must be a FlowAnchorKind")
+        if not isinstance(self.source, SourceIdentityDescriptor):
+            raise TypeError("source must be a SourceIdentityDescriptor")
+        _optional_non_empty(self.list_id, "list_id")
+        _optional_non_empty(self.sender_address, "sender_address")
+        _optional_non_empty(self.isolated_message_id, "isolated_message_id")
+        if not isinstance(self.automatic_intention, Intencion):
+            raise TypeError("automatic_intention must be an Intencion")
+        _exact_version(self.version, IDENTITY_DESCRIPTOR_VERSION)
+
+        if self.kind is FlowAnchorKind.LIST_INTENT:
+            if (
+                self.list_id is None
+                or self.sender_address is not None
+                or self.isolated_message_id is not None
+            ):
+                raise ValueError("list flow descriptor has invalid anchors")
+            if self.source.kind is not SourceAnchorKind.SENDERS:
+                raise ValueError("list flow descriptor requires a sender source")
+            _canonical_list_id(self.list_id, "list_id")
+        elif self.kind is FlowAnchorKind.SENDER_INTENT:
+            if (
+                self.sender_address is None
+                or self.list_id is not None
+                or self.isolated_message_id is not None
+            ):
+                raise ValueError("sender flow descriptor has invalid anchors")
+            if self.source.kind is not SourceAnchorKind.SENDERS:
+                raise ValueError("sender flow descriptor requires a sender source")
+            _canonical_address(self.sender_address, "sender_address")
+            if self.sender_address not in self.source.sender_addresses:
+                raise ValueError("sender flow descriptor does not belong to source")
+        elif (
+            self.isolated_message_id is None
+            or self.list_id is not None
+            or self.sender_address is not None
+        ):
+            raise ValueError("isolated flow descriptor has invalid anchors")
+        elif (
+            self.source.kind is SourceAnchorKind.ISOLATED_MESSAGE
+            and self.source.isolated_message_id != self.isolated_message_id
+        ):
+            raise ValueError("isolated source and flow must reference the same message")
+
+    def __repr__(self) -> str:
+        return (
+            "FlowIdentityDescriptor("
+            f"kind={self.kind.value!r}, source_kind={self.source.kind.value!r}, "
+            f"automatic_intention={self.automatic_intention.value!r}, "
+            f"has_list={self.list_id is not None}, "
+            f"has_sender={self.sender_address is not None}, "
+            f"has_isolated_message={self.isolated_message_id is not None}, "
+            f"version={self.version})"
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class ClassifiedMessage:
     provider_message_id: str = field(repr=False)
     source_id: str
@@ -243,6 +395,7 @@ class ClassifiedMessage:
 @dataclass(frozen=True, slots=True)
 class ClassifiedSource:
     source_id: str
+    identity_descriptor: SourceIdentityDescriptor = field(repr=False)
     display_name: str = field(repr=False)
     sender_addresses: tuple[str, ...] = field(repr=False)
     domains: tuple[str, ...] = field(repr=False)
@@ -254,6 +407,8 @@ class ClassifiedSource:
 
     def __post_init__(self) -> None:
         _source_id(self.source_id)
+        if not isinstance(self.identity_descriptor, SourceIdentityDescriptor):
+            raise TypeError("identity_descriptor must be a SourceIdentityDescriptor")
         _non_empty(self.display_name, "display_name")
         _string_tuple(self.sender_addresses, "sender_addresses", allow_empty=True)
         _string_tuple(self.domains, "domains", allow_empty=True)
@@ -266,10 +421,18 @@ class ClassifiedSource:
         if not isinstance(self.confianza, Confianza):
             raise TypeError("confianza must be a Confianza")
         _evidence_tuple(self.evidence)
+        if self.identity_descriptor.sender_addresses != self.sender_addresses:
+            raise ValueError("source identity descriptor does not match senders")
+        if (
+            self.identity_descriptor.kind is SourceAnchorKind.ISOLATED_MESSAGE
+            and self.message_ids != (self.identity_descriptor.isolated_message_id,)
+        ):
+            raise ValueError("isolated source descriptor does not match members")
 
     def __repr__(self) -> str:
         return (
             f"ClassifiedSource(source_id={self.source_id!r}, display_name=<redacted>, "
+            f"identity_kind={self.identity_descriptor.kind.value!r}, "
             f"sender_count={len(self.sender_addresses)}, domain_count={len(self.domains)}, "
             f"message_count={len(self.message_ids)}, flow_ids={self.flow_ids!r}, "
             f"rubro={self.rubro.value!r}, confianza={self.confianza.value!r}, "
@@ -281,6 +444,7 @@ class ClassifiedSource:
 class ClassifiedFlow:
     flow_id: str
     source_id: str
+    identity_descriptor: FlowIdentityDescriptor = field(repr=False)
     display_name: str = field(repr=False)
     message_ids: tuple[str, ...] = field(repr=False)
     intencion: Intencion
@@ -291,6 +455,8 @@ class ClassifiedFlow:
     def __post_init__(self) -> None:
         _flow_id(self.flow_id)
         _source_id(self.source_id)
+        if not isinstance(self.identity_descriptor, FlowIdentityDescriptor):
+            raise TypeError("identity_descriptor must be a FlowIdentityDescriptor")
         _non_empty(self.display_name, "display_name")
         _string_tuple(self.message_ids, "message_ids", allow_empty=False)
         if not isinstance(self.intencion, Intencion):
@@ -300,10 +466,18 @@ class ClassifiedFlow:
         if not isinstance(self.confianza, Confianza):
             raise TypeError("confianza must be a Confianza")
         _evidence_tuple(self.evidence)
+        if self.identity_descriptor.automatic_intention is not self.intencion:
+            raise ValueError("flow intention must match identity descriptor")
+        if (
+            self.identity_descriptor.kind is FlowAnchorKind.ISOLATED_MESSAGE
+            and self.message_ids != (self.identity_descriptor.isolated_message_id,)
+        ):
+            raise ValueError("isolated flow descriptor does not match members")
 
     def __repr__(self) -> str:
         return (
             f"ClassifiedFlow(flow_id={self.flow_id!r}, source_id={self.source_id!r}, "
+            f"identity_kind={self.identity_descriptor.kind.value!r}, "
             f"display_name=<redacted>, message_count={len(self.message_ids)}, "
             f"intencion={self.intencion.value!r}, suscripcion={self.suscripcion.value!r}, "
             f"confianza={self.confianza.value!r}, evidence_count={len(self.evidence)})"
@@ -332,10 +506,7 @@ class ClassificationResult:
             not isinstance(item, ClassifiedFlow) for item in self.flows
         ):
             raise TypeError("flows must be a tuple of ClassifiedFlow values")
-        if isinstance(self.version, bool) or self.version != CLASSIFICATION_MODEL_VERSION:
-            raise ValueError(
-                f"version must be {CLASSIFICATION_MODEL_VERSION}"
-            )
+        _exact_version(self.version, CLASSIFICATION_MODEL_VERSION)
 
         is_empty = not self.messages and not self.sources and not self.flows
         if is_empty != (self.account_key is None):
@@ -350,6 +521,12 @@ class ClassificationResult:
             raise ValueError("sources must not contain duplicate identities")
         if len(set(flow_ids)) != len(flow_ids):
             raise ValueError("flows must not contain duplicate identities")
+        source_descriptors = tuple(item.identity_descriptor for item in self.sources)
+        flow_descriptors = tuple(item.identity_descriptor for item in self.flows)
+        if len(set(source_descriptors)) != len(source_descriptors):
+            raise ValueError("sources must not contain duplicate identity descriptors")
+        if len(set(flow_descriptors)) != len(flow_descriptors):
+            raise ValueError("flows must not contain duplicate identity descriptors")
         if message_ids != tuple(sorted(message_ids)):
             raise ValueError("messages must be ordered by identity")
         if source_ids != tuple(sorted(source_ids)):
@@ -365,6 +542,15 @@ class ClassificationResult:
             raise ValueError("every message must reference a known flow")
         if any(item.source_id not in known_sources for item in self.flows):
             raise ValueError("every flow must reference a known source")
+
+        descriptors_by_source = {
+            item.source_id: item.identity_descriptor for item in self.sources
+        }
+        if any(
+            item.identity_descriptor.source != descriptors_by_source[item.source_id]
+            for item in self.flows
+        ):
+            raise ValueError("flow identity descriptor must reference its source descriptor")
 
         flow_sources = {item.flow_id: item.source_id for item in self.flows}
         if any(

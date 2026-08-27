@@ -97,8 +97,14 @@ una página sean atómicos y para que un escaneo completo nuevo reemplace de for
 controlada el índice anterior. La integración D4 agrega clasificación pura y
 explicable sobre registros normalizados sintéticos, sin consumidor productivo.
 MAIN corrigió agrupación entre dominios, validación de baja y confianza de
-identidades aisladas. La batería global pasó con 162 pruebas Python aprobadas;
+identidades aisladas. La ampliación pública D4 conservó la proyección semántica
+y la batería global pasó con 168 pruebas Python aprobadas;
 el roundtrip DPAPI real pudo ejecutarse bajo el perfil de usuario actual. También
 aprobaron Ruff, mypy, ESLint, 4 pruebas Vitest y el build Vite. Este estado no
 autoriza abrir OAuth, usar credenciales, conectar Gmail real, persistir
-metadatos privados ni comenzar D5.
+metadatos privados ni comenzar D5. MAIN redactó
+`LOCAL_POLICY_MEMORY_V1.md`, Joa aprobó el contrato y autorizó la columna
+vertebral de descriptores públicos D4. Esa ampliación conserva la semántica de
+clasificación y no modifica el estado de privacidad de Base Segura. D5 no tiene
+worktree ni implementación y permanece bloqueada hasta una autorización
+específica posterior de Joa.

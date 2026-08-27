@@ -18,6 +18,10 @@ from mailmap.classification_model import (
     EvidenceCode,
     EvidenceOrigin,
     EvidenceStrength,
+    FlowAnchorKind,
+    FlowIdentityDescriptor,
+    SourceAnchorKind,
+    SourceIdentityDescriptor,
 )
 from mailmap.index_model import IndexedMessageRecord
 from mailmap.model import Confianza, Intencion, Rubro, Suscripcion
@@ -159,6 +163,7 @@ class _NormalizedRecord:
 @dataclass(frozen=True, slots=True)
 class _SourceGroup:
     source_id: str
+    identity_descriptor: SourceIdentityDescriptor = field(repr=False)
     identity_key: str = field(repr=False)
     records: tuple[_NormalizedRecord, ...] = field(repr=False)
     mergeable_name: str | None = field(repr=False)
@@ -169,6 +174,7 @@ class _SourceGroup:
 class _MessageDraft:
     normalized: _NormalizedRecord = field(repr=False)
     source_id: str
+    source_identity_descriptor: SourceIdentityDescriptor = field(repr=False)
     rubro: Rubro
     intencion: Intencion
     suscripcion: Suscripcion
@@ -180,6 +186,7 @@ class _MessageDraft:
 class _FlowGroup:
     flow_id: str
     source_id: str
+    identity_descriptor: FlowIdentityDescriptor = field(repr=False)
     drafts: tuple[_MessageDraft, ...] = field(repr=False)
     identity_evidence: ClassificationEvidence
 
@@ -533,9 +540,23 @@ def _source_groups(
             if addresses
             else f"missing\x1f{grouped_records[0].record.provider_message_id}"
         )
+        identity_descriptor = (
+            SourceIdentityDescriptor(
+                kind=SourceAnchorKind.SENDERS,
+                sender_addresses=addresses,
+                isolated_message_id=None,
+            )
+            if addresses
+            else SourceIdentityDescriptor(
+                kind=SourceAnchorKind.ISOLATED_MESSAGE,
+                sender_addresses=(),
+                isolated_message_id=grouped_records[0].record.provider_message_id,
+            )
+        )
         groups.append(
             _SourceGroup(
                 source_id=_stable_id("source", account_key, stable_identity),
+                identity_descriptor=identity_descriptor,
                 identity_key=identity_key,
                 records=grouped_records,
                 mergeable_name=mergeable_name,
@@ -1058,6 +1079,7 @@ def _drafts_for_source(
             _MessageDraft(
                 normalized=record,
                 source_id=group.source_id,
+                source_identity_descriptor=group.identity_descriptor,
                 rubro=rubro,
                 intencion=intent,
                 suscripcion=subscription,
@@ -1072,7 +1094,7 @@ def _drafts_for_source(
 
 def _flow_identity(
     draft: _MessageDraft,
-) -> tuple[str, ClassificationEvidence]:
+) -> tuple[str, ClassificationEvidence, FlowIdentityDescriptor]:
     record = draft.normalized
     if draft.confianza is Confianza.CONTRADICTORIA or record.sender_address is None:
         return (
@@ -1084,6 +1106,14 @@ def _flow_identity(
                 EvidenceStrength.STRONG,
                 EvidenceOrigin.AGGREGATION,
             ),
+            FlowIdentityDescriptor(
+                kind=FlowAnchorKind.ISOLATED_MESSAGE,
+                source=draft.source_identity_descriptor,
+                list_id=None,
+                sender_address=None,
+                automatic_intention=draft.intencion,
+                isolated_message_id=record.record.provider_message_id,
+            ),
         )
     if record.list_id is not None:
         return (
@@ -1094,6 +1124,14 @@ def _flow_identity(
                 "List-ID e intención forman una identidad de flujo dentro de la fuente.",
                 EvidenceStrength.STRONG,
                 EvidenceOrigin.AGGREGATION,
+            ),
+            FlowIdentityDescriptor(
+                kind=FlowAnchorKind.LIST_INTENT,
+                source=draft.source_identity_descriptor,
+                list_id=record.list_id,
+                sender_address=None,
+                automatic_intention=draft.intencion,
+                isolated_message_id=None,
             ),
         )
     return (
@@ -1108,6 +1146,14 @@ def _flow_identity(
             EvidenceStrength.MEDIUM,
             EvidenceOrigin.AGGREGATION,
         ),
+        FlowIdentityDescriptor(
+            kind=FlowAnchorKind.SENDER_INTENT,
+            source=draft.source_identity_descriptor,
+            list_id=None,
+            sender_address=record.sender_address,
+            automatic_intention=draft.intencion,
+            isolated_message_id=None,
+        ),
     )
 
 
@@ -1116,15 +1162,21 @@ def _flow_groups(
 ) -> tuple[_FlowGroup, ...]:
     buckets: dict[tuple[str, str], list[_MessageDraft]] = defaultdict(list)
     identity_evidence: dict[tuple[str, str], ClassificationEvidence] = {}
+    identity_descriptors: dict[tuple[str, str], FlowIdentityDescriptor] = {}
     for draft in drafts:
-        identity_key, evidence = _flow_identity(draft)
+        identity_key, evidence, descriptor = _flow_identity(draft)
         key = (draft.source_id, identity_key)
+        previous_descriptor = identity_descriptors.get(key)
+        if previous_descriptor is not None and previous_descriptor != descriptor:
+            raise ClassificationError(ClassificationErrorCode.INVALID_RECORD)
         buckets[key].append(draft)
         identity_evidence[key] = evidence
+        identity_descriptors[key] = descriptor
     groups = [
         _FlowGroup(
             flow_id=_stable_id("flow", account_key, source_id, identity_key),
             source_id=source_id,
+            identity_descriptor=identity_descriptors[(source_id, identity_key)],
             drafts=tuple(
                 sorted(
                     bucket,
@@ -1195,6 +1247,7 @@ def _classified_flows(
             ClassifiedFlow(
                 flow_id=group.flow_id,
                 source_id=group.source_id,
+                identity_descriptor=group.identity_descriptor,
                 display_name=(
                     "Flujo desconocido"
                     if intent is Intencion.DESCONOCIDO
@@ -1312,6 +1365,7 @@ def _classified_sources(
         sources.append(
             ClassifiedSource(
                 source_id=group.source_id,
+                identity_descriptor=group.identity_descriptor,
                 display_name=_display_name(group),
                 sender_addresses=addresses,
                 domains=domains,

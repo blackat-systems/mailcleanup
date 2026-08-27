@@ -32,6 +32,8 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-023 | Ampliar D1 para aplicar altas, actualizaciones, bajas y checkpoint en una transacción e iniciar un escaneo completo reemplazando controladamente el índice anterior; adaptar e integrar D3 con regresiones de rollback y registros obsoletos. | Ejecutada y consolidada por el commit que contiene esta decisión | Instrucción explícita de Joa y auditoría MAIN del 18 de agosto de 2026 |
 | D-024 | Preparar y crear D4 `real-classification-domain` sobre registros normalizados exclusivamente sintéticos, con identidad conservadora, flujos separados, taxonomía MVP y evidencia; sin Gmail, OAuth, red, datos reales, persistencia, API ni UI. | Autorizada | Instrucción explícita de Joa del 27 de agosto de 2026 y `CLASSIFICATION_DOMAIN_V1.md` |
 | D-025 | Integrar D4 en MAIN después de auditoría independiente, corrigiendo sobreagrupación entre dominios, validación de baja y cálculo de confianza; mantener D5 bloqueada hasta definir migración de correcciones ante cambios de agrupación o IDs. | Ejecutada y consolidada por el commit que contiene esta decisión | Handoff especialista, auditoría MAIN y aprobación de Joa del 27 de agosto de 2026 |
+| D-026 | Definir para D5 una capa local separada de la clasificación automática: comandos tipados, historial append-only, undo lógico, selectores durables, reaplicación sólo ante coincidencia exacta o cambio aislado de ID con selector idéntico y protección acumulativa que nunca rebaja reglas automáticas. | Contrato aprobado; implementación D5 no autorizada | Aprobación explícita de Joa del 27 de agosto de 2026; `LOCAL_POLICY_MEMORY_V1.md` y revisión cruzada D4/D5 |
+| D-027 | Ampliar la salida pública D4 con descriptores cerrados, inmutables, versionados y redactados de identidad de fuente y flujo, sin cambiar agrupaciones, IDs, taxonomías, inferencias ni evidencias. | Ejecutada y consolidada por el commit que contiene esta decisión | Autorización explícita de Joa del 27 de agosto de 2026, `CLASSIFICATION_DOMAIN_V1.md` y regresiones de compatibilidad |
 
 ## Decisiones suficientemente definidas
 
@@ -54,7 +56,9 @@ D-017, D-018, aceptó Base Segura mediante D-019, habilitó la implementación
 sintética de D2 mediante D-020 y su integración auditada mediante D-021,
 autorizó D3 sintética mediante D-022, resolvió su bloqueo transaccional mediante
 D-023, autorizó preparar D4 sintética mediante D-024 y MAIN ejecutó su
-integración auditada mediante D-025. Ninguna autorización
+integración auditada mediante D-025. Joa aprobó después el contrato de D5
+mediante D-026 y autorizó la columna vertebral pública D4 mediante D-027, sin
+autorizar todavía el worktree ni la implementación de D5. Ninguna autorización
 permite abrir OAuth, conectar Gmail, solicitar credenciales, usar datos reales,
 ejecutar acciones externas, iniciar D5, Estudio de Limpieza o Limpieza
 Controlada.
