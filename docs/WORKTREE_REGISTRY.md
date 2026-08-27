@@ -171,7 +171,7 @@ Gmail real, OAuth, red, credenciales, datos reales, D5 ni D6.
 | Rama | `codex/local-policy-memory` |
 | Base | `663d8a99e94da9c40b5787bfb5f7a6b1e5f595b8` |
 | HEAD al crear | `663d8a99e94da9c40b5787bfb5f7a6b1e5f595b8` |
-| Tarea | `01a04539-09b7-7780-bf93-1ca8172c63a2` — `Local Policy Memory` |
+| Tarea | `01a04539-09b7-7780-bf93-1ca8172c63a2` — `D5 - LOCAL_POLICY_MEMORY` |
 | Prompt | `docs/prompts/D5_LOCAL_POLICY_MEMORY.md` |
 | Contrato | `docs/contracts/LOCAL_POLICY_MEMORY_V1.md` |
 | Alcance | Preparación tipada, replay, historial append-only, undo, reconciliación conservadora, protección acumulativa y migración SQLite v3 |
