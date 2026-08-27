@@ -90,5 +90,12 @@ No hay rutas activas con `oauth`, `gmail`, `execute` o `disconnect`. Los únicos
 
 Las pruebas funcionales y estructurales están verificadas. La revisión visual
 instrumental continúa pendiente como evidencia, aunque Joa aceptó el proceso.
-La autorización posterior permitió integrar D2 con dobles, pero no abrir OAuth,
-usar credenciales, conectar Gmail real ni comenzar D3.
+La autorización posterior permitió integrar D2 y D3 con dobles sintéticos. MAIN
+amplió la persistencia D1 para que altas, actualizaciones, bajas y checkpoint de
+una página sean atómicos y para que un escaneo completo nuevo reemplace de forma
+controlada el índice anterior. La batería global pasó con 124 pruebas Python
+aprobadas; el roundtrip DPAPI real pudo ejecutarse bajo el perfil de usuario
+actual. También aprobaron Ruff, mypy, ESLint, 4 pruebas Vitest y el build Vite.
+Esta integración queda consolidada por el commit que contiene este estado y no
+autoriza abrir OAuth, usar credenciales, conectar Gmail real, persistir
+metadatos privados ni comenzar D4.

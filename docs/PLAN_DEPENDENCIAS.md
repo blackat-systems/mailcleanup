@@ -1,7 +1,7 @@
 # Plan de dependencias y worktrees
 
-Estado del plan: ejecución controlada; D1 y D2 están `INTEGRADA` en el árbol de
-trabajo de MAIN y las demás dependencias conservan sus bloqueos.
+Estado del plan: ejecución controlada; D1, D2 y D3 están consolidadas. Las demás
+dependencias conservan sus bloqueos.
 
 Fecha de inspección: 18 de agosto de 2026.
 
@@ -16,12 +16,12 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\mailcleanup` |
 | Rama | `main` |
 | HEAD de MAIN al integrar D1 | `7720ad4c57c984c7ba6fc2e6bc9c5e02119756a2` |
-| Estado actual | D1 y D2 consolidadas; contratos y prompt de D3 preparados |
+| Estado actual | D1, D2 y D3 consolidadas; D3 incluye la ampliación transaccional de D1 |
 | Worktrees | Cuatro: MAIN, D1, D2 y D3 `gmail-readonly-inventory` |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
-| Capacidades autorizadas | D3 con dobles sintéticos; ninguna conexión Gmail, OAuth abierto, credencial ni dato real |
+| Capacidades autorizadas | D3 integrada sólo con dobles sintéticos; ninguna conexión Gmail, OAuth abierto, credencial ni dato real; D4 no autorizada |
 
 El SHA anterior es la base de MAIN sobre la que se integró D1, no un commit de
 integración. Cada dependencia posterior requiere un SHA limpio nuevo que
@@ -223,7 +223,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Criterios de aceptación | No usa contraseña, no registra tokens, no pide permisos de modificación y permite revocar y borrar el estado local. |
 | Riesgos de integración | Alcance excesivo, almacenamiento inseguro, filtrado en logs y dependencia directa del SDK en el dominio. |
 | Paralelización real | Puede coexistir con D1 si sus interfaces están congeladas y no modifica archivos compartidos. |
-| Condición exacta de desbloqueo | Cumplida para la integración sintética. La ejecución real y D3 continúan bloqueadas hasta contratos C1-C5 operativos y una autorización específica posterior. |
+| Condición exacta de desbloqueo | Cumplida y consumida por D3 sintética, ya integrada. La ejecución real de la sesión continúa bloqueada hasta una autorización específica posterior. |
 
 ### D3 — `gmail-readonly-inventory`
 
@@ -233,7 +233,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Inventariar en sólo lectura IDs, etiquetas, fechas, tamaño y encabezados autorizados; paginar, reanudar y normalizar sin clasificar. |
 | Razón para separarlo | Concentra interacción con Gmail, límites, lotes y recuperación, pero no debe decidir producto ni persistencia. |
-| Estado actual | `EN DESARROLLO` con alcance sintético |
+| Estado actual | `INTEGRADA` y consolidada con alcance sintético |
 | Dependencias previas | D1 y D2 integradas; C1 a C5 estables. |
 | Contratos que consume | `SECURITY_PRIVACY_V1.md`, `GMAIL_READONLY_INVENTORY_V1.md`, sesión D2, repositorio D1 y C1-C5. |
 | Resultados que produce | Registros normalizados y eventos de progreso/reanudación; inventario de Spam separado y exclusión de Enviados, Borradores y Papelera. |
@@ -247,7 +247,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Criterios de aceptación | Una interrupción se reanuda sin duplicar; una historia vencida fuerza resincronización segura; sólo se persisten campos permitidos. |
 | Riesgos de integración | Confundir conversación con mensaje, excluir datos antes de protegerlos, cuotas, cambios durante el escaneo y scope insuficiente. |
 | Paralelización real | No con D1/D2 antes de integrarlas; luego puede coexistir sólo con UI basada en contrato y fixtures, no con cambios de C1/C5. |
-| Condición exacta de desbloqueo | Cumplida para crear D3 sintética cuando la batería global pase y MAIN fije el SHA. OAuth, Gmail, credenciales, índice real y adaptador productivo siguen bloqueados. |
+| Condición exacta de desbloqueo | D3 sintética fue auditada e integrada después de ampliar la atomicidad D1. OAuth, Gmail, credenciales, índice real, adaptador productivo y D4 siguen bloqueados. |
 
 ### D4 — `real-classification-domain`
 
@@ -485,8 +485,8 @@ MAIN: contrato C1/C4 sintético + batería + SHA limpio
 ```
 
 Orden de apertura recomendado: D1, D2, D3, D4, D5, D6, D7, D8, D9 y D10.
-El orden expresa consumo real. D1 y D2 ya fueron integradas con alcance
-sintético. D3 puede crearse sólo con dobles. D8 puede adelantarse con fixtures
+El orden expresa consumo real. D1, D2 y D3 fueron consolidadas con alcance
+sintético. D8 puede adelantarse con fixtures
 solamente si C6 y la API están congelados; su integración siempre espera D7.
 
 ## 8. Primer worktree creado e integrado

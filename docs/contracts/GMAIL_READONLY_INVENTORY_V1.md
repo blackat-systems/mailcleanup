@@ -75,12 +75,19 @@ no hay `requests`, `httpx`, `urllib.request`, sockets, SDK Google ni navegador.
 
 Escaneo completo:
 
-1. listar el conjunto normal sin Spam ni Papelera;
-2. inventariar Spam mediante `labelIds=SPAM` e `includeSpamTrash=true`;
-3. obtener el detalle `METADATA` antes de persistir;
-4. descartar cualquier mensaje con `SENT`, `DRAFT` o `TRASH`;
-5. conservar estrella, importancia y demás etiquetas para protección posterior;
-6. guardar registros y checkpoint atómicamente con D1.
+1. al iniciar un `scan_id` nuevo, usar `start_full_index` para reemplazar de
+   forma atómica el índice anterior de esa cuenta y su checkpoint inicial;
+2. listar el conjunto normal sin Spam ni Papelera;
+3. inventariar Spam mediante `labelIds=SPAM` e `includeSpamTrash=true`;
+4. obtener el detalle `METADATA` antes de persistir;
+5. descartar cualquier mensaje con `SENT`, `DRAFT` o `TRASH`;
+6. conservar estrella, importancia y demás etiquetas para protección posterior;
+7. guardar cada página y checkpoint atómicamente con `apply_index_page`.
+
+Reanudar el mismo `scan_id` no elimina otra vez lo ya consolidado. Un escaneo
+completo nuevo sí elimina registros anteriores que ya no aparecen: durante el
+escaneo esa sustitución queda identificada por un checkpoint `running` o
+`paused`, nunca como un índice completo terminado.
 
 La presencia simultánea de una etiqueta excluida prevalece aunque el mensaje
 también tenga `SPAM` u otra etiqueta.
@@ -89,10 +96,14 @@ Escaneo parcial:
 
 - parte del `history_id` consolidado;
 - normaliza agregados y cambios de etiquetas;
-- elimina del índice IDs borrados o que pasen a una etiqueta excluida;
+- elimina del índice IDs borrados o que pasen a una etiqueta excluida dentro de
+  la misma llamada `apply_index_page` que persiste altas, actualizaciones y
+  checkpoint;
 - si Gmail responde 404 por historia vencida, guarda
   `requires_full_resync` sin mezclar resultados parciales;
-- un reintento no duplica registros ni avanza el checkpoint antes de tiempo.
+- un reintento no duplica registros ni avanza el checkpoint antes de tiempo;
+- un fallo de checkpoint revierte simultáneamente altas, actualizaciones y
+  bajas.
 
 La persistencia real continúa bloqueada porque D1 no cifra metadatos. Las pruebas
 usan bases temporales y valores `.example`.

@@ -49,30 +49,29 @@ visual con herramienta no llegó a verificarse y permanece registrada como tal;
 la aceptación es una decisión de producto, no evidencia visual retroactiva.
 
 La preparación sintética de Mapa Total mediante D2 fue auditada e integrada en
-MAIN. Joa autorizó preparar D3 con las barreras de
-`docs/contracts/SECURITY_PRIVACY_V1.md` y
-`docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`. D3 usa solamente dobles
-sintéticos: no están autorizados abrir OAuth, conectar Gmail, solicitar
-credenciales ni usar datos reales. Existen cuatro worktrees: MAIN sobre `main`,
-D1
-`codex/real-index-persistence` y D2 `codex/secure-gmail-session`. D1 está
-consolidada, esos dos worktrees se conservan como evidencia y D3 trabaja en
-`codex/gmail-readonly-inventory` desde la base exacta registrada. No hay remoto
-Git configurado.
+MAIN. D3 `gmail-readonly-inventory` fue auditada e integrada en el árbol de
+trabajo de MAIN después de ampliar D1 para aplicar altas, actualizaciones,
+bajas y checkpoint en una transacción e iniciar un escaneo completo reemplazando
+de forma controlada el índice anterior. La integración queda consolidada por el
+commit que contiene este estado. D3 usa solamente dobles sintéticos: no están autorizados abrir
+OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen
+cuatro worktrees: MAIN sobre `main` y las fuentes D1, D2 y D3 conservadas como
+evidencia. No hay remoto Git configurado.
 
 ## Objetivo actual
 
-Crear y auditar D3 `gmail-readonly-inventory` desde un SHA limpio, con puertos y
-datos sintéticos. No abrir OAuth, conectar una cuenta real, persistir metadatos
-privados ni usar credenciales durante esa implementación.
+Mantener verde la integración sintética auditada de D3 y resolver con Joa la
+próxima puerta del producto. No iniciar D4, abrir OAuth, conectar una cuenta
+real, persistir metadatos privados ni usar credenciales sin autorización.
 
 ---
 
 # 2. PRIORIDAD
 
-Implementar D3 contra dobles sin introducir acceso real a Gmail. Todo cambio
-debe respetar el permiso mínimo, la allowlist de lectura, la separación de
-secretos, la barrera de no escritura y los contratos de seguridad e inventario.
+Conservar verde y auditable la integración D3 consolidada. Todo cambio
+debe respetar el permiso mínimo, la allowlist de lectura, la atomicidad del
+índice, la separación de secretos, la barrera de no escritura y los contratos
+de seguridad e inventario.
 
 Mapa Total, Estudio de Limpieza y Limpieza Controlada permanecen detrás de
 puertas de autorización independientes. Las ideas futuras se registran sin
@@ -306,10 +305,9 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 
 # 10. ESPECIALISTAS
 
-Los worktrees fuente de D1 `real-index-persistence` y D2
-`secure-gmail-session` se conservan como evidencia de entregas integradas. D3
-`gmail-readonly-inventory` es la única dependencia autorizada para crearse y
-trabajar; no habilita otra dependencia.
+Los worktrees fuente de D1 `real-index-persistence`, D2
+`secure-gmail-session` y D3 `gmail-readonly-inventory` se conservan como
+evidencia de entregas integradas. D4 no está autorizada y no debe crearse.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -332,7 +330,7 @@ Base Segura aceptada por Joa
         ↓
 D1 integrada + D2 integrada + contratos de privacidad e inventario
         ↓
-D3 con dobles sintéticos → auditoría MAIN → integración
+D3 con dobles sintéticos → auditoría MAIN → integración consolidada
 ```
 
 Las puertas de producto son secuenciales:

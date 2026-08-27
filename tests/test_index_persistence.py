@@ -339,6 +339,153 @@ def test_checkpoint_failure_rolls_back_account_and_entire_page(tmp_path: Path) -
     assert account_count == 0
 
 
+def test_apply_index_page_commits_updates_deletes_and_checkpoint_together(
+    tmp_path: Path,
+) -> None:
+    repository = Repository(tmp_path / "atomic-delta.db")
+    original_update = _record("message-update")
+    original_delete = _record("message-delete")
+    initial_checkpoint = _checkpoint(processed_count=2)
+    repository.save_index_page(
+        ACCOUNT_A,
+        (original_update, original_delete),
+        initial_checkpoint,
+    )
+    updated = replace(original_update, subject="Asunto sintético actualizado")
+    added = _record("message-added")
+    next_checkpoint = replace(
+        initial_checkpoint,
+        processed_count=5,
+        page_token="page-synthetic-003",
+    )
+
+    repository.apply_index_page(
+        ACCOUNT_A,
+        (updated, added),
+        (original_delete.provider_message_id,),
+        next_checkpoint,
+    )
+
+    assert repository.indexed_messages(ACCOUNT_A) == (added, updated)
+    assert repository.sync_checkpoint(ACCOUNT_A) == next_checkpoint
+
+
+def test_apply_index_page_checkpoint_failure_rolls_back_updates_adds_and_deletes(
+    tmp_path: Path,
+) -> None:
+    repository = Repository(tmp_path / "atomic-delta-rollback.db")
+    original_update = _record("message-update")
+    original_delete = _record("message-delete")
+    initial_checkpoint = _checkpoint(processed_count=2)
+    repository.save_index_page(
+        ACCOUNT_A,
+        (original_update, original_delete),
+        initial_checkpoint,
+    )
+    with sqlite3.connect(repository.path) as connection:
+        connection.execute(
+            """
+            CREATE TRIGGER reject_synthetic_checkpoint_update
+            BEFORE UPDATE ON sync_checkpoints
+            BEGIN
+                SELECT RAISE(ABORT, 'synthetic_checkpoint_update_failure');
+            END
+            """
+        )
+
+    with pytest.raises(
+        sqlite3.IntegrityError, match="synthetic_checkpoint_update_failure"
+    ):
+        repository.apply_index_page(
+            ACCOUNT_A,
+            (
+                replace(original_update, subject="Cambio que debe revertirse"),
+                _record("message-added"),
+            ),
+            (original_delete.provider_message_id,),
+            replace(initial_checkpoint, processed_count=5),
+        )
+
+    assert repository.indexed_messages(ACCOUNT_A) == (
+        original_delete,
+        original_update,
+    )
+    assert repository.sync_checkpoint(ACCOUNT_A) == initial_checkpoint
+
+
+def test_start_full_index_replaces_only_target_account_index_and_checkpoint(
+    tmp_path: Path,
+) -> None:
+    repository = Repository(tmp_path / "start-full.db")
+    stale = _record("message-stale")
+    other = _record("message-other", account_key=ACCOUNT_B)
+    repository.save_index_page(ACCOUNT_A, (stale,), _checkpoint())
+    repository.save_index_page(
+        ACCOUNT_B,
+        (other,),
+        _checkpoint(account_key=ACCOUNT_B, scan_id="scan-synthetic-b"),
+    )
+    full_start = replace(
+        _checkpoint(),
+        scan_id="scan-synthetic-replacement",
+        state=SyncState.RUNNING,
+        processed_count=0,
+    )
+
+    repository.start_full_index(ACCOUNT_A, full_start)
+
+    assert repository.indexed_messages(ACCOUNT_A) == ()
+    assert repository.sync_checkpoint(ACCOUNT_A) == full_start
+    assert repository.indexed_messages(ACCOUNT_B) == (other,)
+
+
+def test_start_full_index_checkpoint_failure_preserves_previous_index(
+    tmp_path: Path,
+) -> None:
+    repository = Repository(tmp_path / "start-full-rollback.db")
+    stale = _record("message-stale")
+    initial_checkpoint = _checkpoint()
+    repository.save_index_page(ACCOUNT_A, (stale,), initial_checkpoint)
+    with sqlite3.connect(repository.path) as connection:
+        connection.execute(
+            """
+            CREATE TRIGGER reject_full_start_checkpoint
+            BEFORE UPDATE ON sync_checkpoints
+            BEGIN
+                SELECT RAISE(ABORT, 'synthetic_full_start_failure');
+            END
+            """
+        )
+
+    full_start = replace(
+        initial_checkpoint,
+        scan_id="scan-synthetic-replacement",
+        state=SyncState.RUNNING,
+        processed_count=0,
+    )
+    with pytest.raises(sqlite3.IntegrityError, match="synthetic_full_start_failure"):
+        repository.start_full_index(ACCOUNT_A, full_start)
+
+    assert repository.indexed_messages(ACCOUNT_A) == (stale,)
+    assert repository.sync_checkpoint(ACCOUNT_A) == initial_checkpoint
+
+
+def test_apply_index_page_rejects_overlap_before_writing(tmp_path: Path) -> None:
+    repository = Repository(tmp_path / "overlap.db")
+    checkpoint = _checkpoint()
+
+    with pytest.raises(ValueError, match="updated and deleted"):
+        repository.apply_index_page(
+            ACCOUNT_A,
+            (_record("message-overlap"),),
+            ("message-overlap",),
+            checkpoint,
+        )
+
+    assert repository.indexed_messages(ACCOUNT_A) == ()
+    assert repository.sync_checkpoint(ACCOUNT_A) is None
+
+
 def test_all_input_is_validated_before_writing_and_page_duplicates_are_rejected(
     tmp_path: Path,
 ) -> None:

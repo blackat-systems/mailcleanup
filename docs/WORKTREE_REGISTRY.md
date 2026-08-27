@@ -98,7 +98,7 @@ reales; D2 por sí sola no habilitó D3.
 | Campo | Estado real |
 |---|---|
 | Proceso | Mapa Total, inventario sintético de sólo metadatos |
-| Estado | `EN DESARROLLO` |
+| Estado | `INTEGRADA`; consolidada por el commit que contiene este registro; fuente conservada |
 | Ruta | `C:\Users\Joaquin\.codex\worktrees\f1b0\mailcleanup` |
 | Rama | `codex/gmail-readonly-inventory` |
 | Base | `f510db0799c94d944f28d3dd71db8a9bd79ae648` |
@@ -111,12 +111,19 @@ reales; D2 por sí sola no habilitó D3.
 | OAuth, Gmail, red, credenciales y datos reales | Prohibidos durante desarrollo y pruebas |
 | Adaptador productivo, API y frontend | Prohibidos |
 | Commit del especialista | No autorizado |
-| Integración en `main` | Pendiente de handoff y auditoría independiente de MAIN |
+| Integración en `main` | Auditoría, integración semántica y consolidación completadas |
 
 Codex creó inicialmente el checkout en `detached HEAD`. MAIN comprobó que estaba
 limpio, lo adjuntó a la rama indicada y volvió a verificar ruta, rama, base y
 estado antes de habilitar al especialista. La tarea recibió el prompt completo
 con el SHA exacto y la prohibición de conectar Gmail.
+
+MAIN auditó los cuatro archivos entregados, detectó que las bajas parciales y
+el checkpoint no compartían transacción y que un escaneo completo no retiraba
+registros obsoletos. Por instrucción de Joa amplió D1 con `apply_index_page` y
+`start_full_index`, agregó regresiones de rollback y reemplazo completo, adaptó
+D3 y repitió la batería global. La integración continúa exclusivamente
+sintética y no habilita Gmail, OAuth, credenciales, datos reales ni D4.
 
 ## Reglas de actualización
 

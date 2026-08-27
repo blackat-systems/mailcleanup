@@ -15,12 +15,14 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
 - todo plan responde `canExecute: false` y no existe una ruta de ejecución;
 - Joa aceptó Base Segura; la revisión visual instrumental continúa registrada
   como no verificada;
-- D1 de persistencia sintética fue auditada e integrada;
-- D2 está en desarrollo en un worktree aislado, con dobles sintéticos y bajo un
-  contrato específico;
+- D1 de persistencia sintética y D2 de sesión segura fueron auditadas y
+  consolidadas;
+- D3 de inventario de sólo metadatos fue auditada e integrada con dobles
+  sintéticos; la integración queda consolidada por el commit que contiene este
+  estado;
 - abrir OAuth, conectar Gmail, solicitar credenciales y usar datos reales siguen
   prohibidos;
-- esta consolidación queda registrada en el commit que contiene este documento.
+- D4 no está autorizada y no debe comenzar todavía.
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -62,6 +64,6 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-Crear y auditar D2 `secure-gmail-session` con dobles sintéticos. La conexión de
-una cuenta real seguirá requiriendo confirmación específica después de integrar
-el módulo y revisar su seguridad.
+Revisar y, con autorización explícita de Joa, crear el commit de la integración
+sintética D3. La conexión de una cuenta real seguirá requiriendo una autorización
+específica posterior y decisiones pendientes sobre protección del índice local.

@@ -14,6 +14,8 @@ OAUTH_SESSION_PATH = ACTIVE_PACKAGE / "oauth_session.py"
 SESSION_MODEL_PATH = ACTIVE_PACKAGE / "session_model.py"
 WINDOWS_SECRET_STORE_PATH = ACTIVE_PACKAGE / "windows_secret_store.py"
 GMAIL_READONLY_POLICY_PATH = ACTIVE_PACKAGE / "gmail_readonly_policy.py"
+GMAIL_INVENTORY_MODEL_PATH = ACTIVE_PACKAGE / "gmail_inventory_model.py"
+GMAIL_INVENTORY_PATH = ACTIVE_PACKAGE / "gmail_inventory.py"
 SAFE_STDLIB_URL_IMPORT_ALLOWLIST = {
     OAUTH_SESSION_PATH: {"urllib.parse"},
     GMAIL_READONLY_POLICY_PATH: {"urllib.parse"},
@@ -141,6 +143,26 @@ def test_d2_allowlist_is_exact_and_contains_no_real_transport_or_browser() -> No
             "httpx.",
         )
     )
+
+
+def test_d3_inventory_has_no_external_transport_network_browser_or_scope_literal() -> None:
+    for path in (GMAIL_INVENTORY_MODEL_PATH, GMAIL_INVENTORY_PATH):
+        imports = _import_modules(path)
+        assert all(not _matches_forbidden_import(module) for module in imports)
+        text = path.read_text(encoding="utf-8").casefold()
+        assert "gmail.metadata" not in text
+        assert all(
+            marker not in text
+            for marker in (
+                "socket.",
+                "urlopen(",
+                "webbrowser.",
+                "requests.",
+                "httpx.",
+                "googleapiclient",
+                "installedappflow",
+            )
+        )
 
 
 def test_metadata_scope_and_dpapi_are_confined_to_exact_d2_files() -> None:

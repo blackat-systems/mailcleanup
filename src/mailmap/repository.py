@@ -439,12 +439,21 @@ class Repository:
         records: Iterable[IndexedMessageRecord],
         checkpoint: SyncCheckpoint,
     ) -> None:
+        self.apply_index_page(account_key, records, (), checkpoint)
+
+    def apply_index_page(
+        self,
+        account_key: str,
+        records: Iterable[IndexedMessageRecord],
+        deleted_message_ids: Iterable[str],
+        checkpoint: SyncCheckpoint,
+    ) -> None:
         validated_account_key = validate_account_key(account_key)
         if not isinstance(checkpoint, SyncCheckpoint):
             raise TypeError("checkpoint must be a SyncCheckpoint")
         validated_checkpoint = replace(checkpoint)
         if validated_checkpoint.account_key != validated_account_key:
-            raise ValueError("checkpoint account_key does not match save_index_page account_key")
+            raise ValueError("checkpoint account_key does not match apply_index_page account_key")
 
         validated_records: list[IndexedMessageRecord] = []
         identities: set[str] = set()
@@ -453,65 +462,128 @@ class Repository:
                 raise TypeError("records must contain IndexedMessageRecord values")
             validated_record = replace(record)
             if validated_record.account_key != validated_account_key:
-                raise ValueError("record account_key does not match save_index_page account_key")
+                raise ValueError("record account_key does not match apply_index_page account_key")
             if validated_record.provider_message_id in identities:
                 raise ValueError("records contains a duplicate provider_message_id")
             identities.add(validated_record.provider_message_id)
             validated_records.append(validated_record)
 
+        validated_deleted_ids = tuple(
+            sorted(
+                {
+                    validate_opaque_identifier(message_id, "provider_message_id")
+                    for message_id in deleted_message_ids
+                }
+            )
+        )
+        overlap = identities.intersection(validated_deleted_ids)
+        if overlap:
+            raise ValueError("a provider_message_id cannot be updated and deleted together")
+
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
+            self._ensure_index_account(connection, validated_account_key)
+            connection.executemany(
+                "DELETE FROM indexed_messages "
+                "WHERE account_key = ? AND provider_message_id = ?",
+                [
+                    (validated_account_key, message_id)
+                    for message_id in validated_deleted_ids
+                ],
+            )
+            self._upsert_index_records(connection, validated_records)
+            self._upsert_checkpoint(connection, validated_checkpoint)
+
+    def start_full_index(
+        self, account_key: str, checkpoint: SyncCheckpoint
+    ) -> None:
+        validated_account_key = validate_account_key(account_key)
+        if not isinstance(checkpoint, SyncCheckpoint):
+            raise TypeError("checkpoint must be a SyncCheckpoint")
+        validated_checkpoint = replace(checkpoint)
+        if validated_checkpoint.account_key != validated_account_key:
+            raise ValueError("checkpoint account_key does not match start_full_index account_key")
+        if validated_checkpoint.mode is not SyncMode.FULL:
+            raise ValueError("start_full_index requires a full checkpoint")
+        if validated_checkpoint.state is not SyncState.RUNNING:
+            raise ValueError("start_full_index requires a running checkpoint")
+        if validated_checkpoint.processed_count != 0:
+            raise ValueError("start_full_index requires processed_count zero")
+
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            self._ensure_index_account(connection, validated_account_key)
             connection.execute(
-                "INSERT INTO indexed_accounts(account_key) VALUES (?) "
-                "ON CONFLICT(account_key) DO NOTHING",
+                "DELETE FROM indexed_messages WHERE account_key = ?",
                 (validated_account_key,),
             )
-            connection.executemany(
-                """
-                INSERT INTO indexed_messages(
-                    account_key, provider_message_id, provider_thread_id, received_at,
-                    sender_name, sender_address, subject, label_ids_json, category,
-                    size_estimate_bytes, authenticated_domain, list_id, list_unsubscribe,
-                    list_unsubscribe_post, dkim_result, dmarc_result, record_version
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(account_key, provider_message_id) DO UPDATE SET
-                    provider_thread_id = excluded.provider_thread_id,
-                    received_at = excluded.received_at,
-                    sender_name = excluded.sender_name,
-                    sender_address = excluded.sender_address,
-                    subject = excluded.subject,
-                    label_ids_json = excluded.label_ids_json,
-                    category = excluded.category,
-                    size_estimate_bytes = excluded.size_estimate_bytes,
-                    authenticated_domain = excluded.authenticated_domain,
-                    list_id = excluded.list_id,
-                    list_unsubscribe = excluded.list_unsubscribe,
-                    list_unsubscribe_post = excluded.list_unsubscribe_post,
-                    dkim_result = excluded.dkim_result,
-                    dmarc_result = excluded.dmarc_result,
-                    record_version = excluded.record_version
-                """,
-                [self._indexed_message_values(record) for record in validated_records],
-            )
-            connection.execute(
-                """
-                INSERT INTO sync_checkpoints(
-                    account_key, scan_id, mode, state, page_token, history_id,
-                    processed_count, started_at, updated_at, error_code
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(account_key) DO UPDATE SET
-                    scan_id = excluded.scan_id,
-                    mode = excluded.mode,
-                    state = excluded.state,
-                    page_token = excluded.page_token,
-                    history_id = excluded.history_id,
-                    processed_count = excluded.processed_count,
-                    started_at = excluded.started_at,
-                    updated_at = excluded.updated_at,
-                    error_code = excluded.error_code
-                """,
-                self._checkpoint_values(validated_checkpoint),
-            )
+            self._upsert_checkpoint(connection, validated_checkpoint)
+
+    @staticmethod
+    def _ensure_index_account(
+        connection: sqlite3.Connection, account_key: str
+    ) -> None:
+        connection.execute(
+            "INSERT INTO indexed_accounts(account_key) VALUES (?) "
+            "ON CONFLICT(account_key) DO NOTHING",
+            (account_key,),
+        )
+
+    def _upsert_index_records(
+        self,
+        connection: sqlite3.Connection,
+        records: Iterable[IndexedMessageRecord],
+    ) -> None:
+        connection.executemany(
+            """
+            INSERT INTO indexed_messages(
+                account_key, provider_message_id, provider_thread_id, received_at,
+                sender_name, sender_address, subject, label_ids_json, category,
+                size_estimate_bytes, authenticated_domain, list_id, list_unsubscribe,
+                list_unsubscribe_post, dkim_result, dmarc_result, record_version
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(account_key, provider_message_id) DO UPDATE SET
+                provider_thread_id = excluded.provider_thread_id,
+                received_at = excluded.received_at,
+                sender_name = excluded.sender_name,
+                sender_address = excluded.sender_address,
+                subject = excluded.subject,
+                label_ids_json = excluded.label_ids_json,
+                category = excluded.category,
+                size_estimate_bytes = excluded.size_estimate_bytes,
+                authenticated_domain = excluded.authenticated_domain,
+                list_id = excluded.list_id,
+                list_unsubscribe = excluded.list_unsubscribe,
+                list_unsubscribe_post = excluded.list_unsubscribe_post,
+                dkim_result = excluded.dkim_result,
+                dmarc_result = excluded.dmarc_result,
+                record_version = excluded.record_version
+            """,
+            [self._indexed_message_values(record) for record in records],
+        )
+
+    def _upsert_checkpoint(
+        self, connection: sqlite3.Connection, checkpoint: SyncCheckpoint
+    ) -> None:
+        connection.execute(
+            """
+            INSERT INTO sync_checkpoints(
+                account_key, scan_id, mode, state, page_token, history_id,
+                processed_count, started_at, updated_at, error_code
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(account_key) DO UPDATE SET
+                scan_id = excluded.scan_id,
+                mode = excluded.mode,
+                state = excluded.state,
+                page_token = excluded.page_token,
+                history_id = excluded.history_id,
+                processed_count = excluded.processed_count,
+                started_at = excluded.started_at,
+                updated_at = excluded.updated_at,
+                error_code = excluded.error_code
+            """,
+            self._checkpoint_values(checkpoint),
+        )
 
     def indexed_messages(self, account_key: str) -> tuple[IndexedMessageRecord, ...]:
         validated_account_key = validate_account_key(account_key)

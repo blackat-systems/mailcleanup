@@ -152,6 +152,18 @@ save_index_page(
     checkpoint: SyncCheckpoint,
 ) -> None
 
+apply_index_page(
+    account_key: str,
+    records: Iterable[IndexedMessageRecord],
+    deleted_message_ids: Iterable[str],
+    checkpoint: SyncCheckpoint,
+) -> None
+
+start_full_index(
+    account_key: str,
+    checkpoint: SyncCheckpoint,
+) -> None
+
 indexed_messages(account_key: str) -> tuple[IndexedMessageRecord, ...]
 indexed_message(account_key: str, provider_message_id: str) -> IndexedMessageRecord | None
 sync_checkpoint(account_key: str) -> SyncCheckpoint | None
@@ -159,9 +171,19 @@ delete_indexed_messages(account_key: str, provider_message_ids: Iterable[str]) -
 delete_account_index(account_key: str) -> None
 ```
 
-`save_index_page` debe ser una única transacción: o se guardan registros y
-checkpoint, o no se guarda ninguno. Repetir la misma página no duplica filas.
-Una actualización reemplaza los campos permitidos de esa identidad compuesta.
+`save_index_page` conserva compatibilidad para páginas sin bajas y delega en
+`apply_index_page`. Esta última es la operación de escritura para consumidores:
+en una única transacción aplica altas y actualizaciones, aplica bajas y guarda
+el checkpoint. Si falla cualquiera de esas partes, se revierten todas. Repetir
+la misma página no duplica filas. Una actualización reemplaza los campos
+permitidos de esa identidad compuesta. Un mismo ID no puede actualizarse y
+eliminarse dentro de la misma página.
+
+`start_full_index` inicia un intento completo nuevo mediante una única
+transacción: conserva o crea la cuenta opaca, elimina el índice anterior sólo de
+esa cuenta y reemplaza su checkpoint por uno `full`, `running` y con contador
+cero. Si falla el checkpoint, el índice anterior permanece intacto. Reanudar el
+mismo `scan_id` no vuelve a ejecutar esta operación destructiva controlada.
 
 `indexed_messages` ordena por `received_at` descendente y, ante empate, por
 `provider_message_id` ascendente.
@@ -175,7 +197,10 @@ especialista lo explica en el handoff.
 ## 9. Transacciones y fallos
 
 - Cada operación de escritura usa transacción explícita y rollback ante error.
-- Un fallo al persistir el checkpoint revierte también la página de mensajes.
+- Un fallo al persistir el checkpoint revierte altas, actualizaciones y bajas de
+  la página.
+- El inicio de un escaneo completo revierte también la eliminación del índice
+  anterior si el checkpoint no puede guardarse.
 - Un registro inválido falla antes de escribir toda la página.
 - Duplicados dentro de una misma entrada se resuelven de forma determinista o
   se rechazan de manera explícita; nunca producen dos filas.
@@ -197,15 +222,18 @@ D1 está terminado para su alcance sintético cuando:
 
 1. una base nueva y una base con migración v1 llegan al mismo esquema;
 2. Base Segura conserva exactamente su dataset y sus planes;
-3. una página se guarda junto con su checkpoint de forma atómica;
-4. reintentar no duplica mensajes;
-5. una interrupción puede continuar desde el checkpoint persistido;
-6. eliminar una cuenta borra solamente su índice y checkpoint;
-7. los tipos rechazan fechas ingenuas, estados inválidos y datos prohibidos;
-8. no aparecen Gmail, OAuth, red, credenciales ni datos reales;
-9. pasan pruebas específicas, pytest completo, Ruff, mypy y la barrera de
+3. altas, actualizaciones, bajas y checkpoint de una página se guardan de forma
+   atómica;
+4. un escaneo completo nuevo reemplaza de forma atómica el índice anterior y su
+   checkpoint inicial;
+5. reintentar no duplica mensajes;
+6. una interrupción puede continuar desde el checkpoint persistido;
+7. eliminar una cuenta borra solamente su índice y checkpoint;
+8. los tipos rechazan fechas ingenuas, estados inválidos y datos prohibidos;
+9. no aparecen Gmail, OAuth, red, credenciales ni datos reales;
+10. pasan pruebas específicas, pytest completo, Ruff, mypy y la barrera de
    Base Segura;
-10. el especialista entrega diff y handoff sin commit ni integración.
+11. el especialista entrega diff y handoff sin commit ni integración.
 
 La aceptación de D1 no habilita D2 ni D3 automáticamente. MAIN debe auditarlo,
 integrarlo, repetir la batería y resolver los bloqueos de privacidad antes de
