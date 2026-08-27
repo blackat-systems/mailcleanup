@@ -30,6 +30,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-021 | Integrar D2 en MAIN después de auditoría independiente y corregir vencimientos y conservación del refresh token, sin habilitar adaptadores reales ni D3. | Ejecutada y consolidada por el commit que contiene esta decisión | Instrucción de Joa y auditoría de MAIN del 18 de agosto de 2026 |
 | D-022 | Reforzar la privacidad, consolidar contratos C1-C5 para alcance sintético y crear D3 `gmail-readonly-inventory` con dobles, sin OAuth, Gmail, credenciales, datos reales ni adaptador productivo. | Autorizada | Instrucción explícita de Joa del 18 de agosto de 2026 y contratos `SECURITY_PRIVACY_V1.md` y `GMAIL_READONLY_INVENTORY_V1.md` |
 | D-023 | Ampliar D1 para aplicar altas, actualizaciones, bajas y checkpoint en una transacción e iniciar un escaneo completo reemplazando controladamente el índice anterior; adaptar e integrar D3 con regresiones de rollback y registros obsoletos. | Ejecutada y consolidada por el commit que contiene esta decisión | Instrucción explícita de Joa y auditoría MAIN del 18 de agosto de 2026 |
+| D-024 | Preparar y crear D4 `real-classification-domain` sobre registros normalizados exclusivamente sintéticos, con identidad conservadora, flujos separados, taxonomía MVP y evidencia; sin Gmail, OAuth, red, datos reales, persistencia, API ni UI. | Autorizada | Instrucción explícita de Joa del 27 de agosto de 2026 y `CLASSIFICATION_DOMAIN_V1.md` |
 
 ## Decisiones suficientemente definidas
 
@@ -50,10 +51,11 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 Joa respondió afirmativamente y autorizó D-005 + D-006. Posteriormente autorizó
 D-017, D-018, aceptó Base Segura mediante D-019, habilitó la implementación
 sintética de D2 mediante D-020 y su integración auditada mediante D-021,
-autorizó D3 sintética mediante D-022 y resolvió su bloqueo transaccional mediante
-D-023. Ninguna autorización permite abrir OAuth, conectar Gmail, solicitar
-credenciales, usar datos reales, ejecutar acciones externas, iniciar D4,
-Estudio de Limpieza o Limpieza Controlada.
+autorizó D3 sintética mediante D-022, resolvió su bloqueo transaccional mediante
+D-023 y autorizó preparar D4 sintética mediante D-024. Ninguna autorización
+permite abrir OAuth, conectar Gmail, solicitar credenciales, usar datos reales,
+ejecutar acciones externas, iniciar D5, Estudio de Limpieza o Limpieza
+Controlada.
 
 ## Resultado de la implementación autorizada
 

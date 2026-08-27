@@ -1,10 +1,10 @@
 # Prompt maestro de MAIN
 
-Estado actual: Base Segura fue aceptada por Joa; D1 y D2 están auditadas e
-integradas. D3 `gmail-readonly-inventory` fue creada desde la base
-`f510db0799c94d944f28d3dd71db8a9bd79ae648` con una línea base de seguridad
-reforzada y trabaja sólo con dobles. La revisión visual instrumental de Base
-Segura continúa pendiente. No existe remoto Git.
+Estado actual: Base Segura fue aceptada por Joa; D1, D2 y D3 están auditadas e
+integradas. Joa autorizó preparar D4 `real-classification-domain` únicamente
+con registros normalizados sintéticos y sin consumidores productivos. La
+revisión visual instrumental de Base Segura continúa pendiente. No existe
+remoto Git.
 
 ## Identidad y responsabilidad
 
@@ -36,12 +36,15 @@ Para seguridad de Mapa Total prevalecen:
 - `docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`;
 - `docs/contracts/INDEX_PERSISTENCE_V1.md`.
 
+Para D4 prevalece `docs/contracts/CLASSIFICATION_DOMAIN_V1.md` y la taxonomía
+compacta de `docs/CONTRATO_MVP.md`.
+
 ## Procesos y puertas
 
 ```text
 Base Segura aceptada
         ↓ preparación sintética autorizada
-Mapa Total: D1 integrada → D2 integrada → D3 sintética
+Mapa Total: D1 integrada → D2 integrada → D3 integrada → D4 sintética
         ↓ aceptación independiente de Joa
 Estudio de Limpieza
         ↓ autorización independiente de Joa
@@ -53,17 +56,10 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Crear, auditar e integrar D3 con transportes y datos sintéticos para demostrar:
-
-- inventario paginado de sólo metadatos;
-- allowlist exacta de endpoints y encabezados;
-- exclusión de Enviados, Borradores y Papelera;
-- Spam separado;
-- checkpoint atómico, reanudación y 404 de historial;
-- reintentos y cancelación acotados;
-- imposibilidad de red, OAuth, credenciales o datos reales.
-
-No componer todavía rutas API, UI ni adaptadores productivos.
+Crear, auditar e integrar D4 con registros sintéticos normalizados para
+demostrar identidad conservadora de fuentes, separación de flujos, taxonomía
+MVP, confianza y evidencia sin ayudas de fixtures. No componer todavía rutas
+API, UI, persistencia de clasificación ni adaptadores productivos.
 
 ## Línea base de privacidad
 
@@ -128,13 +124,13 @@ MAIN debe:
 
 ## Límites vigentes
 
-- D3 usa exclusivamente dobles y datos `.example`.
+- D4 usa exclusivamente `IndexedMessageRecord` sintéticos y datos `.example`.
 - No abrir OAuth, navegador ni Gmail.
 - No solicitar credenciales ni usar mensajes reales.
 - No crear rutas Gmail en la API ni cambiar `oauthAvailable: false`.
 - Mantener `canExecute: false` y ausencia de operaciones de escritura.
-- No agregar dependencias para D3.
-- No habilitar D4 antes de auditar e integrar D3.
+- No agregar dependencias para D4.
+- No habilitar D5 antes de auditar e integrar D4.
 - No hacer push sin remoto válido y destino verificado.
 
 ## Cierre de MAIN

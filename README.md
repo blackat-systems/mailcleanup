@@ -22,7 +22,8 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
   estado;
 - abrir OAuth, conectar Gmail, solicitar credenciales y usar datos reales siguen
   prohibidos;
-- D4 no está autorizada y no debe comenzar todavía.
+- D4 de clasificación sobre registros normalizados está autorizada únicamente
+  con un corpus sintético y sin consumidores productivos;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -64,6 +65,6 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-Revisar y, con autorización explícita de Joa, crear el commit de la integración
-sintética D3. La conexión de una cuenta real seguirá requiriendo una autorización
-específica posterior y decisiones pendientes sobre protección del índice local.
+Crear y auditar D4 `real-classification-domain` con registros sintéticos. La
+conexión de una cuenta real seguirá requiriendo una autorización específica
+posterior y decisiones pendientes sobre protección del índice local.

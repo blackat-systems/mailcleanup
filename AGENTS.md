@@ -53,16 +53,19 @@ MAIN. D3 `gmail-readonly-inventory` fue auditada e integrada en el árbol de
 trabajo de MAIN después de ampliar D1 para aplicar altas, actualizaciones,
 bajas y checkpoint en una transacción e iniciar un escaneo completo reemplazando
 de forma controlada el índice anterior. La integración queda consolidada por el
-commit que contiene este estado. D3 usa solamente dobles sintéticos: no están autorizados abrir
-OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen
-cuatro worktrees: MAIN sobre `main` y las fuentes D1, D2 y D3 conservadas como
+commit que contiene este estado. Joa autorizó preparar D4
+`real-classification-domain` exclusivamente con registros sintéticos y el
+contrato `CLASSIFICATION_DOMAIN_V1.md`. No están autorizados abrir OAuth,
+conectar Gmail, solicitar credenciales ni usar datos reales. Existen cuatro
+worktrees: MAIN sobre `main` y las fuentes D1, D2 y D3 conservadas como
 evidencia. No hay remoto Git configurado.
 
 ## Objetivo actual
 
-Mantener verde la integración sintética auditada de D3 y resolver con Joa la
-próxima puerta del producto. No iniciar D4, abrir OAuth, conectar una cuenta
-real, persistir metadatos privados ni usar credenciales sin autorización.
+Preparar y coordinar D4 sintética desde un contrato estable, sin que el
+especialista modifique taxonomías, composición o arquitectura. No iniciar D5,
+abrir OAuth, conectar una cuenta real, persistir metadatos privados ni usar
+credenciales.
 
 ---
 
@@ -307,7 +310,8 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 
 Los worktrees fuente de D1 `real-index-persistence`, D2
 `secure-gmail-session` y D3 `gmail-readonly-inventory` se conservan como
-evidencia de entregas integradas. D4 no está autorizada y no debe crearse.
+evidencia de entregas integradas. D4 `real-classification-domain` es la única
+dependencia autorizada para crearse y trabajar; no habilita D5 ni D6.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,

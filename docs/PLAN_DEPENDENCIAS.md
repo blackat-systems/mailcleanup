@@ -21,7 +21,7 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
-| Capacidades autorizadas | D3 integrada sólo con dobles sintéticos; ninguna conexión Gmail, OAuth abierto, credencial ni dato real; D4 no autorizada |
+| Capacidades autorizadas | D4 puede crearse sólo con registros sintéticos normalizados; ninguna conexión Gmail, OAuth abierto, credencial ni dato real; D5 no autorizada |
 
 El SHA anterior es la base de MAIN sobre la que se integró D1, no un commit de
 integración. Cada dependencia posterior requiere un SHA limpio nuevo que
@@ -247,7 +247,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Criterios de aceptación | Una interrupción se reanuda sin duplicar; una historia vencida fuerza resincronización segura; sólo se persisten campos permitidos. |
 | Riesgos de integración | Confundir conversación con mensaje, excluir datos antes de protegerlos, cuotas, cambios durante el escaneo y scope insuficiente. |
 | Paralelización real | No con D1/D2 antes de integrarlas; luego puede coexistir sólo con UI basada en contrato y fixtures, no con cambios de C1/C5. |
-| Condición exacta de desbloqueo | D3 sintética fue auditada e integrada después de ampliar la atomicidad D1. OAuth, Gmail, credenciales, índice real, adaptador productivo y D4 siguen bloqueados. |
+| Condición exacta de desbloqueo | D3 sintética fue auditada e integrada después de ampliar la atomicidad D1. D4 sintética fue autorizada después de esa integración. OAuth, Gmail, credenciales, índice real y adaptador productivo siguen bloqueados. |
 
 ### D4 — `real-classification-domain`
 
@@ -255,12 +255,12 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 |---|---|
 | ID | D4 |
 | Proceso | Mapa Total |
-| Responsabilidad única | Adaptar y ampliar la clasificación explicable para registros reales sin `source_hint` ni `flow_hint`, conservando desconocidos y evidencia. |
+| Responsabilidad única | Adaptar y ampliar la clasificación explicable para registros normalizados con forma real pero valores sintéticos, sin `source_hint` ni `flow_hint`, conservando desconocidos y evidencia. |
 | Razón para separarlo | Es una ampliación concreta del dominio existente y puede probarse con corpus sintético normalizado sin red ni UI. |
-| Estado actual | `BLOQUEADA POR AUTORIZACIÓN` |
+| Estado actual | `LISTA PARA CREAR` con alcance exclusivamente sintético |
 | Dependencias previas | D3 integrada; C1/C2 y taxonomías confirmadas. |
-| Contratos que consume | Registros normalizados D3, modelo C1, reglas de clasificación y protección vigentes. |
-| Resultados que produce | Agrupación conservadora, identidad/fuentes/flujos reales, confianza, evidencia y desconocidos estables. |
+| Contratos que consume | `CLASSIFICATION_DOMAIN_V1.md`, registros normalizados D3, taxonomías MVP y límites C1/C2. |
+| Resultados que produce | Agrupación conservadora, identidad, fuentes y flujos sin ayudas de fixtures, confianza, evidencia y desconocidos estables. |
 | Consumidores posteriores | D5, D6 y D7. |
 | Permitido | Módulos de clasificación/dominio y pruebas sintéticas específicas. |
 | Prohibido | OAuth, API Gmail, persistencia, API pública, UI, mutaciones y servicios externos. |
@@ -271,7 +271,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Criterios de aceptación | No presenta inferencias como hechos; cada resultado conserva evidencia; no fusiona confianza baja; las reglas actuales siguen cubiertas. |
 | Riesgos de integración | IDs cambiantes, sobreagrupación, taxonomías superpuestas y dependencia accidental de encabezados no autorizados. |
 | Paralelización real | Puede prepararse con fixtures después de congelar C1/C2, pero no integrarse antes de D3; no en paralelo con cambios a taxonomías. |
-| Condición exacta de desbloqueo | D3 integrada; MAIN confirma corpus sintético, identidad, evidencia y taxonomías; batería verde, SHA limpio y prompt aprobado. |
+| Condición exacta de desbloqueo | Cumplida para crear D4 sintética: D3 integrada, contrato y corpus fijados por MAIN, autorización D-024, batería verde, SHA limpio y prompt completo. D5 y cualquier dato real siguen bloqueados. |
 
 ### D5 — `local-policy-memory`
 
