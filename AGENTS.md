@@ -64,7 +64,10 @@ worktree D5. MAIN consolidó la base `663d8a9` y creó D5 en
 `codex/local-policy-memory`, actualmente `EN DESARROLLO`. No están autorizados
 abrir OAuth, conectar Gmail, solicitar credenciales ni usar datos reales.
 Existen seis worktrees: MAIN, las fuentes D1-D4 conservadas como evidencia y D5
-activa. No hay remoto Git configurado.
+activa. `origin` apunta al repositorio privado
+`https://github.com/blackat-systems/mailcleanup.git`. Sólo MAIN puede publicar
+`main` después de verificar destino, alcance y autorización; los worktrees
+especialistas no publican ramas ni usan el remoto para ampliar su alcance.
 
 ## Objetivo actual
 
@@ -376,8 +379,14 @@ inestables.
 - MAIN revisa alcance, contratos, secretos, datos privados y conflictos
   semánticos antes de integrar y luego repite la batería.
 
-No hay remoto configurado. No inventarlo ni afirmar que un commit local fue
-publicado.
+El único remoto autorizado es `origin`, repositorio privado
+`https://github.com/blackat-systems/mailcleanup.git`. No afirmar que un commit
+fue publicado sin comprobar `origin/main`. No publicar ramas especialistas,
+datos locales, secretos ni archivos ajenos al alcance.
+
+Para commits destinados a GitHub, usar en este repositorio la identidad privada
+`noreply` provista por GitHub; no incorporar una dirección personal nueva al
+historial.
 
 ---
 

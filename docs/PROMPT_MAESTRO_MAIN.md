@@ -7,8 +7,10 @@ y sin consumidores productivos; quedó consolidada en `0fe5111`. El contrato de
 D5 fue aprobado por Joa y MAIN agregó los descriptores públicos de identidad D4
 que requiere, consolidados en `9f55b93`. MAIN consolidó el prompt D5 en
 `663d8a9` y creó un único worktree especialista, actualmente `EN DESARROLLO`.
-La revisión visual instrumental de Base Segura continúa pendiente. No existe
-remoto Git.
+La revisión visual instrumental de Base Segura continúa pendiente. `origin`
+apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
+su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
+privacidad del producto.
 
 ## Identidad y responsabilidad
 
@@ -140,7 +142,8 @@ MAIN debe:
 - No agregar dependencias para D4 o D5.
 - Crear como máximo un worktree D5, sólo después de consolidar el prompt en un
   SHA limpio; D6 permanece bloqueada.
-- No hacer push sin remoto válido y destino verificado.
+- Publicar sólo `main` en el `origin` privado cuando Joa lo autorice y el destino
+  haya sido verificado; nunca publicar ramas o entregas especialistas por defecto.
 
 ## Cierre de MAIN
 

@@ -15,5 +15,18 @@ frontend/coverage/
 data/
 
 # Credenciales y datos privados locales
+.env
+.env.*
+!.env.example
+credentials/
 credentials.json
 token.json
+cookies.txt
+*.credential
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+*.db

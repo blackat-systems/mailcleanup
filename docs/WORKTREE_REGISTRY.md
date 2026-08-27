@@ -15,8 +15,10 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Candidato funcional heredado | `0a90b71403bb176c6fd2457213bcb8b347428a92` |
 | Proceso autorizado | Base Segura por portado selectivo, sólo con datos sintéticos |
 | Gmail real | Prohibido |
+| Remoto actual | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git` |
+| Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Base consolidada | El commit que contiene este registro |
-| Estado | Base Git limpia y técnicamente verificada; revisión visual y aceptación de producto pendientes |
+| Estado | Base Segura aceptada y técnicamente verificada; revisión visual instrumental pendiente; D5 activa |
 
 ## Estado al consolidar Base Segura
 
@@ -191,6 +193,10 @@ D5 no puede crear ni recrear `indexed_accounts`. El borrado de cuenta debe ser
 terminal y la entrega debe probar que preparados, retries y undos anteriores no
 resucitan memoria borrada. El worktree permanece exclusivamente sintético y no
 habilita Gmail, OAuth, credenciales, datos reales ni D6.
+
+El remoto privado fue agregado por MAIN después de la Puerta 0 de D5. Esa
+aparición posterior es una variación de infraestructura conocida: no habilita al
+especialista a hacer fetch, push, commit, publicación ni a cambiar su alcance.
 
 ## Reglas de actualización
 

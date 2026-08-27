@@ -20,7 +20,7 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | HEAD limpio con D4 y su columna vertebral consolidadas | `9f55b939d8e6aa6efa334fd86f2bf420ba4cd717` |
 | Estado actual | D1, D2, D3 y D4 sintéticas consolidadas |
 | Worktrees | Seis: MAIN, D1-D4 conservadas y D5 `local-policy-memory` activa |
-| Remotos | Ninguno configurado |
+| Remotos | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git`; sólo `main` puede publicarse por MAIN con autorización explícita |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
 | Capacidades autorizadas | Implementación D5 sintética en su único worktree; ninguna conexión Gmail, OAuth abierto, credencial, dato real ni D6 |
