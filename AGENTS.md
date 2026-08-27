@@ -56,9 +56,10 @@ de forma controlada el índice anterior. La integración queda consolidada por e
 commit que contiene este estado. Joa autorizó preparar D4
 `real-classification-domain` exclusivamente con registros sintéticos y el
 contrato `CLASSIFICATION_DOMAIN_V1.md`. No están autorizados abrir OAuth,
-conectar Gmail, solicitar credenciales ni usar datos reales. Existen cuatro
-worktrees: MAIN sobre `main` y las fuentes D1, D2 y D3 conservadas como
-evidencia. No hay remoto Git configurado.
+conectar Gmail, solicitar credenciales ni usar datos reales. Existen cinco
+worktrees: MAIN sobre `main`, las fuentes D1, D2 y D3 conservadas como evidencia
+y D4 activa en `codex/real-classification-domain`. No hay remoto Git
+configurado.
 
 ## Objetivo actual
 

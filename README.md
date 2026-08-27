@@ -22,8 +22,9 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
   estado;
 - abrir OAuth, conectar Gmail, solicitar credenciales y usar datos reales siguen
   prohibidos;
-- D4 de clasificación sobre registros normalizados está autorizada únicamente
-  con un corpus sintético y sin consumidores productivos;
+- D4 de clasificación sobre registros normalizados está en desarrollo en un
+  worktree aislado, únicamente con un corpus sintético y sin consumidores
+  productivos;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).

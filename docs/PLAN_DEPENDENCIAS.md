@@ -16,8 +16,8 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Ruta | `C:\Users\Joaquin\Desktop\chatgptprojects\mailcleanup` |
 | Rama | `main` |
 | HEAD de MAIN al integrar D1 | `7720ad4c57c984c7ba6fc2e6bc9c5e02119756a2` |
-| Estado actual | D1, D2 y D3 consolidadas; D3 incluye la ampliación transaccional de D1 |
-| Worktrees | Cuatro: MAIN, D1, D2 y D3 `gmail-readonly-inventory` |
+| Estado actual | D1, D2 y D3 consolidadas; D4 sintética en desarrollo |
+| Worktrees | Cinco: MAIN, D1, D2, D3 y D4 `real-classification-domain` |
 | Remotos | Ninguno configurado |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental no verificada |
@@ -257,7 +257,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Adaptar y ampliar la clasificación explicable para registros normalizados con forma real pero valores sintéticos, sin `source_hint` ni `flow_hint`, conservando desconocidos y evidencia. |
 | Razón para separarlo | Es una ampliación concreta del dominio existente y puede probarse con corpus sintético normalizado sin red ni UI. |
-| Estado actual | `LISTA PARA CREAR` con alcance exclusivamente sintético |
+| Estado actual | `EN DESARROLLO` con alcance exclusivamente sintético |
 | Dependencias previas | D3 integrada; C1/C2 y taxonomías confirmadas. |
 | Contratos que consume | `CLASSIFICATION_DOMAIN_V1.md`, registros normalizados D3, taxonomías MVP y límites C1/C2. |
 | Resultados que produce | Agrupación conservadora, identidad, fuentes y flujos sin ayudas de fixtures, confianza, evidencia y desconocidos estables. |

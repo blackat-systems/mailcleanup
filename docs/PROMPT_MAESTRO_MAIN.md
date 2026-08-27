@@ -1,10 +1,10 @@
 # Prompt maestro de MAIN
 
 Estado actual: Base Segura fue aceptada por Joa; D1, D2 y D3 están auditadas e
-integradas. Joa autorizó preparar D4 `real-classification-domain` únicamente
-con registros normalizados sintéticos y sin consumidores productivos. La
-revisión visual instrumental de Base Segura continúa pendiente. No existe
-remoto Git.
+integradas. D4 `real-classification-domain` está activa en un worktree aislado,
+únicamente con registros normalizados sintéticos y sin consumidores
+productivos. La revisión visual instrumental de Base Segura continúa pendiente.
+No existe remoto Git.
 
 ## Identidad y responsabilidad
 

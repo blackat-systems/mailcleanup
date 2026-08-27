@@ -125,6 +125,32 @@ registros obsoletos. Por instrucción de Joa amplió D1 con `apply_index_page` y
 D3 y repitió la batería global. La integración continúa exclusivamente
 sintética y no habilita Gmail, OAuth, credenciales, datos reales ni D4.
 
+## D4 — `real-classification-domain`
+
+| Campo | Estado real |
+|---|---|
+| Proceso | Mapa Total, clasificación explicable sobre registros normalizados sintéticos |
+| Estado | `EN DESARROLLO` |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\460d\mailcleanup` |
+| Rama | `codex/real-classification-domain` |
+| Base | `ba1efb4eeb2c80c0c973ee2c7c6dce12089576f2` |
+| HEAD al crear | `ba1efb4eeb2c80c0c973ee2c7c6dce12089576f2` |
+| Tarea | `01a0448e-800e-7420-8b07-978a87f2149a` — `D4 · Clasificación explicable real` |
+| Prompt | `docs/prompts/D4_REAL_CLASSIFICATION_DOMAIN.md` |
+| Contrato | `docs/contracts/CLASSIFICATION_DOMAIN_V1.md` |
+| Alcance | Identidad conservadora de fuente, flujos separados, rubro, intención, suscripción, confianza y evidencia sin hints de fixtures |
+| Archivos permitidos | `src/mailmap/classification_model.py`, `src/mailmap/classification_domain.py`, `tests/test_real_classification_domain.py`, ampliación acotada de `tests/test_base_segura_safety.py` |
+| Gmail, OAuth, red, credenciales y datos reales | Prohibidos |
+| Persistencia, API, UI, protección, planes, D5 y D6 | Prohibidos |
+| Commit del especialista | No autorizado |
+| Integración en `main` | Pendiente de handoff y auditoría independiente de MAIN |
+
+Codex creó el checkout en `detached HEAD` sobre la base exacta. MAIN comprobó
+que estaba limpio, lo adjuntó a `codex/real-classification-domain` y volvió a
+verificar rama, base y limpieza antes de habilitar la implementación. El prompt
+fue entregado al crear la tarea con los archivos autorizados, validaciones y
+stop points completos. D4 no habilita Gmail real ni D5.
+
 ## Reglas de actualización
 
 Al crear, entregar, integrar o descartar un worktree se registran ruta, rama,
