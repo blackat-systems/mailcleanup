@@ -68,6 +68,7 @@ activa. `origin` apunta al repositorio privado
 `https://github.com/blackat-systems/mailcleanup.git`. Sólo MAIN puede publicar
 `main` después de verificar destino, alcance y autorización; los worktrees
 especialistas no publican ramas ni usan el remoto para ampliar su alcance.
+La primera publicación de `main` quedó verificada desde `6310c76`.
 
 ## Objetivo actual
 

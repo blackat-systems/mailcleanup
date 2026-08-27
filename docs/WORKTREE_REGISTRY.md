@@ -17,6 +17,7 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Gmail real | Prohibido |
 | Remoto actual | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git` |
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
+| Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
 | Base consolidada | El commit que contiene este registro |
 | Estado | Base Segura aceptada y técnicamente verificada; revisión visual instrumental pendiente; D5 activa |
 

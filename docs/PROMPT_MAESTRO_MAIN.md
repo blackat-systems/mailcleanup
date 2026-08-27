@@ -10,7 +10,8 @@ que requiere, consolidados en `9f55b93`. MAIN consolidó el prompt D5 en
 La revisión visual instrumental de Base Segura continúa pendiente. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
-privacidad del producto.
+privacidad del producto. La publicación inicial de `main` quedó verificada desde
+`6310c76`.
 
 ## Identidad y responsabilidad
 
