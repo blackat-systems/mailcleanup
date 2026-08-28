@@ -19,7 +19,13 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
 | Base consolidada | El commit que contiene este registro |
-| Estado | Base Segura aceptada y técnicamente verificada; revisión visual instrumental pendiente; D5 integrada y consolidada por el commit que contiene este registro |
+| Estado | Base Segura aceptada, técnicamente verificada y revisada visualmente; D1-D5 y C5 consolidadas |
+
+MAIN implementó C5 directamente porque conserva composición, contratos y API
+transversales. No se creó un worktree C5. El candidato agrega
+`MAPA_TOTAL_API_V1.md`, fotografía SQLite, composición D4+D5, fixture `.example`,
+puerta sintética y `/api/v2`; queda consolidado por el commit que contiene este
+registro y no habilita D6 ni capacidades reales.
 
 ## Estado al consolidar Base Segura
 

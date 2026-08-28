@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from datetime import date
 from pathlib import Path
 from typing import Literal
@@ -10,6 +11,9 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from mailmap import __version__
+from mailmap.map_api import install_map_api
+from mailmap.map_fixtures import ensure_synthetic_map_fixture
+from mailmap.map_model import MapCompositionError
 from mailmap.repository import Repository
 from mailmap.service import MailmapService
 
@@ -38,12 +42,16 @@ def create_app(db_path: Path | None = None, *, serve_frontend: bool = True) -> F
         title="Mailmap local",
         description="API local de Base Segura. Sólo contiene datos sintéticos.",
         version=__version__,
-        docs_url="/api/docs",
+        docs_url=None,
+        redoc_url=None,
         openapi_url="/api/openapi.json",
         swagger_ui_oauth2_redirect_url=None,
     )
     app.state.repository = repository
     app.state.service = service
+    # La API v1 permanece disponible; la puerta v2 devolverá map_unavailable.
+    with suppress(MapCompositionError):
+        ensure_synthetic_map_fixture(repository)
 
     @app.get("/api/v1/health")
     def health() -> dict[str, object]:
@@ -108,6 +116,8 @@ def create_app(db_path: Path | None = None, *, serve_frontend: bool = True) -> F
     def configuration() -> dict[str, object]:
         return service.configuration()
 
+    install_map_api(app, repository)
+
     frontend_dist = PROJECT_ROOT / "frontend" / "dist"
     if serve_frontend and frontend_dist.exists():
         assets = frontend_dist / "assets"
@@ -130,7 +140,7 @@ def create_app(db_path: Path | None = None, *, serve_frontend: bool = True) -> F
         def root() -> dict[str, str]:
             return {
                 "message": "API sintética activa. Construí frontend/ para servir la interfaz.",
-                "docs": "/api/docs",
+                "openapi": "/api/openapi.json",
             }
 
     return app

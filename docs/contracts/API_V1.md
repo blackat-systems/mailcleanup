@@ -1,7 +1,7 @@
 # Contrato de API local v1
 
-Estado: contrato estable y verificado para el candidato de Base Segura. La
-aceptación final del hito por Joa sigue pendiente.
+Estado: contrato estable y verificado de Base Segura, aceptada por Joa. Su
+recorrido visual posterior también fue completado en escritorio y 390 px.
 
 Base: `http://127.0.0.1:8765/api/v1`.
 
@@ -49,4 +49,6 @@ son la creación de la vista previa y su revalidación.
 - No duplicar en el frontend las reglas de identidad, clasificación, precedencia o protección.
 - No ampliar este contrato con datos privados durante Base Segura.
 - Un cambio incompatible requiere una nueva versión y auditoría de MAIN.
+- Mapa Total usa el contrato separado `MAPA_TOTAL_API_V1.md` bajo `/api/v2`;
+  no reinterpreta estas respuestas.
 - Las futuras acciones reales deben usar rutas y modelos separados, con revalidación, idempotencia y registro durable.

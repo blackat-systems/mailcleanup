@@ -13,8 +13,8 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
 - el dominio, la API, SQLite y el frontend sintéticos pasan la batería local;
 - el servidor real fue comprobado en `127.0.0.1:8765`;
 - todo plan responde `canExecute: false` y no existe una ruta de ejecución;
-- Joa aceptó Base Segura; la revisión visual instrumental continúa registrada
-  como no verificada;
+- Joa aceptó Base Segura y MAIN completó después su revisión visual instrumental
+  en escritorio y 390 px, sin defectos bloqueantes;
 - D1 de persistencia sintética y D2 de sesión segura fueron auditadas y
   consolidadas;
 - D3 de inventario de sólo metadatos fue auditada e integrada con dobles
@@ -30,6 +30,10 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
   y SQLite v3. MAIN corrigió una regresión para que particionar un flujo nunca
   mejore la confianza automática de D4; queda consolidada por el commit que
   contiene este estado;
+- C5 de backend para Mapa Total está auditada y verde en el árbol de MAIN:
+  compone D1+D4+D5 desde una fotografía SQLite coherente y expone `/api/v2`
+  sólo con el fixture `.example`; queda consolidada por el commit que contiene
+  este estado y todavía no existe una interfaz D6 consumiéndola;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -45,6 +49,7 @@ Leer en este orden:
 5. [`docs/PROMPT_MAESTRO_MAIN.md`](docs/PROMPT_MAESTRO_MAIN.md)
 6. [`docs/WORKTREE_REGISTRY.md`](docs/WORKTREE_REGISTRY.md)
 7. [`docs/DECISIONES.md`](docs/DECISIONES.md)
+8. [`docs/contracts/MAPA_TOTAL_API_V1.md`](docs/contracts/MAPA_TOTAL_API_V1.md), para C5 y D6
 
 ## Organización y arquitectura candidata
 
@@ -71,7 +76,7 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso técnico es que MAIN defina la composición backend y el contrato
-C5 que consumirá la futura interfaz de Mapa Total. D6 no se crea todavía: siguen pendientes C5, la puerta visual y una
-autorización específica. Conectar una cuenta real también requiere una
-autorización independiente y resolver la protección del índice local.
+El próximo paso, sólo con autorización expresa de Joa, es preparar y crear D6
+`mapa-total-ui` desde el SHA limpio de C5 para conectar la interfaz a `/api/v2`.
+Conectar una cuenta real continúa fuera de alcance y requiere otra autorización
+más resolver la protección del índice local.

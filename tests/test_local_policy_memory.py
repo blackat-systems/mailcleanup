@@ -466,14 +466,14 @@ def _with_single_message_traits(
     )
 
 
-def test_fresh_and_exact_v2_migration_have_the_same_v3_schema(tmp_path: Path) -> None:
+def test_fresh_and_exact_v2_migration_have_the_same_latest_schema(tmp_path: Path) -> None:
     fresh_path = tmp_path / "fresh-policy.db"
     migrated_path = tmp_path / "migrated-policy.db"
     fresh = Repository(fresh_path)
     _create_exact_v2(migrated_path)
     migrated = Repository(migrated_path)
 
-    assert fresh.schema_version() == migrated.schema_version() == 3
+    assert fresh.schema_version() == migrated.schema_version() == len(MIGRATIONS)
     assert _schema_signature(fresh_path) == _schema_signature(migrated_path)
     assert "begin" not in MIGRATIONS[2][1].casefold()
     assert "commit" not in MIGRATIONS[2][1].casefold()

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 import sqlite3
 from collections import defaultdict
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
-from dataclasses import replace
-from datetime import datetime
+from dataclasses import dataclass, field, fields, is_dataclass, replace
+from datetime import UTC, datetime
+from enum import Enum, StrEnum
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +21,13 @@ from mailmap.index_model import (
     SyncState,
     validate_account_key,
     validate_opaque_identifier,
+)
+from mailmap.map_synthetic_gate import (
+    SYNTHETIC_MAP_FIXTURE_VERSION,
+    SyntheticMapGateError,
+    assert_synthetic_fixture_payload,
+    assert_synthetic_map_snapshot,
+    assert_synthetic_policy_candidate,
 )
 from mailmap.model import DATASET_VERSION, Intencion, Proteccion, Rubro, SyntheticMessage
 from mailmap.policy_model import (
@@ -58,6 +68,207 @@ from mailmap.policy_model import (
     policy_selector_kind,
     source_identity_descriptor_from_parts,
 )
+
+MAP_INPUT_REVISION_VERSION = 1
+MAP_POLICY_REQUEST_CONTRACT_VERSION = 1
+
+_MAP_INPUT_REVISION = re.compile(r"^input-v1-[0-9a-f]{64}$")
+_SHA256_FINGERPRINT = re.compile(r"^[0-9a-f]{64}$")
+
+
+class MapRepositoryErrorCode(StrEnum):
+    INVALID_INPUT = "invalid_input"
+    MAP_REVISION_CONFLICT = "map_revision_conflict"
+    COMMAND_ID_CONFLICT = "command_id_conflict"
+    MAP_UNAVAILABLE = "map_unavailable"
+    RECEIPT_CORRUPT = "receipt_corrupt"
+
+
+class MapRepositoryError(RuntimeError):
+    __slots__ = ()
+    _RUNTIME_ATTRIBUTES = frozenset(
+        {"__traceback__", "__cause__", "__context__", "__suppress_context__"}
+    )
+
+    def __init__(self, code: MapRepositoryErrorCode) -> None:
+        if not isinstance(code, MapRepositoryErrorCode):
+            raise TypeError("code must be a MapRepositoryErrorCode")
+        super().__init__(code.value)
+
+    @property
+    def code(self) -> MapRepositoryErrorCode:
+        return MapRepositoryErrorCode(self.args[0])
+
+    def __getattribute__(self, name: str) -> object:
+        if name == "__dict__":
+            raise AttributeError("MapRepositoryError is closed")
+        return super().__getattribute__(name)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        if name in self._RUNTIME_ATTRIBUTES:
+            BaseException.__setattr__(self, name, value)
+            return
+        raise AttributeError("MapRepositoryError is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        if name in self._RUNTIME_ATTRIBUTES:
+            BaseException.__delattr__(self, name)
+            return
+        raise AttributeError("MapRepositoryError is immutable")
+
+    def __repr__(self) -> str:
+        return f"MapRepositoryError(code={self.code.value!r})"
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class MapInputSnapshot:
+    account_key: str = field(repr=False)
+    account_exists: bool
+    indexed_account_keys: tuple[str, ...] = field(repr=False)
+    fixture_version: str | None = field(repr=False)
+    records: tuple[IndexedMessageRecord, ...] = field(repr=False)
+    checkpoint: SyncCheckpoint | None = field(repr=False)
+    policy_history: tuple[PolicyEvent, ...] = field(repr=False)
+    active_policies: tuple[ActivePolicy, ...] = field(repr=False)
+    policy_revision: int
+    input_revision: str = field(repr=False)
+
+    def __post_init__(self) -> None:
+        validate_account_key(self.account_key)
+        if not isinstance(self.account_exists, bool):
+            raise TypeError("account_exists must be a boolean")
+        if not isinstance(self.indexed_account_keys, tuple):
+            raise TypeError("indexed_account_keys must be a tuple")
+        for account_key in self.indexed_account_keys:
+            validate_account_key(account_key)
+        if self.indexed_account_keys != tuple(sorted(set(self.indexed_account_keys))):
+            raise ValueError("indexed_account_keys must be canonical")
+        if self.account_exists != (self.account_key in self.indexed_account_keys):
+            raise ValueError("account_exists does not match indexed_account_keys")
+        if self.fixture_version is not None and (
+            not isinstance(self.fixture_version, str)
+            or not self.fixture_version
+            or self.fixture_version != self.fixture_version.strip()
+        ):
+            raise ValueError("fixture_version must be normalized or None")
+        if not isinstance(self.records, tuple) or any(
+            not isinstance(record, IndexedMessageRecord) for record in self.records
+        ):
+            raise TypeError("records must contain IndexedMessageRecord values")
+        if any(record.account_key != self.account_key for record in self.records):
+            raise ValueError("records reference another account")
+        if self.checkpoint is not None and not isinstance(
+            self.checkpoint, SyncCheckpoint
+        ):
+            raise TypeError("checkpoint must be a SyncCheckpoint or None")
+        if self.checkpoint is not None and self.checkpoint.account_key != self.account_key:
+            raise ValueError("checkpoint references another account")
+        if not isinstance(self.policy_history, tuple) or any(
+            not isinstance(event, PolicyEvent) for event in self.policy_history
+        ):
+            raise TypeError("policy_history must contain PolicyEvent values")
+        if any(
+            event.command.account_key != self.account_key for event in self.policy_history
+        ):
+            raise ValueError("policy_history references another account")
+        if not isinstance(self.active_policies, tuple) or any(
+            not isinstance(policy, ActivePolicy) for policy in self.active_policies
+        ):
+            raise TypeError("active_policies must contain ActivePolicy values")
+        if any(policy.account_key != self.account_key for policy in self.active_policies):
+            raise ValueError("active_policies reference another account")
+        if isinstance(self.policy_revision, bool) or not isinstance(
+            self.policy_revision, int
+        ):
+            raise TypeError("policy_revision must be an integer")
+        expected_revision = (
+            self.policy_history[-1].account_revision if self.policy_history else 0
+        )
+        if self.policy_revision != expected_revision:
+            raise ValueError("policy_revision does not match policy_history")
+        if _MAP_INPUT_REVISION.fullmatch(self.input_revision) is None:
+            raise ValueError("input_revision must be a versioned opaque identifier")
+        if not self.account_exists and (
+            self.records
+            or self.checkpoint is not None
+            or self.policy_history
+            or self.active_policies
+            or self.policy_revision != 0
+        ):
+            raise ValueError("a missing account cannot contain account-scoped data")
+
+    def __repr__(self) -> str:
+        return (
+            "MapInputSnapshot("
+            f"account_exists={self.account_exists}, "
+            f"indexed_account_count={len(self.indexed_account_keys)}, "
+            f"fixture_version_present={self.fixture_version is not None}, "
+            f"record_count={len(self.records)}, "
+            "checkpoint_state="
+            f"{self.checkpoint.state.value if self.checkpoint is not None else None!r}, "
+            f"policy_event_count={len(self.policy_history)}, "
+            f"active_policy_count={len(self.active_policies)}, "
+            f"policy_revision={self.policy_revision}, "
+            f"input_revision_version={MAP_INPUT_REVISION_VERSION})"
+        )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class MapPolicyWriteResult:
+    event: PolicyEvent = field(repr=False)
+    replayed: bool
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.event, PolicyEvent):
+            raise TypeError("event must be a PolicyEvent")
+        if not isinstance(self.replayed, bool):
+            raise TypeError("replayed must be a boolean")
+
+    def __repr__(self) -> str:
+        return (
+            "MapPolicyWriteResult(event=<redacted>, "
+            f"command_type={self.event.command.command_type.value!r}, "
+            f"account_revision={self.event.account_revision}, "
+            f"replayed={self.replayed})"
+        )
+
+
+def _canonical_json_value(value: object) -> object:
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    if isinstance(value, datetime):
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("canonical datetimes must include timezone information")
+        return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
+    if isinstance(value, Enum):
+        return value.value
+    if isinstance(value, tuple):
+        return [_canonical_json_value(item) for item in value]
+    if isinstance(value, list):
+        return [_canonical_json_value(item) for item in value]
+    if isinstance(value, dict):
+        if any(not isinstance(key, str) for key in value):
+            raise TypeError("canonical mappings require string keys")
+        return {
+            key: _canonical_json_value(item)
+            for key, item in sorted(value.items())
+        }
+    if is_dataclass(value) and not isinstance(value, type):
+        return {
+            item.name: _canonical_json_value(getattr(value, item.name))
+            for item in fields(value)
+        }
+    raise TypeError("value is not canonically serializable")
+
+
+def _sha256_revision(payload: object) -> str:
+    serialized = json.dumps(
+        _canonical_json_value(payload),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return f"input-v{MAP_INPUT_REVISION_VERSION}-{hashlib.sha256(serialized).hexdigest()}"
 
 MIGRATIONS: tuple[tuple[int, str], ...] = (
     (
@@ -551,6 +762,29 @@ MIGRATIONS: tuple[tuple[int, str], ...] = (
                 account_key, account_revision, relation_kind,
                 ifnull(anchor_order, -1), target_decision_id
             );
+        """,
+    ),
+    (
+        4,
+        """
+        CREATE TABLE map_policy_requests (
+            account_key TEXT NOT NULL,
+            command_id TEXT NOT NULL CHECK(length(trim(command_id)) > 0),
+            contract_version INTEGER NOT NULL CHECK(contract_version = 1),
+            request_fingerprint TEXT NOT NULL CHECK(
+                length(request_fingerprint) = 64
+                AND request_fingerprint NOT GLOB '*[^0-9a-f]*'
+            ),
+            PRIMARY KEY (account_key, command_id),
+            FOREIGN KEY (account_key, command_id)
+                REFERENCES local_policy_events(account_key, command_id)
+                ON DELETE CASCADE,
+            FOREIGN KEY (account_key)
+                REFERENCES indexed_accounts(account_key)
+                ON DELETE CASCADE
+        );
+        CREATE INDEX idx_map_policy_requests_event
+            ON map_policy_requests(account_key, command_id);
         """,
     ),
 )
@@ -2067,6 +2301,502 @@ class Repository:
         ).fetchone()
         return int(row[0] or 0)
 
+    @staticmethod
+    def _map_input_snapshot_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+    ) -> MapInputSnapshot:
+        indexed_account_keys = tuple(
+            str(row[0])
+            for row in connection.execute(
+                "SELECT account_key FROM indexed_accounts ORDER BY account_key"
+            ).fetchall()
+        )
+        account_exists = account_key in indexed_account_keys
+        fixture_row = connection.execute(
+            "SELECT value FROM app_meta WHERE key = 'map_fixture_version'"
+        ).fetchone()
+        fixture_version = str(fixture_row[0]) if fixture_row is not None else None
+
+        message_rows = connection.execute(
+            "SELECT * FROM indexed_messages WHERE account_key = ? "
+            "ORDER BY received_at DESC, provider_message_id ASC",
+            (account_key,),
+        ).fetchall()
+        records = tuple(Repository._indexed_message_from_row(row) for row in message_rows)
+        checkpoint_row = connection.execute(
+            "SELECT * FROM sync_checkpoints WHERE account_key = ?",
+            (account_key,),
+        ).fetchone()
+        checkpoint = (
+            Repository._checkpoint_from_row(checkpoint_row)
+            if checkpoint_row is not None
+            else None
+        )
+        policy_history = Repository._policy_history_conn(connection, account_key)
+        active_policies = Repository._active_policies_from_events(policy_history)
+        policy_revision = (
+            policy_history[-1].account_revision if policy_history else 0
+        )
+
+        raw_policy_rows: dict[str, list[dict[str, Any]]] = {}
+        policy_queries = (
+            (
+                "local_policy_events",
+                "SELECT * FROM local_policy_events WHERE account_key = ? "
+                "ORDER BY account_revision",
+            ),
+            (
+                "local_policy_anchors",
+                "SELECT * FROM local_policy_anchors WHERE account_key = ? "
+                "ORDER BY account_revision, anchor_order",
+            ),
+            (
+                "local_policy_anchor_sources",
+                "SELECT * FROM local_policy_anchor_sources WHERE account_key = ? "
+                "ORDER BY account_revision, anchor_order, source_order, member_order",
+            ),
+            (
+                "local_policy_partition_members",
+                "SELECT * FROM local_policy_partition_members WHERE account_key = ? "
+                "ORDER BY account_revision, anchor_order, member_order",
+            ),
+            (
+                "local_policy_observed_ids",
+                "SELECT * FROM local_policy_observed_ids WHERE account_key = ? "
+                "ORDER BY account_revision, anchor_order, observed_kind, observed_order",
+            ),
+            (
+                "local_policy_relations",
+                "SELECT * FROM local_policy_relations WHERE account_key = ? "
+                "ORDER BY account_revision, relation_order",
+            ),
+        )
+        for table_name, query in policy_queries:
+            raw_policy_rows[table_name] = [
+                dict(row) for row in connection.execute(query, (account_key,)).fetchall()
+            ]
+
+        revision_payload = {
+            "account_key": account_key,
+            "account_exists": account_exists,
+            "indexed_account_keys": indexed_account_keys,
+            "fixture_version": fixture_version,
+            "indexed_messages": [dict(row) for row in message_rows],
+            "sync_checkpoint": (
+                dict(checkpoint_row) if checkpoint_row is not None else None
+            ),
+            "policy_ledger": raw_policy_rows,
+        }
+        return MapInputSnapshot(
+            account_key=account_key,
+            account_exists=account_exists,
+            indexed_account_keys=indexed_account_keys,
+            fixture_version=fixture_version,
+            records=records,
+            checkpoint=checkpoint,
+            policy_history=policy_history,
+            active_policies=active_policies,
+            policy_revision=policy_revision,
+            input_revision=_sha256_revision(revision_payload),
+        )
+
+    def map_input_snapshot(self, account_key: str) -> MapInputSnapshot:
+        try:
+            validated_account_key = validate_account_key(account_key)
+        except (TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+        try:
+            with self._connect() as connection:
+                connection.execute("BEGIN")
+                return self._map_input_snapshot_conn(connection, validated_account_key)
+        except MapRepositoryError:
+            raise
+        except (PolicyError, sqlite3.DatabaseError, TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.MAP_UNAVAILABLE) from None
+
+    def install_synthetic_map_fixture(
+        self,
+        account_key: str,
+        fixture_version: str,
+        records: tuple[IndexedMessageRecord, ...],
+        checkpoint: SyncCheckpoint,
+        policy_events: tuple[PolicyEvent, ...],
+    ) -> MapInputSnapshot:
+        try:
+            validated_account_key = validate_account_key(account_key)
+            if (
+                not isinstance(fixture_version, str)
+                or not fixture_version
+                or fixture_version != fixture_version.strip()
+            ):
+                raise ValueError("fixture_version must be normalized")
+            if not isinstance(records, tuple) or any(
+                not isinstance(record, IndexedMessageRecord) for record in records
+            ):
+                raise TypeError("records must contain IndexedMessageRecord values")
+            if any(record.account_key != validated_account_key for record in records):
+                raise ValueError("records reference another account")
+            message_ids = tuple(record.provider_message_id for record in records)
+            if len(message_ids) != len(set(message_ids)):
+                raise ValueError("records contain duplicate provider_message_id values")
+            validated_records = tuple(replace(record) for record in records)
+            if not isinstance(checkpoint, SyncCheckpoint):
+                raise TypeError("checkpoint must be a SyncCheckpoint")
+            validated_checkpoint = replace(checkpoint)
+            if validated_checkpoint.account_key != validated_account_key:
+                raise ValueError("checkpoint references another account")
+            if not isinstance(policy_events, tuple) or any(
+                not isinstance(event, PolicyEvent) for event in policy_events
+            ):
+                raise TypeError("policy_events must contain PolicyEvent values")
+
+            validated_events: list[PolicyEvent] = []
+            for expected_revision, event in enumerate(policy_events, start=1):
+                validated_event = PolicyEvent(
+                    command=event.command,
+                    account_revision=event.account_revision,
+                    anchors=event.anchors,
+                    relations=event.relations,
+                    version=event.version,
+                )
+                if validated_event.command.account_key != validated_account_key:
+                    raise ValueError("policy event references another account")
+                if validated_event.account_revision != expected_revision:
+                    raise ValueError("policy events must form a contiguous sequence")
+                if is_policy_decision_command(validated_event.command):
+                    prepared = PreparedPolicyDecision(
+                        command=validated_event.command,
+                        anchors=validated_event.anchors,
+                        relations=validated_event.relations,
+                        version=validated_event.version,
+                    )
+                    self._validate_prepared_against_active(
+                        prepared,
+                        self._active_policies_from_events(tuple(validated_events)),
+                    )
+                validated_events.append(validated_event)
+                self._active_policies_from_events(tuple(validated_events))
+            validated_policy_events = tuple(validated_events)
+            assert_synthetic_fixture_payload(
+                account_key=validated_account_key,
+                fixture_version=fixture_version,
+                records=validated_records,
+                checkpoint=validated_checkpoint,
+                policy_events=validated_policy_events,
+            )
+        except SyntheticMapGateError:
+            raise MapRepositoryError(MapRepositoryErrorCode.MAP_UNAVAILABLE) from None
+        except (PolicyError, TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+
+        try:
+            with self._connect() as connection:
+                connection.execute("BEGIN IMMEDIATE")
+                assert_synthetic_fixture_payload(
+                    account_key=validated_account_key,
+                    fixture_version=fixture_version,
+                    records=validated_records,
+                    checkpoint=validated_checkpoint,
+                    policy_events=validated_policy_events,
+                )
+                if (
+                    connection.execute("SELECT 1 FROM indexed_accounts LIMIT 1").fetchone()
+                    is not None
+                    or connection.execute(
+                        "SELECT 1 FROM app_meta WHERE key = 'map_fixture_version'"
+                    ).fetchone()
+                    is not None
+                ):
+                    raise MapRepositoryError(MapRepositoryErrorCode.MAP_UNAVAILABLE)
+
+                connection.execute(
+                    "INSERT INTO indexed_accounts(account_key) VALUES (?)",
+                    (validated_account_key,),
+                )
+                self._upsert_index_records(connection, validated_records)
+                self._upsert_checkpoint(connection, validated_checkpoint)
+                for event in validated_policy_events:
+                    self._insert_policy_event(
+                        connection, event.command, event.account_revision
+                    )
+                    for anchor in event.anchors:
+                        self._insert_policy_anchor(
+                            connection,
+                            validated_account_key,
+                            event.account_revision,
+                            anchor,
+                        )
+                    for relation in event.relations:
+                        self._insert_policy_relation(
+                            connection,
+                            validated_account_key,
+                            event.account_revision,
+                            relation,
+                        )
+                connection.execute(
+                    "INSERT INTO app_meta(key, value) "
+                    "VALUES ('map_fixture_version', ?)",
+                    (fixture_version,),
+                )
+                snapshot = self._map_input_snapshot_conn(
+                    connection, validated_account_key
+                )
+                self._assert_map_snapshot_gate(
+                    snapshot, SYNTHETIC_MAP_FIXTURE_VERSION
+                )
+                return snapshot
+        except SyntheticMapGateError:
+            raise MapRepositoryError(MapRepositoryErrorCode.MAP_UNAVAILABLE) from None
+        except MapRepositoryError:
+            raise
+        except (PolicyError, sqlite3.DatabaseError, TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+
+    @staticmethod
+    def _validate_map_receipt_metadata(
+        *,
+        request_fingerprint: str,
+        contract_version: int,
+    ) -> None:
+        if (
+            not isinstance(request_fingerprint, str)
+            or _SHA256_FINGERPRINT.fullmatch(request_fingerprint) is None
+        ):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT)
+        if (
+            isinstance(contract_version, bool)
+            or not isinstance(contract_version, int)
+            or contract_version != MAP_POLICY_REQUEST_CONTRACT_VERSION
+        ):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT)
+
+    @staticmethod
+    def _validate_map_write_metadata(
+        *,
+        expected_input_revision: str,
+        request_fingerprint: str,
+        required_fixture_version: str,
+        contract_version: int,
+    ) -> None:
+        Repository._validate_map_receipt_metadata(
+            request_fingerprint=request_fingerprint,
+            contract_version=contract_version,
+        )
+        if (
+            not isinstance(expected_input_revision, str)
+            or _MAP_INPUT_REVISION.fullmatch(expected_input_revision) is None
+        ):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT)
+        if (
+            not isinstance(required_fixture_version, str)
+            or not required_fixture_version
+            or required_fixture_version != required_fixture_version.strip()
+        ):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT)
+
+    @staticmethod
+    def _map_policy_replay_conn(
+        connection: sqlite3.Connection,
+        *,
+        account_key: str,
+        command_id: str,
+        request_fingerprint: str,
+        contract_version: int,
+    ) -> MapPolicyWriteResult | None:
+        receipt = connection.execute(
+            "SELECT contract_version, request_fingerprint "
+            "FROM map_policy_requests WHERE account_key = ? AND command_id = ?",
+            (account_key, command_id),
+        ).fetchone()
+        event_row = connection.execute(
+            "SELECT * FROM local_policy_events "
+            "WHERE account_key = ? AND command_id = ?",
+            (account_key, command_id),
+        ).fetchone()
+        if receipt is None:
+            if event_row is not None:
+                raise MapRepositoryError(MapRepositoryErrorCode.COMMAND_ID_CONFLICT)
+            return None
+        if event_row is None:
+            raise MapRepositoryError(MapRepositoryErrorCode.RECEIPT_CORRUPT)
+
+        stored_version = receipt["contract_version"]
+        stored_fingerprint = receipt["request_fingerprint"]
+        if (
+            isinstance(stored_version, bool)
+            or not isinstance(stored_version, int)
+            or stored_version != MAP_POLICY_REQUEST_CONTRACT_VERSION
+            or not isinstance(stored_fingerprint, str)
+            or _SHA256_FINGERPRINT.fullmatch(stored_fingerprint) is None
+        ):
+            raise MapRepositoryError(MapRepositoryErrorCode.RECEIPT_CORRUPT)
+        if (
+            stored_version != contract_version
+            or stored_fingerprint != request_fingerprint
+        ):
+            raise MapRepositoryError(MapRepositoryErrorCode.COMMAND_ID_CONFLICT)
+        try:
+            event = Repository._event_from_row(connection, event_row)
+        except PolicyError:
+            raise MapRepositoryError(MapRepositoryErrorCode.RECEIPT_CORRUPT) from None
+        return MapPolicyWriteResult(event=event, replayed=True)
+
+    def map_policy_replay(
+        self,
+        account_key: str,
+        command_id: str,
+        *,
+        request_fingerprint: str,
+        contract_version: int = MAP_POLICY_REQUEST_CONTRACT_VERSION,
+    ) -> MapPolicyWriteResult | None:
+        try:
+            validated_account_key = validate_account_key(account_key)
+            validated_command_id = validate_opaque_identifier(command_id, "command_id")
+            self._validate_map_receipt_metadata(
+                request_fingerprint=request_fingerprint,
+                contract_version=contract_version,
+            )
+        except MapRepositoryError:
+            raise
+        except (TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+        try:
+            with self._connect() as connection:
+                connection.execute("BEGIN")
+                return self._map_policy_replay_conn(
+                    connection,
+                    account_key=validated_account_key,
+                    command_id=validated_command_id,
+                    request_fingerprint=request_fingerprint,
+                    contract_version=contract_version,
+                )
+        except MapRepositoryError:
+            raise
+        except (PolicyError, sqlite3.DatabaseError, TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.RECEIPT_CORRUPT) from None
+
+    @staticmethod
+    def _assert_map_snapshot_gate(
+        snapshot: MapInputSnapshot,
+        required_fixture_version: str,
+    ) -> None:
+        if required_fixture_version != SYNTHETIC_MAP_FIXTURE_VERSION:
+            raise MapRepositoryError(MapRepositoryErrorCode.MAP_UNAVAILABLE)
+        try:
+            assert_synthetic_map_snapshot(
+                account_key=snapshot.account_key,
+                account_exists=snapshot.account_exists,
+                indexed_account_keys=snapshot.indexed_account_keys,
+                fixture_version=snapshot.fixture_version,
+                records=snapshot.records,
+                checkpoint=snapshot.checkpoint,
+                policy_history=snapshot.policy_history,
+                active_policies=snapshot.active_policies,
+            )
+        except SyntheticMapGateError:
+            raise MapRepositoryError(MapRepositoryErrorCode.MAP_UNAVAILABLE) from None
+
+    @staticmethod
+    def _insert_map_policy_receipt(
+        connection: sqlite3.Connection,
+        *,
+        account_key: str,
+        command_id: str,
+        request_fingerprint: str,
+        contract_version: int,
+    ) -> None:
+        connection.execute(
+            "INSERT INTO map_policy_requests("
+            "account_key, command_id, contract_version, request_fingerprint"
+            ") VALUES (?, ?, ?, ?)",
+            (account_key, command_id, contract_version, request_fingerprint),
+        )
+
+    @staticmethod
+    def _record_policy_conn(
+        connection: sqlite3.Connection,
+        prepared: PreparedPolicyDecision,
+    ) -> PolicyEvent:
+        command = prepared.command
+        if not Repository._account_exists_conn(connection, command.account_key):
+            raise PolicyError(PolicyErrorCode.TARGET_NOT_FOUND)
+        current_revision = Repository._current_policy_revision_conn(
+            connection, command.account_key
+        )
+        if command.expected_revision != current_revision:
+            raise PolicyError(PolicyErrorCode.REVISION_CONFLICT)
+        if (
+            connection.execute(
+                "SELECT 1 FROM local_policy_events "
+                "WHERE account_key = ? AND decision_id = ?",
+                (command.account_key, command.decision_id),
+            ).fetchone()
+            is not None
+        ):
+            raise PolicyError(PolicyErrorCode.INVALID_TRANSITION)
+
+        active = Repository._active_policies_conn(connection, command.account_key)
+        Repository._validate_prepared_against_active(prepared, active)
+        account_revision = current_revision + 1
+        Repository._insert_policy_event(connection, command, account_revision)
+        for anchor in prepared.anchors:
+            Repository._insert_policy_anchor(
+                connection, command.account_key, account_revision, anchor
+            )
+        for relation in prepared.relations:
+            Repository._insert_policy_relation(
+                connection, command.account_key, account_revision, relation
+            )
+        row = connection.execute(
+            "SELECT * FROM local_policy_events "
+            "WHERE account_key = ? AND account_revision = ?",
+            (command.account_key, account_revision),
+        ).fetchone()
+        if row is None:
+            raise PolicyError(PolicyErrorCode.INVALID_INPUT)
+        return Repository._event_from_row(connection, row)
+
+    @staticmethod
+    def _undo_policy_conn(
+        connection: sqlite3.Connection,
+        command: UndoPolicy,
+    ) -> PolicyEvent:
+        current_revision = Repository._current_policy_revision_conn(
+            connection, command.account_key
+        )
+        if command.expected_revision != current_revision:
+            raise PolicyError(PolicyErrorCode.REVISION_CONFLICT)
+        if not Repository._account_exists_conn(connection, command.account_key):
+            raise PolicyError(PolicyErrorCode.INVALID_TRANSITION)
+        active = {
+            policy.decision_id: policy
+            for policy in Repository._active_policies_conn(
+                connection, command.account_key
+            )
+        }
+        if command.target_decision_id not in active:
+            raise PolicyError(PolicyErrorCode.INVALID_TRANSITION)
+
+        account_revision = current_revision + 1
+        relation = PreparedPolicyRelation(
+            relation_order=0,
+            kind=PolicyRelationKind.UNDOES,
+            target_decision_id=command.target_decision_id,
+        )
+        Repository._insert_policy_event(connection, command, account_revision)
+        Repository._insert_policy_relation(
+            connection, command.account_key, account_revision, relation
+        )
+        row = connection.execute(
+            "SELECT * FROM local_policy_events "
+            "WHERE account_key = ? AND account_revision = ?",
+            (command.account_key, account_revision),
+        ).fetchone()
+        if row is None:
+            raise PolicyError(PolicyErrorCode.INVALID_INPUT)
+        return Repository._event_from_row(connection, row)
+
     def policy_event_for_command(
         self,
         command: LocalPolicyCommand,
@@ -2096,43 +2826,7 @@ class Repository:
                     relations=prepared.relations,
                     version=prepared.version,
                 )
-                if not self._account_exists_conn(connection, command.account_key):
-                    raise PolicyError(PolicyErrorCode.TARGET_NOT_FOUND)
-                current_revision = self._current_policy_revision_conn(
-                    connection, command.account_key
-                )
-                if command.expected_revision != current_revision:
-                    raise PolicyError(PolicyErrorCode.REVISION_CONFLICT)
-                if (
-                    connection.execute(
-                        "SELECT 1 FROM local_policy_events "
-                        "WHERE account_key = ? AND decision_id = ?",
-                        (command.account_key, command.decision_id),
-                    ).fetchone()
-                    is not None
-                ):
-                    raise PolicyError(PolicyErrorCode.INVALID_TRANSITION)
-
-                active = self._active_policies_conn(connection, command.account_key)
-                self._validate_prepared_against_active(validated, active)
-                account_revision = current_revision + 1
-                self._insert_policy_event(connection, command, account_revision)
-                for anchor in validated.anchors:
-                    self._insert_policy_anchor(
-                        connection, command.account_key, account_revision, anchor
-                    )
-                for relation in validated.relations:
-                    self._insert_policy_relation(
-                        connection, command.account_key, account_revision, relation
-                    )
-                row = connection.execute(
-                    "SELECT * FROM local_policy_events "
-                    "WHERE account_key = ? AND account_revision = ?",
-                    (command.account_key, account_revision),
-                ).fetchone()
-                if row is None:
-                    raise PolicyError(PolicyErrorCode.INVALID_INPUT)
-                return self._event_from_row(connection, row)
+                return self._record_policy_conn(connection, validated)
         except sqlite3.IntegrityError:
             raise PolicyError(PolicyErrorCode.INVALID_INPUT) from None
         except PolicyError:
@@ -2149,47 +2843,162 @@ class Repository:
                 replay = self._policy_event_for_command_conn(connection, command)
                 if replay is not None:
                     return replay
-
-                current_revision = self._current_policy_revision_conn(
-                    connection, command.account_key
-                )
-                if command.expected_revision != current_revision:
-                    raise PolicyError(PolicyErrorCode.REVISION_CONFLICT)
-                if not self._account_exists_conn(connection, command.account_key):
-                    raise PolicyError(PolicyErrorCode.INVALID_TRANSITION)
-                active = {
-                    policy.decision_id: policy
-                    for policy in self._active_policies_conn(
-                        connection, command.account_key
-                    )
-                }
-                if command.target_decision_id not in active:
-                    raise PolicyError(PolicyErrorCode.INVALID_TRANSITION)
-
-                account_revision = current_revision + 1
-                relation = PreparedPolicyRelation(
-                    relation_order=0,
-                    kind=PolicyRelationKind.UNDOES,
-                    target_decision_id=command.target_decision_id,
-                )
-                self._insert_policy_event(connection, command, account_revision)
-                self._insert_policy_relation(
-                    connection, command.account_key, account_revision, relation
-                )
-                row = connection.execute(
-                    "SELECT * FROM local_policy_events "
-                    "WHERE account_key = ? AND account_revision = ?",
-                    (command.account_key, account_revision),
-                ).fetchone()
-                if row is None:
-                    raise PolicyError(PolicyErrorCode.INVALID_INPUT)
-                return self._event_from_row(connection, row)
+                return self._undo_policy_conn(connection, command)
         except sqlite3.IntegrityError:
             raise PolicyError(PolicyErrorCode.INVALID_INPUT) from None
         except PolicyError:
             raise
         except (AttributeError, KeyError, TypeError, ValueError):
             raise PolicyError(PolicyErrorCode.INVALID_INPUT) from None
+
+    def record_map_policy(
+        self,
+        prepared: PreparedPolicyDecision,
+        *,
+        expected_input_revision: str,
+        request_fingerprint: str,
+        required_fixture_version: str,
+        contract_version: int = MAP_POLICY_REQUEST_CONTRACT_VERSION,
+    ) -> MapPolicyWriteResult:
+        if not isinstance(prepared, PreparedPolicyDecision):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT)
+        self._validate_map_write_metadata(
+            expected_input_revision=expected_input_revision,
+            request_fingerprint=request_fingerprint,
+            required_fixture_version=required_fixture_version,
+            contract_version=contract_version,
+        )
+        try:
+            validated = PreparedPolicyDecision(
+                command=prepared.command,
+                anchors=prepared.anchors,
+                relations=prepared.relations,
+                version=prepared.version,
+            )
+            assert_synthetic_policy_candidate(validated)
+        except SyntheticMapGateError:
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+        except (TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+        command = validated.command
+        try:
+            with self._connect() as connection:
+                connection.execute("BEGIN IMMEDIATE")
+                replay = self._map_policy_replay_conn(
+                    connection,
+                    account_key=command.account_key,
+                    command_id=command.command_id,
+                    request_fingerprint=request_fingerprint,
+                    contract_version=contract_version,
+                )
+                if replay is not None:
+                    return replay
+
+                snapshot = self._map_input_snapshot_conn(
+                    connection, command.account_key
+                )
+                self._assert_map_snapshot_gate(snapshot, required_fixture_version)
+                if snapshot.input_revision != expected_input_revision:
+                    raise MapRepositoryError(
+                        MapRepositoryErrorCode.MAP_REVISION_CONFLICT
+                    )
+                if command.expected_revision != snapshot.policy_revision:
+                    raise PolicyError(PolicyErrorCode.REVISION_CONFLICT)
+
+                event = self._record_policy_conn(connection, validated)
+                self._assert_map_snapshot_gate(
+                    self._map_input_snapshot_conn(connection, command.account_key),
+                    required_fixture_version,
+                )
+                self._insert_map_policy_receipt(
+                    connection,
+                    account_key=command.account_key,
+                    command_id=command.command_id,
+                    request_fingerprint=request_fingerprint,
+                    contract_version=contract_version,
+                )
+                return MapPolicyWriteResult(event=event, replayed=False)
+        except (MapRepositoryError, PolicyError):
+            raise
+        except sqlite3.IntegrityError:
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+        except (AttributeError, KeyError, TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+
+    def undo_map_policy(
+        self,
+        command: UndoPolicy,
+        *,
+        expected_input_revision: str,
+        request_fingerprint: str,
+        required_fixture_version: str,
+        contract_version: int = MAP_POLICY_REQUEST_CONTRACT_VERSION,
+    ) -> MapPolicyWriteResult:
+        if not isinstance(command, UndoPolicy):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT)
+        self._validate_map_write_metadata(
+            expected_input_revision=expected_input_revision,
+            request_fingerprint=request_fingerprint,
+            required_fixture_version=required_fixture_version,
+            contract_version=contract_version,
+        )
+        try:
+            validated = UndoPolicy(
+                command_id=command.command_id,
+                account_key=command.account_key,
+                occurred_at=command.occurred_at,
+                expected_revision=command.expected_revision,
+                target_decision_id=command.target_decision_id,
+                version=command.version,
+            )
+            assert_synthetic_policy_candidate(validated)
+        except SyntheticMapGateError:
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+        except (TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+        try:
+            with self._connect() as connection:
+                connection.execute("BEGIN IMMEDIATE")
+                replay = self._map_policy_replay_conn(
+                    connection,
+                    account_key=validated.account_key,
+                    command_id=validated.command_id,
+                    request_fingerprint=request_fingerprint,
+                    contract_version=contract_version,
+                )
+                if replay is not None:
+                    return replay
+
+                snapshot = self._map_input_snapshot_conn(
+                    connection, validated.account_key
+                )
+                self._assert_map_snapshot_gate(snapshot, required_fixture_version)
+                if snapshot.input_revision != expected_input_revision:
+                    raise MapRepositoryError(
+                        MapRepositoryErrorCode.MAP_REVISION_CONFLICT
+                    )
+                if validated.expected_revision != snapshot.policy_revision:
+                    raise PolicyError(PolicyErrorCode.REVISION_CONFLICT)
+
+                event = self._undo_policy_conn(connection, validated)
+                self._assert_map_snapshot_gate(
+                    self._map_input_snapshot_conn(connection, validated.account_key),
+                    required_fixture_version,
+                )
+                self._insert_map_policy_receipt(
+                    connection,
+                    account_key=validated.account_key,
+                    command_id=validated.command_id,
+                    request_fingerprint=request_fingerprint,
+                    contract_version=contract_version,
+                )
+                return MapPolicyWriteResult(event=event, replayed=False)
+        except (MapRepositoryError, PolicyError):
+            raise
+        except sqlite3.IntegrityError:
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
+        except (AttributeError, KeyError, TypeError, ValueError):
+            raise MapRepositoryError(MapRepositoryErrorCode.INVALID_INPUT) from None
 
     def policy_history(self, account_key: str) -> tuple[PolicyEvent, ...]:
         try:

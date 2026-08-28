@@ -21,10 +21,16 @@ CLASSIFICATION_MODEL_PATH = ACTIVE_PACKAGE / "classification_model.py"
 CLASSIFICATION_DOMAIN_PATH = ACTIVE_PACKAGE / "classification_domain.py"
 POLICY_MODEL_PATH = ACTIVE_PACKAGE / "policy_model.py"
 POLICY_DOMAIN_PATH = ACTIVE_PACKAGE / "policy_domain.py"
+MAP_API_PATH = ACTIVE_PACKAGE / "map_api.py"
+MAP_COMPOSITION_PATH = ACTIVE_PACKAGE / "map_composition.py"
+MAP_FIXTURES_PATH = ACTIVE_PACKAGE / "map_fixtures.py"
+MAP_MODEL_PATH = ACTIVE_PACKAGE / "map_model.py"
+MAP_SYNTHETIC_GATE_PATH = ACTIVE_PACKAGE / "map_synthetic_gate.py"
 REPOSITORY_PATH = ACTIVE_PACKAGE / "repository.py"
 SAFE_STDLIB_URL_IMPORT_ALLOWLIST = {
     OAUTH_SESSION_PATH: {"urllib.parse"},
     GMAIL_READONLY_POLICY_PATH: {"urllib.parse"},
+    MAP_SYNTHETIC_GATE_PATH: {"urllib.parse"},
 }
 FORBIDDEN_IMPORT_PREFIXES = {
     "google",
@@ -189,10 +195,11 @@ def test_no_shippable_code_contains_write_scopes_routes_or_credential_files() ->
     assert findings == []
 
 
-def test_d2_allowlist_is_exact_and_contains_no_real_transport_or_browser() -> None:
+def test_url_parser_allowlist_is_exact_and_contains_no_real_transport_or_browser() -> None:
     assert {
         OAUTH_SESSION_PATH: {"urllib.parse"},
         GMAIL_READONLY_POLICY_PATH: {"urllib.parse"},
+        MAP_SYNTHETIC_GATE_PATH: {"urllib.parse"},
     } == SAFE_STDLIB_URL_IMPORT_ALLOWLIST
     oauth_imports = _import_modules(OAUTH_SESSION_PATH)
     assert "urllib.parse" in oauth_imports
@@ -235,7 +242,7 @@ def test_d3_inventory_has_no_external_transport_network_browser_or_scope_literal
         )
 
 
-def test_d4_classification_is_local_closed_and_has_no_product_consumer() -> None:
+def test_d4_classification_is_local_closed_and_has_only_c5_consumers() -> None:
     for path in (CLASSIFICATION_MODEL_PATH, CLASSIFICATION_DOMAIN_PATH):
         imports = _import_modules(path)
         assert imports == D4_IMPORT_ALLOWLIST[path]
@@ -263,7 +270,7 @@ def test_d4_classification_is_local_closed_and_has_no_product_consumer() -> None
             )
         )
 
-    consumer_findings: list[str] = []
+    consumer_findings: list[Path] = []
     for path in sorted(ACTIVE_PACKAGE.rglob("*.py")):
         if path in (
             CLASSIFICATION_MODEL_PATH,
@@ -281,8 +288,13 @@ def test_d4_classification_is_local_closed_and_has_no_product_consumer() -> None
                 "classify_indexed_records",
             )
         ):
-            consumer_findings.append(str(path.relative_to(PROJECT_ROOT)))
-    assert consumer_findings == []
+            consumer_findings.append(path)
+    assert consumer_findings == [
+        MAP_API_PATH,
+        MAP_COMPOSITION_PATH,
+        MAP_FIXTURES_PATH,
+        MAP_MODEL_PATH,
+    ]
 
 
 def test_d5_policy_memory_is_local_closed_and_has_only_authorized_consumers() -> None:
@@ -334,8 +346,15 @@ def test_d5_policy_memory_is_local_closed_and_has_only_authorized_consumers() ->
             policy_model_consumers.append(path)
         if "mailmap.policy_domain" in imports:
             policy_domain_consumers.append(path)
-    assert policy_model_consumers == [REPOSITORY_PATH]
-    assert policy_domain_consumers == []
+    assert policy_model_consumers == [
+        MAP_API_PATH,
+        MAP_COMPOSITION_PATH,
+        MAP_FIXTURES_PATH,
+        MAP_MODEL_PATH,
+        MAP_SYNTHETIC_GATE_PATH,
+        REPOSITORY_PATH,
+    ]
+    assert policy_domain_consumers == [MAP_COMPOSITION_PATH, MAP_FIXTURES_PATH]
 
     repository_tree = ast.parse(
         REPOSITORY_PATH.read_text(encoding="utf-8"), filename=str(REPOSITORY_PATH)
@@ -444,18 +463,30 @@ def test_legacy_gmail_package_is_not_in_the_active_tree_or_build_config() -> Non
     assert 'include = ["mailmap*"]' in pyproject
 
 
-def test_base_segura_api_exposes_no_connection_or_execution_routes(tmp_path: Path) -> None:
+def test_active_api_exposes_only_local_policy_writes_and_no_external_actions(
+    tmp_path: Path,
+) -> None:
     app = create_app(tmp_path / "safety.db", serve_frontend=False)
     assert app.state.service.configuration()["oauthAvailable"] is False
+    expanded_routes = [
+        nested
+        for route in app.routes
+        for nested in (
+            getattr(getattr(route, "original_router", None), "routes", None)
+            or (route,)
+        )
+    ]
     routes = {
         (method, route.path)
-        for route in app.routes
+        for route in expanded_routes
         for method in getattr(route, "methods", set())
     }
     post_routes = {path for method, path in routes if method == "POST"}
-    assert post_routes == {
+    assert post_routes - {"/api/v2/{unmatched_path:path}"} == {
         "/api/v1/plans/preview",
         "/api/v1/plans/{plan_id}/revalidate",
+        "/api/v2/decisions",
+        "/api/v2/decisions/{decisionId}/undo",
     }
     assert all(
         blocked not in path.casefold()
@@ -478,4 +509,5 @@ def test_server_entrypoint_is_fixed_to_loopback(monkeypatch: Any) -> None:
         "host": "127.0.0.1",
         "port": 8765,
         "reload": False,
+        "access_log": False,
     }

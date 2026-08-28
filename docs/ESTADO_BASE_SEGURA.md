@@ -2,9 +2,10 @@
 
 Fecha del corte: 18 de agosto de 2026.
 
-Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. La aceptación
-no convierte en verificada la revisión visual que la herramienta no pudo
-completar; ese dato histórico se conserva. La preparación sintética de Mapa
+Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. MAIN completó
+el 27 de agosto de 2026 la revisión visual que había quedado pendiente; el fallo
+histórico de la herramienta se conserva como antecedente, no como estado actual.
+La preparación sintética de Mapa
 Total mediante D2, D3, D4 y D5 fue auditada e integrada con dobles o registros
 sintéticos, sin abrir OAuth ni conectar datos reales. D5 queda consolidada por
 el commit que contiene este estado.
@@ -44,9 +45,10 @@ pero no se importan, prueban ni empaquetan como parte de Base Segura.
   frontend, creación y revalidación del plan respondieron correctamente.
 - plan HTTP comprobado: 1 mensaje, estado `simulated`, revalidación `valid` y
   `canExecute: false` en ambas respuestas.
-- recorrido visual: no verificado; durante la consolidación, el servicio de
-  control del navegador de Codex volvió a rechazar su propia ruta interna de
-  confianza antes de abrir la página.
+- recorrido visual verificado el 27 de agosto de 2026: Panorama, Fuentes,
+  detalle de fuente, Estudio de Limpieza y Estado en escritorio y a 390 px;
+  navegación, jerarquía, contenido y adaptación responsive sin defectos
+  bloqueantes ni errores de consola observados.
 
 ## Correcciones de la herencia
 
@@ -79,18 +81,19 @@ No hay rutas activas con `oauth`, `gmail`, `execute` o `disconnect`. Los únicos
   dependencias, sin agregar paquetes sólo para ocultar el aviso.
 - La aplicación todavía no fue empaquetada como ejecutable de Windows; Base Segura
   se inicia como servidor web local.
-- La experiencia responsive tiene reglas estructurales y pruebas funcionales,
-  pero no se considera visualmente aprobada hasta completar el recorrido real.
+- Cada interfaz futura de Mapa Total deberá repetir su propio recorrido visual;
+  la revisión cerrada corresponde únicamente a Base Segura vigente.
 
 ## Cierre de Base Segura
 
-- recorrer visualmente Panorama, Fuentes, detalle, Plan y Estado en escritorio;
-- repetir el recorrido con un ancho móvil de 390 px;
-- corregir cualquier defecto visual encontrado;
+- recorrido visual de Panorama, Fuentes, detalle, Plan y Estado en escritorio:
+  completado el 27 de agosto de 2026;
+- recorrido con un ancho móvil de 390 px: completado el 27 de agosto de 2026;
+- defectos visuales bloqueantes encontrados: ninguno;
 - aceptación explícita de Joa: recibida el 18 de agosto de 2026.
 
-Las pruebas funcionales y estructurales están verificadas. La revisión visual
-instrumental continúa pendiente como evidencia, aunque Joa aceptó el proceso.
+Las pruebas funcionales, estructurales y la revisión visual instrumental de
+Base Segura están verificadas. Joa aceptó el proceso previamente.
 La autorización posterior permitió integrar D2 y D3 con dobles sintéticos. MAIN
 amplió la persistencia D1 para que altas, actualizaciones, bajas y checkpoint de
 una página sean atómicos y para que un escaneo completo nuevo reemplace de forma
@@ -103,8 +106,15 @@ SQLite v3 sin crear cuentas ni consumidores productivos. Durante la auditoría,
 MAIN corrigió que una partición pudiera mejorar la confianza automática de un
 flujo D4 y agregó la regresión correspondiente.
 
-La batería global actual pasó con 225 pruebas Python, Ruff, mypy estricto sobre
-19 archivos, ESLint, 4 pruebas Vitest y build Vite. El roundtrip DPAPI real pudo
+MAIN implementó después el candidato C5 para Mapa Total: una fotografía SQLite
+coherente que incluye índice y políticas, composición determinista D4+D5, un
+fixture canónico `.example`, una puerta sintética revalidada dentro de cada
+escritura y nueve rutas cerradas bajo `/api/v2`. `/api/v1` permanece compatible,
+el frontend todavía no consume C5 y no existe acceso real. El candidato fue
+auditado y queda consolidado por el commit que contiene este estado.
+
+La batería global actual pasó con 296 pruebas Python, Ruff, mypy estricto sobre
+24 archivos, ESLint, 4 pruebas Vitest y build Vite. El roundtrip DPAPI real pudo
 ejecutarse bajo el perfil de usuario actual en una verificación anterior. Este
 estado no autoriza abrir OAuth, usar credenciales, conectar Gmail real, persistir
 metadatos privados ni comenzar D6.

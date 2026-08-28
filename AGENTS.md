@@ -44,9 +44,10 @@ que sea importante, ambiguo o contradictorio.
 
 ## Estado actual
 
-`DEVELOPMENT` — Joa aceptó Base Segura el 18 de agosto de 2026. La revisión
-visual con herramienta no llegó a verificarse y permanece registrada como tal;
-la aceptación es una decisión de producto, no evidencia visual retroactiva.
+`DEVELOPMENT` — Joa aceptó Base Segura el 18 de agosto de 2026. MAIN completó
+el 27 de agosto de 2026 el recorrido visual instrumental de Panorama, Fuentes,
+detalle, Estudio y Estado tanto en escritorio como a 390 px, sin defectos
+bloqueantes.
 
 La preparación sintética de Mapa Total mediante D2 fue auditada e integrada en
 MAIN. D3 `gmail-readonly-inventory` fue auditada e integrada después de ampliar
@@ -72,11 +73,18 @@ fuentes D1-D5 conservadas como evidencia. `origin` apunta al repositorio privado
 especialistas no publican ramas ni usan el remoto para ampliar su alcance.
 La primera publicación de `main` quedó verificada desde `6310c76`.
 
+MAIN definió `MAPA_TOTAL_API_V1.md` e implementó en su árbol de trabajo el
+candidato C5: fotografía SQLite coherente, composición D4+D5, fixture canónico,
+puerta sintética cerrada y API local `/api/v2`. La auditoría y la batería global
+están verdes y C5 queda consolidada por el commit que contiene este estado. No
+incorpora frontend de Mapa Total ni habilita capacidades externas.
+
 ## Objetivo actual
 
-Estabilizar la composición backend y el contrato C5 antes de proponer D6. D6
-continúa bloqueada y no debe crearse. No abrir OAuth, conectar
-una cuenta real, persistir metadatos privados ni usar credenciales.
+Esperar autorización específica de Joa para preparar y crear D6 desde el SHA
+limpio que consolida C5. D6 continúa bloqueada y no debe crearse todavía. No
+abrir OAuth, conectar una cuenta real, persistir metadatos privados ni usar
+credenciales.
 
 ---
 
@@ -106,10 +114,11 @@ Para determinar implementación y estado actual:
 1. código en `src/mailmap` y `frontend/src`;
 2. pruebas en `tests` y `frontend/src`;
 3. `docs/contracts/API_V1.md`;
-4. `docs/adr/0001-arquitectura-base-segura.md`;
-5. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
-6. `docs/ESTADO_BASE_SEGURA.md`;
-7. `docs/DECISIONES.md`.
+4. `docs/contracts/MAPA_TOTAL_API_V1.md` para C5 y futuros consumidores D6;
+5. `docs/adr/0001-arquitectura-base-segura.md`;
+6. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
+7. `docs/ESTADO_BASE_SEGURA.md`;
+8. `docs/DECISIONES.md`.
 
 Para coordinación de MAIN y dependencias:
 
@@ -123,7 +132,9 @@ Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`. Para D4 prevalece
 `docs/contracts/CLASSIFICATION_DOMAIN_V1.md`. Para D5 prevalece el contrato
 aprobado `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`. Su integración sintética no
-habilita Gmail, OAuth, datos reales ni consumidores posteriores.
+habilita Gmail, OAuth ni datos reales. Para C5 prevalece
+`docs/contracts/MAPA_TOTAL_API_V1.md`; su API `/api/v2` es exclusivamente local
+y sintética y todavía no tiene consumidor frontend.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -149,7 +160,8 @@ contrato sin evidencia y decisión de MAIN.
 ## Frontend
 
 - React 19, TypeScript 6 y Vite 8.
-- Navegación local por hash y consumo de `/api/v1`.
+- Navegación local por hash y consumo actual de `/api/v1`; `/api/v2` queda
+  reservada para el futuro D6.
 
 ## Persistencia
 
@@ -190,6 +202,18 @@ API local v1
 interfaz React/TypeScript
 ```
 
+El candidato C5 agrega una rama backend separada, sin sustituir la anterior:
+
+```text
+índice sintético D1 + políticas D5
+        ↓ fotografía SQLite única
+clasificación D4 + aplicación conservadora D5
+        ↓
+proyección explicable de Mapa Total
+        ↓
+API local v2 cerrada
+```
+
 ## Componentes
 
 - `model.py`, `fixtures.py`, `classifier.py`: modelo versionado, dataset canónico
@@ -198,6 +222,9 @@ interfaz React/TypeScript
   planes simulados; no almacena credenciales.
 - `service.py`, `api.py`, `main.py`: agregación, planes incapaces de ejecutarse,
   API y servidor fijado a `127.0.0.1:8765`.
+- `map_model.py`, `map_composition.py`, `map_fixtures.py`,
+  `map_synthetic_gate.py` y `map_api.py`: contrato ejecutable C5, composición,
+  fixture `.example`, puerta sintética y API local v2; no conectan Gmail.
 - `frontend/src`: presentación, navegación, selección y consumo tipado de la API;
   no duplica reglas de clasificación o seguridad.
 - `tests`, pruebas frontend y `scripts/check.ps1`: invariantes, contrato HTTP,
@@ -449,8 +476,9 @@ Una tarea de MailCleanup está terminada sólo si:
 - Git y el registro de worktrees reflejan el estado real.
 
 Base Segura no queda aceptada porque compile. Joa ya otorgó la aceptación
-explícita; la revisión visual instrumental continúa registrada como evidencia
-no verificada y deberá completarse antes de cerrar la experiencia de Mapa Total.
+explícita y MAIN completó después la revisión visual instrumental en escritorio
+y 390 px. Toda experiencia nueva de Mapa Total deberá repetir su propia revisión
+visual antes de considerarse cerrada.
 
 ---
 
