@@ -32,8 +32,8 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
   contiene este estado;
 - C5 de backend para Mapa Total está auditada, consolidada en `67b00c7` y verde:
   compone D1+D4+D5 desde una fotografía SQLite coherente y expone `/api/v2`
-  sólo con el fixture `.example`; Joa autorizó preparar un único worktree D6
-  para construir su interfaz sintética;
+  sólo con el fixture `.example`; D6 construye su interfaz sintética en un único
+  worktree aislado desde la base `75764c9`;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -76,7 +76,7 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso autorizado es crear D6 `mapa-total-ui` desde un SHA limpio que
-contenga C5 y su prompt durable, para migrar la interfaz activa a `/api/v2` con
-datos de demostración. Conectar una cuenta real continúa fuera de alcance y
-requiere otra autorización más resolver la protección del índice local.
+El próximo paso es recibir y auditar la entrega D6 `mapa-total-ui`, repetir la
+batería y revisar la experiencia en escritorio y 390 px antes de integrarla.
+Conectar una cuenta real continúa fuera de alcance y requiere otra autorización
+más resolver la protección del índice local.

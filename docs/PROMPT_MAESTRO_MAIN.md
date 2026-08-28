@@ -9,8 +9,8 @@ que requiere, consolidados en `9f55b93`. MAIN consolidó el prompt D5 en
 `663d8a9`, creó un único worktree especialista y auditó su entrega. D5 está
 integrada en MAIN con una corrección conservadora de confianza de flujos
 particionados y consolidada por el commit que contiene este estado. MAIN
-estabilizó y consolidó C5 en `67b00c7`; Joa autorizó preparar y crear un único
-worktree D6 para la interfaz sintética de Mapa Total.
+estabilizó y consolidó C5 en `67b00c7`, consolidó el prompt D6 en `75764c9` y
+creó un único worktree para la interfaz sintética de Mapa Total.
 La revisión visual instrumental de Base Segura está completada. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
@@ -72,10 +72,10 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Consolidar el prompt D6 en una base limpia, crear un único worktree desde ese SHA
-y entregarle la implementación de la interfaz sintética `/api/v2`. No agregar
-adaptadores productivos ni habilitar conexiones, sincronización operativa,
-Estudio de Limpieza o acciones.
+Supervisar D6 en su worktree aislado y, al recibirla, auditar diff, no rastreados,
+contrato, seguridad, batería y experiencia visual antes de decidir su integración.
+No agregar adaptadores productivos ni habilitar conexiones, sincronización
+operativa, Estudio de Limpieza o acciones.
 
 ## Línea base de privacidad
 

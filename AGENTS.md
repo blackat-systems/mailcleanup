@@ -66,9 +66,10 @@ worktree D5. MAIN consolidó la base `663d8a9`, creó D5 en
 MAIN quedó aprobada con una corrección conservadora: los fragmentos de un flujo
 particionado conservan la confianza automática original de D4. D5 queda
 consolidada por el commit que contiene este estado. No están autorizados abrir
-OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen seis
-worktrees: MAIN y las
-fuentes D1-D5 conservadas como evidencia. `origin` apunta al repositorio privado
+OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen siete
+worktrees: MAIN, las fuentes D1-D5 conservadas como evidencia y D6 activa en
+`C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup`, rama
+`codex/mapa-total-ui`. `origin` apunta al repositorio privado
 `https://github.com/blackat-systems/mailcleanup.git`. Sólo MAIN puede publicar
 `main` después de verificar destino, alcance y autorización; los worktrees
 especialistas no publican ramas ni usan el remoto para ampliar su alcance.
@@ -77,17 +78,18 @@ La primera publicación de `main` quedó verificada desde `6310c76`.
 MAIN definió `MAPA_TOTAL_API_V1.md` e implementó C5: fotografía SQLite coherente,
 composición D4+D5, fixture canónico, puerta sintética cerrada y API local
 `/api/v2`. La auditoría y la batería global están verdes y C5 quedó consolidada
-en `67b00c7`. Joa autorizó preparar y crear un único worktree D6
-`mapa-total-ui` desde una base limpia que incluya su prompt durable. Esta
-autorización cubre sólo la interfaz sintética y no habilita capacidades externas.
+en `67b00c7`. MAIN consolidó el prompt D6 en `75764c9`, creó un único worktree
+`mapa-total-ui` desde ese SHA y le entregó el alcance completo. Esta autorización
+cubre sólo la interfaz sintética y no habilita capacidades externas.
 
 ## Objetivo actual
 
-Preparar el prompt autosuficiente D6, consolidarlo en una base limpia y crear un
-único worktree `mapa-total-ui` desde ese SHA exacto. La interfaz debe consumir
-solamente `/api/v2`, retirar del recorrido activo los conceptos de Estudio de
-Limpieza y permanecer sintética. No abrir OAuth, conectar una cuenta real,
-persistir metadatos privados ni usar credenciales.
+Supervisar la implementación especialista D6 y esperar su handoff. MAIN deberá
+auditar el diff completo y los no rastreados, repetir la batería y revisar la
+interfaz en escritorio y 390 px antes de decidir una integración. D6 debe
+consumir solamente `/api/v2`, retirar del recorrido activo Estudio de Limpieza y
+permanecer sintética. No abrir OAuth, conectar una cuenta real, persistir
+metadatos privados ni usar credenciales.
 
 ---
 
@@ -355,9 +357,8 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 Los worktrees fuente de D1 `real-index-persistence`, D2
 `secure-gmail-session`, D3 `gmail-readonly-inventory`, D4
 `real-classification-domain` y D5 `local-policy-memory` se conservan como
-evidencia de entregas integradas. D6 `mapa-total-ui` está autorizada y lista
-para crear después de consolidar su prompt en un SHA limpio; todavía no existe
-su worktree al registrarse esta base.
+evidencia de entregas integradas. D6 `mapa-total-ui` está `EN DESARROLLO` en el
+único worktree registrado; su entrega no se considera integrada ni aceptada.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,

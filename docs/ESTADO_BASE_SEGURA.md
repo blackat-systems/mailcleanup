@@ -111,8 +111,9 @@ coherente que incluye índice y políticas, composición determinista D4+D5, un
 fixture canónico `.example`, una puerta sintética revalidada dentro de cada
 escritura y nueve rutas cerradas bajo `/api/v2`. `/api/v1` permanece compatible,
 el frontend todavía no consume C5 y no existe acceso real. C5 fue auditada y
-quedó consolidada en `67b00c7`. Joa autorizó posteriormente preparar y crear D6
-para sustituir la superficie frontend activa por el Mapa Total sintético.
+quedó consolidada en `67b00c7`. MAIN consolidó el prompt D6 en `75764c9`, creó
+el único worktree autorizado y entregó la implementación de la superficie
+frontend de Mapa Total sintético. D6 permanece sin integrar.
 
 La batería global actual pasó con 296 pruebas Python, Ruff, mypy estricto sobre
 24 archivos, ESLint, 4 pruebas Vitest y build Vite. El roundtrip DPAPI real pudo

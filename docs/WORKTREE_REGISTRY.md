@@ -214,6 +214,32 @@ El remoto privado fue agregado por MAIN después de la Puerta 0 de D5. Esa
 aparición posterior es una variación de infraestructura conocida: no habilita al
 especialista a hacer fetch, push, commit, publicación ni a cambiar su alcance.
 
+## D6 — `mapa-total-ui`
+
+| Campo | Estado real |
+|---|---|
+| Proceso | Mapa Total, interfaz sintética sobre la API local `/api/v2` |
+| Estado | `EN DESARROLLO`; no integrada ni aceptada |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup` |
+| Rama | `codex/mapa-total-ui` |
+| Base | `75764c9fbc66b2ba36bf1c3ccc5e8141e91f3130` |
+| HEAD al crear | `75764c9fbc66b2ba36bf1c3ccc5e8141e91f3130` |
+| Tarea | `01a0463f-19c6-76a3-a07d-2793191b868d` — `D6 · Interfaz de Mapa Total` |
+| Prompt | `docs/prompts/D6_MAPA_TOTAL_UI.md` |
+| Contratos | `MAPA_TOTAL_API_V1.md`, `SECURITY_PRIVACY_V1.md` y compatibilidad backend `API_V1.md` |
+| Alcance | Migrar la superficie frontend activa a las nueve rutas `/api/v2`, mostrar mapa y evidencia, registrar las siete decisiones D5 y undo, con estados completos y responsive |
+| Archivos permitidos | `frontend/src/**` y `frontend/index.html` |
+| Backend, contratos, scripts, configuración y dependencias | Prohibidos |
+| Gmail, OAuth, red externa, credenciales y datos reales | Prohibidos |
+| Estudio de Limpieza, controles de sincronización y acciones | Prohibidos |
+| Commit y publicación del especialista | No autorizados |
+| Integración en `main` | Pendiente de handoff, auditoría independiente, batería global y revisión visual de MAIN |
+
+Codex creó inicialmente el checkout en `detached HEAD` sobre la base exacta.
+MAIN verificó que estaba limpio, lo adjuntó a `codex/mapa-total-ui`, volvió a
+comprobar ruta, rama, HEAD y estado, y recién entonces envió el prompt durable
+con el SHA exacto. El especialista no recibió autorización para usar el remoto.
+
 ## Reglas de actualización
 
 Al crear, entregar, integrar o descartar un worktree se registran ruta, rama,

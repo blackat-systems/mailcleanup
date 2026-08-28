@@ -18,7 +18,7 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Rama | `main` |
 | HEAD limpio previo a C5 | `bff91584d7a622b3883d1c4b8a1b7dfea6c47ab2` |
 | Estado actual | D1-D5 y C5 sintéticas consolidadas por el commit que contiene este estado |
-| Worktrees | Seis: MAIN y D1-D5 conservadas como fuentes de evidencia |
+| Worktrees | Siete: MAIN, D1-D5 conservadas como fuentes de evidencia y D6 activa |
 | Remotos | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git`; `main` publicada desde `6310c76`; ninguna rama especialista publicada |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental completada después en escritorio y 390 px |
@@ -316,7 +316,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Presentar en modo sintético el estado de conexión y sincronización, mapa, evidencia y correcciones mediante la API estable, sin ofrecer controles que C5 no publica. |
 | Razón para separarlo | Es una frontera de presentación TypeScript que puede consumir fixtures contractuales sin incorporar reglas de dominio. |
-| Estado actual | `LISTA PARA CREAR`; Joa autorizó un único worktree y MAIN prepara su base exacta |
+| Estado actual | `EN DESARROLLO` en un único worktree especialista |
 | Dependencias previas | D2-D5 integradas; C5 estable; revisión visual de Base Segura completada. |
 | Contratos que consume | C5, sesión D2, progreso D3, mapa D4 y políticas D5. |
 | Resultados que produce | Experiencia verificable de Mapa Total en escritorio y 390 px. |
@@ -324,13 +324,13 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Permitido | `frontend/src`, pruebas frontend y tipos generados/contractuales acordados. |
 | Prohibido | Backend, clasificación, persistencia, OAuth interno, tokens, acciones reales y navegación externa automática. |
 | Rama propuesta | `codex/mapa-total-ui` |
-| Ruta propuesta | Worktree aislado asignado por Codex; registrar la ruta real después de crearlo. |
-| Commit base requerido | SHA limpio posterior a `67b00c7` que contenga C5, autorización y prompt D6. |
+| Ruta real | `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup` |
+| Commit base requerido | Cumplido: `75764c9fbc66b2ba36bf1c3ccc5e8141e91f3130`. |
 | Verificaciones específicas | ESLint, Vitest, build, estados vacíos/carga/error, seis estados de sincronización y parcialidad sin controles operativos, escritorio y 390 px, ausencia de secretos. |
 | Criterios de aceptación | Distingue hechos e inferencias, no habilita procesos posteriores y permite entender/corregir sin ocultar protecciones. |
 | Riesgos de integración | Duplicar reglas en frontend, mezclar estado sintético/real y prometer operaciones no autorizadas. |
 | Paralelización real | Sólo puede construirse en paralelo tardío con backend si C5 está congelado y usa fixtures; integración después de D2-D5. |
-| Condición exacta de desbloqueo | Cumplida por autorización explícita de Joa: falta consolidar este prompt en un SHA limpio, crear el worktree desde ese SHA y registrar sus datos reales. |
+| Condición exacta de desbloqueo | Cumplida: autorización D-036, prompt durable, batería verde, SHA limpio, worktree y despacho verificados. |
 
 La presentación de GET o `mailto:` de desuscripción, si C8 la habilita, es un
 subalcance pequeño de esta interfaz o de la interfaz de Estudio de Limpieza. No
