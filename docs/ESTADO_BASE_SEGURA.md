@@ -106,15 +106,16 @@ SQLite v3 sin crear cuentas ni consumidores productivos. Durante la auditoría,
 MAIN corrigió que una partición pudiera mejorar la confianza automática de un
 flujo D4 y agregó la regresión correspondiente.
 
-MAIN implementó después el candidato C5 para Mapa Total: una fotografía SQLite
+MAIN implementó después C5 para Mapa Total: una fotografía SQLite
 coherente que incluye índice y políticas, composición determinista D4+D5, un
 fixture canónico `.example`, una puerta sintética revalidada dentro de cada
 escritura y nueve rutas cerradas bajo `/api/v2`. `/api/v1` permanece compatible,
-el frontend todavía no consume C5 y no existe acceso real. El candidato fue
-auditado y queda consolidado por el commit que contiene este estado.
+el frontend todavía no consume C5 y no existe acceso real. C5 fue auditada y
+quedó consolidada en `67b00c7`. Joa autorizó posteriormente preparar y crear D6
+para sustituir la superficie frontend activa por el Mapa Total sintético.
 
 La batería global actual pasó con 296 pruebas Python, Ruff, mypy estricto sobre
 24 archivos, ESLint, 4 pruebas Vitest y build Vite. El roundtrip DPAPI real pudo
 ejecutarse bajo el perfil de usuario actual en una verificación anterior. Este
-estado no autoriza abrir OAuth, usar credenciales, conectar Gmail real, persistir
-metadatos privados ni comenzar D6.
+estado y la autorización D6 no permiten abrir OAuth, usar credenciales, conectar
+Gmail real ni persistir metadatos privados.

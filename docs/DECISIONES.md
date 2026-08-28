@@ -42,6 +42,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-033 | Integrar D5 en MAIN después de auditoría independiente, corrigiendo que una partición pudiera mejorar la confianza automática del flujo D4 y manteniendo D6 y toda capacidad real bloqueadas. | Ejecutada y consolidada por el commit que contiene esta decisión | Handoff especialista y auditorías independientes de dominio, seguridad y persistencia del 27 de agosto de 2026 |
 | D-034 | Cerrar la evidencia visual pendiente de Base Segura después de recorrer Panorama, Fuentes, detalle, Estudio y Estado en escritorio y 390 px, sin defectos bloqueantes. | Verificada | Recorrido instrumental de MAIN del 27 de agosto de 2026 |
 | D-035 | Estabilizar C5 en MAIN mediante una fotografía SQLite coherente, composición D4+D5, fixture canónico `.example`, puerta sintética ejecutable y una API local `/api/v2` cerrada, preservando `/api/v1` y sin crear D6 ni habilitar capacidades reales. | Ejecutada y consolidada por el commit que contiene esta decisión | `MAPA_TOTAL_API_V1.md`, auditorías independientes, batería global y autorización de commit de Joa del 27 de agosto de 2026 |
+| D-036 | Preparar y crear un único worktree D6 `mapa-total-ui` desde una base limpia posterior a C5, limitado al frontend sintético `/api/v2`, sin Gmail, OAuth, credenciales, datos reales, controles de sincronización, Estudio de Limpieza ni acciones. | Autorizada; prompt y base en preparación | Autorización explícita de Joa del 27 de agosto de 2026 y `MAPA_TOTAL_API_V1.md` |
 
 ## Decisiones suficientemente definidas
 
@@ -68,10 +69,11 @@ integración auditada mediante D-025. Joa aprobó después el contrato de D5
 mediante D-026, autorizó la columna vertebral pública D4 mediante D-027 y la
 preparación del prompt D5 mediante D-028 y finalmente un único worktree e
 implementación D5 mediante D-031. MAIN auditó e integró esa entrega mediante
-D-033, completó la evidencia visual mediante D-034 y autorizó continuar con la
-columna vertebral C5 registrada por D-035. Ninguna autorización permite abrir
-OAuth, conectar Gmail, solicitar credenciales, usar datos reales, ejecutar
-acciones externas, iniciar D6, Estudio de Limpieza o Limpieza Controlada.
+D-033, completó la evidencia visual mediante D-034, autorizó continuar con la
+columna vertebral C5 registrada por D-035 y autorizó la creación sintética de D6
+mediante D-036. Ninguna autorización permite abrir OAuth, conectar Gmail,
+solicitar credenciales, usar datos reales, ejecutar acciones externas, iniciar
+Estudio de Limpieza o Limpieza Controlada.
 
 ## Resultado de la implementación autorizada
 

@@ -8,8 +8,10 @@ D5 fue aprobado por Joa y MAIN agregó los descriptores públicos de identidad D
 que requiere, consolidados en `9f55b93`. MAIN consolidó el prompt D5 en
 `663d8a9`, creó un único worktree especialista y auditó su entrega. D5 está
 integrada en MAIN con una corrección conservadora de confianza de flujos
-particionados y consolidada por el commit que contiene este estado.
-La revisión visual instrumental de Base Segura continúa pendiente. `origin`
+particionados y consolidada por el commit que contiene este estado. MAIN
+estabilizó y consolidó C5 en `67b00c7`; Joa autorizó preparar y crear un único
+worktree D6 para la interfaz sintética de Mapa Total.
+La revisión visual instrumental de Base Segura está completada. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
 privacidad del producto. La publicación inicial de `main` quedó verificada desde
@@ -49,15 +51,16 @@ Para D4 prevalece `docs/contracts/CLASSIFICATION_DOMAIN_V1.md` y la taxonomía
 compacta de `docs/CONTRATO_MVP.md`.
 
 Para D5 prevalece `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`, aprobado por Joa.
-Su integración sintética no habilita Gmail, OAuth, credenciales, datos reales ni
-D6.
+Para C5 y D6 prevalece `docs/contracts/MAPA_TOTAL_API_V1.md`. La autorización
+D6 sólo habilita su consumidor frontend sintético y no habilita Gmail, OAuth,
+credenciales ni datos reales.
 
 ## Procesos y puertas
 
 ```text
 Base Segura aceptada
         ↓ preparación sintética autorizada
-Mapa Total: D1 integrada → D2 integrada → D3 integrada → D4 integrada → D5 integrada en árbol
+Mapa Total: D1 → D2 → D3 → D4 → D5 → C5 integradas → D6 autorizada
         ↓ aceptación independiente de Joa
 Estudio de Limpieza
         ↓ autorización independiente de Joa
@@ -69,10 +72,10 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Estabilizar en MAIN la composición backend y el contrato C5 antes de proponer
-D6. D6 sigue bloqueada.
-No componer rutas API o UI antes de fijar C5, persistir clasificación automática
-ni agregar adaptadores productivos.
+Consolidar el prompt D6 en una base limpia, crear un único worktree desde ese SHA
+y entregarle la implementación de la interfaz sintética `/api/v2`. No agregar
+adaptadores productivos ni habilitar conexiones, sincronización operativa,
+Estudio de Limpieza o acciones.
 
 ## Línea base de privacidad
 
@@ -142,9 +145,10 @@ MAIN debe:
 - No solicitar credenciales ni usar mensajes reales.
 - No crear rutas Gmail en la API ni cambiar `oauthAvailable: false`.
 - Mantener `canExecute: false` y ausencia de operaciones de escritura.
-- No agregar dependencias para D4 o D5.
-- Conservar el único worktree D5 como evidencia hasta que MAIN consolide su
-  integración; D6 permanece bloqueada.
+- No agregar dependencias para D4, D5 o D6.
+- Conservar los worktrees D1-D5 como evidencia. D6 está autorizada únicamente
+  para un worktree frontend desde su SHA documental limpio; no habilita datos o
+  conexiones reales.
 - Publicar sólo `main` en el `origin` privado cuando Joa lo autorice y el destino
   haya sido verificado; nunca publicar ramas o entregas especialistas por defecto.
 

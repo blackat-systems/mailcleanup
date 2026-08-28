@@ -30,10 +30,10 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
   y SQLite v3. MAIN corrigió una regresión para que particionar un flujo nunca
   mejore la confianza automática de D4; queda consolidada por el commit que
   contiene este estado;
-- C5 de backend para Mapa Total está auditada y verde en el árbol de MAIN:
+- C5 de backend para Mapa Total está auditada, consolidada en `67b00c7` y verde:
   compone D1+D4+D5 desde una fotografía SQLite coherente y expone `/api/v2`
-  sólo con el fixture `.example`; queda consolidada por el commit que contiene
-  este estado y todavía no existe una interfaz D6 consumiéndola;
+  sólo con el fixture `.example`; Joa autorizó preparar un único worktree D6
+  para construir su interfaz sintética;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -76,7 +76,7 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso, sólo con autorización expresa de Joa, es preparar y crear D6
-`mapa-total-ui` desde el SHA limpio de C5 para conectar la interfaz a `/api/v2`.
-Conectar una cuenta real continúa fuera de alcance y requiere otra autorización
-más resolver la protección del índice local.
+El próximo paso autorizado es crear D6 `mapa-total-ui` desde un SHA limpio que
+contenga C5 y su prompt durable, para migrar la interfaz activa a `/api/v2` con
+datos de demostración. Conectar una cuenta real continúa fuera de alcance y
+requiere otra autorización más resolver la protección del índice local.

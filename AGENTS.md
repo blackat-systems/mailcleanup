@@ -65,26 +65,29 @@ worktree D5. MAIN consolidó la base `663d8a9`, creó D5 en
 `codex/local-policy-memory`, y auditó su entrega. La integración en el árbol de
 MAIN quedó aprobada con una corrección conservadora: los fragmentos de un flujo
 particionado conservan la confianza automática original de D4. D5 queda
-consolidada por el commit que contiene este estado. No están autorizados abrir OAuth, conectar Gmail,
-solicitar credenciales ni usar datos reales. Existen seis worktrees: MAIN y las
+consolidada por el commit que contiene este estado. No están autorizados abrir
+OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen seis
+worktrees: MAIN y las
 fuentes D1-D5 conservadas como evidencia. `origin` apunta al repositorio privado
 `https://github.com/blackat-systems/mailcleanup.git`. Sólo MAIN puede publicar
 `main` después de verificar destino, alcance y autorización; los worktrees
 especialistas no publican ramas ni usan el remoto para ampliar su alcance.
 La primera publicación de `main` quedó verificada desde `6310c76`.
 
-MAIN definió `MAPA_TOTAL_API_V1.md` e implementó en su árbol de trabajo el
-candidato C5: fotografía SQLite coherente, composición D4+D5, fixture canónico,
-puerta sintética cerrada y API local `/api/v2`. La auditoría y la batería global
-están verdes y C5 queda consolidada por el commit que contiene este estado. No
-incorpora frontend de Mapa Total ni habilita capacidades externas.
+MAIN definió `MAPA_TOTAL_API_V1.md` e implementó C5: fotografía SQLite coherente,
+composición D4+D5, fixture canónico, puerta sintética cerrada y API local
+`/api/v2`. La auditoría y la batería global están verdes y C5 quedó consolidada
+en `67b00c7`. Joa autorizó preparar y crear un único worktree D6
+`mapa-total-ui` desde una base limpia que incluya su prompt durable. Esta
+autorización cubre sólo la interfaz sintética y no habilita capacidades externas.
 
 ## Objetivo actual
 
-Esperar autorización específica de Joa para preparar y crear D6 desde el SHA
-limpio que consolida C5. D6 continúa bloqueada y no debe crearse todavía. No
-abrir OAuth, conectar una cuenta real, persistir metadatos privados ni usar
-credenciales.
+Preparar el prompt autosuficiente D6, consolidarlo en una base limpia y crear un
+único worktree `mapa-total-ui` desde ese SHA exacto. La interfaz debe consumir
+solamente `/api/v2`, retirar del recorrido activo los conceptos de Estudio de
+Limpieza y permanecer sintética. No abrir OAuth, conectar una cuenta real,
+persistir metadatos privados ni usar credenciales.
 
 ---
 
@@ -114,7 +117,7 @@ Para determinar implementación y estado actual:
 1. código en `src/mailmap` y `frontend/src`;
 2. pruebas en `tests` y `frontend/src`;
 3. `docs/contracts/API_V1.md`;
-4. `docs/contracts/MAPA_TOTAL_API_V1.md` para C5 y futuros consumidores D6;
+4. `docs/contracts/MAPA_TOTAL_API_V1.md` para C5 y D6;
 5. `docs/adr/0001-arquitectura-base-segura.md`;
 6. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
 7. `docs/ESTADO_BASE_SEGURA.md`;
@@ -132,9 +135,9 @@ Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/GMAIL_READONLY_INVENTORY_V1.md`. Para D4 prevalece
 `docs/contracts/CLASSIFICATION_DOMAIN_V1.md`. Para D5 prevalece el contrato
 aprobado `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`. Su integración sintética no
-habilita Gmail, OAuth ni datos reales. Para C5 prevalece
+habilita Gmail, OAuth ni datos reales. Para C5 y D6 prevalece
 `docs/contracts/MAPA_TOTAL_API_V1.md`; su API `/api/v2` es exclusivamente local
-y sintética y todavía no tiene consumidor frontend.
+y sintética.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -160,8 +163,8 @@ contrato sin evidencia y decisión de MAIN.
 ## Frontend
 
 - React 19, TypeScript 6 y Vite 8.
-- Navegación local por hash y consumo actual de `/api/v1`; `/api/v2` queda
-  reservada para el futuro D6.
+- Navegación local por hash. D6 reemplazará el consumo frontend activo de
+  `/api/v1` por la API sintética `/api/v2`; el backend v1 permanece compatible.
 
 ## Persistencia
 
@@ -352,8 +355,9 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 Los worktrees fuente de D1 `real-index-persistence`, D2
 `secure-gmail-session`, D3 `gmail-readonly-inventory`, D4
 `real-classification-domain` y D5 `local-policy-memory` se conservan como
-evidencia de entregas integradas o preparadas para consolidación. No existe una
-implementación especialista activa. D6 sigue bloqueada.
+evidencia de entregas integradas. D6 `mapa-total-ui` está autorizada y lista
+para crear después de consolidar su prompt en un SHA limpio; todavía no existe
+su worktree al registrarse esta base.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,

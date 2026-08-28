@@ -22,11 +22,11 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Remotos | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git`; `main` publicada desde `6310c76`; ninguna rama especialista publicada |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental completada después en escritorio y 390 px |
-| Capacidades autorizadas | Composición y API C5 sintéticas; ninguna conexión Gmail, OAuth abierto, credencial, dato real ni D6 |
+| Capacidades autorizadas | Composición y API C5 sintéticas; preparación y un único worktree D6 sintético; ninguna conexión Gmail, OAuth abierto, credencial ni dato real |
 
-El SHA anterior consolida D5 y era la base de C5. C5 queda consolidada por el
-commit que contiene este estado. No existe un worktree C5; D6 sólo puede partir
-de ese nuevo SHA limpio después de una autorización específica.
+El SHA anterior consolida D5 y era la base de C5. C5 quedó consolidada en
+`67b00c7`. No existe un worktree C5; Joa autorizó que D6 parta de un SHA limpio
+posterior que también contenga su prompt durable.
 
 ## 2. Inventario de lo que ya existe
 
@@ -306,7 +306,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Criterios de aceptación | La decisión de Joa prevalece según contrato, queda explicada y no convierte una corrección puntual en regla global accidental. |
 | Riesgos de integración | MAIN corrigió la mejora accidental de confianza al fragmentar flujos. Persisten como diseño seguro los estados `NEEDS_REVIEW`, `AMBIGUOUS`, `ORPHANED` y `CONFLICT`. |
 | Paralelización real | Cerrada para D5. D6 puede empezar sólo sobre C5 congelado, fixtures contractuales y sus puertas cumplidas. |
-| Condición exacta de desbloqueo | Cumplida para integración sintética. C5 y la revisión visual de Base Segura están completas; D6 requiere autorización específica. |
+| Condición exacta de desbloqueo | Cumplida para D6 sintética: C5 y la revisión visual de Base Segura están completas y Joa otorgó la autorización D-036. |
 
 ### D6 — `mapa-total-ui`
 
@@ -314,9 +314,9 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 |---|---|
 | ID | D6 |
 | Proceso | Mapa Total |
-| Responsabilidad única | Presentar conexión, progreso, reanudación, errores, mapa real, evidencia y correcciones mediante el API estable. |
+| Responsabilidad única | Presentar en modo sintético el estado de conexión y sincronización, mapa, evidencia y correcciones mediante la API estable, sin ofrecer controles que C5 no publica. |
 | Razón para separarlo | Es una frontera de presentación TypeScript que puede consumir fixtures contractuales sin incorporar reglas de dominio. |
-| Estado actual | `BLOQUEADA POR AUTORIZACIÓN` para crear el worktree |
+| Estado actual | `LISTA PARA CREAR`; Joa autorizó un único worktree y MAIN prepara su base exacta |
 | Dependencias previas | D2-D5 integradas; C5 estable; revisión visual de Base Segura completada. |
 | Contratos que consume | C5, sesión D2, progreso D3, mapa D4 y políticas D5. |
 | Resultados que produce | Experiencia verificable de Mapa Total en escritorio y 390 px. |
@@ -324,13 +324,13 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Permitido | `frontend/src`, pruebas frontend y tipos generados/contractuales acordados. |
 | Prohibido | Backend, clasificación, persistencia, OAuth interno, tokens, acciones reales y navegación externa automática. |
 | Rama propuesta | `codex/mapa-total-ui` |
-| Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-mapa-total-ui` |
-| Commit base requerido | SHA limpio con C5 y backend de Mapa Total integrados. |
-| Verificaciones específicas | ESLint, Vitest, build, estados vacíos/carga/error/reanudación, escritorio y 390 px, ausencia de secretos. |
+| Ruta propuesta | Worktree aislado asignado por Codex; registrar la ruta real después de crearlo. |
+| Commit base requerido | SHA limpio posterior a `67b00c7` que contenga C5, autorización y prompt D6. |
+| Verificaciones específicas | ESLint, Vitest, build, estados vacíos/carga/error, seis estados de sincronización y parcialidad sin controles operativos, escritorio y 390 px, ausencia de secretos. |
 | Criterios de aceptación | Distingue hechos e inferencias, no habilita procesos posteriores y permite entender/corregir sin ocultar protecciones. |
 | Riesgos de integración | Duplicar reglas en frontend, mezclar estado sintético/real y prometer operaciones no autorizadas. |
 | Paralelización real | Sólo puede construirse en paralelo tardío con backend si C5 está congelado y usa fixtures; integración después de D2-D5. |
-| Condición exacta de desbloqueo | Joa autoriza crear D6; MAIN registra el SHA limpio de C5 y entrega fixture, contrato, prompt y batería verde. |
+| Condición exacta de desbloqueo | Cumplida por autorización explícita de Joa: falta consolidar este prompt en un SHA limpio, crear el worktree desde ese SHA y registrar sus datos reales. |
 
 La presentación de GET o `mailto:` de desuscripción, si C8 la habilita, es un
 subalcance pequeño de esta interfaz o de la interfaz de Estudio de Limpieza. No
@@ -441,7 +441,7 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | `protection-engine` | Descartar como worktree autónomo | El motor base ya existe; la ampliación manual pertenece a D5 y las reglas globales quedan en MAIN. |
 | `local-persistence` | Mantener como D1 `real-index-persistence` | SQLite base ya existe; el alcance nuevo son índice privado, checkpoints, reanudación y borrado. |
 | `cleanup-plans` | Mantener como D7 `real-plan-engine` | El plan simulado ya existe; el alcance nuevo es snapshot real, revalidación y caducidad sin efectos. |
-| `source-map-ui` | Mantener como D6 `mapa-total-ui` | La interfaz sintética ya existe; el alcance nuevo son sesión, progreso, mapa real y correcciones. |
+| `source-map-ui` | Mantener como D6 `mapa-total-ui` | La interfaz de Base Segura ya existe; el alcance nuevo es mostrar estado, progreso, Mapa Total sintético y correcciones desde C5. |
 | `gmail-readonly` | Dividir en D2 y D3 | Sesión/credenciales e inventario tienen amenazas, contratos y pruebas diferentes. |
 | `action-engine` | Mantener como D9 `controlled-action-engine` | Se delimita a Archivo/Papelera; la desuscripción se separa por ser otra red y otra irreversibilidad. |
 | `manual-unsubscribe` | Descartar como worktree autónomo | Mostrar GET o `mailto:` es una capacidad pequeña de interfaz; jamás es ejecución automática. D10 cubre sólo RFC 8058. |
@@ -470,9 +470,9 @@ Prompt D5 consolidado en `663d8a9`
 Memoria local de correcciones y protecciones (D5) integrada en árbol
 recuerda decisiones sin reescribir ni debilitar la inferencia automática
         ↓ auditoría e integración consolidadas
-MAIN compone el backend y estabiliza la API de Mapa Total (C5)
-        ↓
-Interfaz de Mapa Total (D6)
+MAIN compone y consolida el backend y la API sintética de Mapa Total (C5)
+        ↓ autorización recibida; prompt y SHA limpio de MAIN
+Interfaz sintética de Mapa Total (D6)
 muestra mapa, evidencia, progreso y correcciones
         ↓ aceptación de Mapa Total + autorización de Estudio de Limpieza
 Motor de planes reales sin efectos (D7)
