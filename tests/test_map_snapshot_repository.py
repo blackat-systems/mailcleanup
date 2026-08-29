@@ -163,10 +163,10 @@ def _receipt_rows(path: Path) -> tuple[tuple[object, ...], ...]:
         )
 
 
-def test_v4_migration_is_cumulative_typed_and_cascades_with_account(
+def test_v5_migration_is_cumulative_and_preserves_v4_map_receipts(
     tmp_path: Path,
 ) -> None:
-    path = tmp_path / "map-v4.db"
+    path = tmp_path / "map-v5.db"
     repository, records = _installed_repository(path)
     snapshot = repository.map_input_snapshot(ACCOUNT)
     result = repository.record_map_policy(
@@ -191,8 +191,17 @@ def test_v4_migration_is_cumulative_typed_and_cascades_with_account(
                 (ACCOUNT, "invalid", 1, "A" * 64),
             )
 
-    assert repository.schema_version() == 4
-    assert len(MIGRATIONS) == 4
+    assert repository.schema_version() == 5
+    assert tuple(version for version, _script in MIGRATIONS) == (1, 2, 3, 4, 5)
+    assert tuple(
+        hashlib.sha256(script.encode("utf-8")).hexdigest()
+        for _version, script in MIGRATIONS[:4]
+    ) == (
+        "fa566caf70cef0b58bd9397f8444dc8f3c1a9bd6b2a7eb288fab2163089189e6",
+        "5a25b39afec02e99333886123551f462f6aa370f72a9db1928fcd905473bbdb7",
+        "891874365929b4a57f1f58d39350c8f644f5105a65173411f8a1d4b09b6168b3",
+        "a3f9787ebdfebab710471638438c43b4d5ca9128c7dc64ca5fb5a30858ae8d1d",
+    )
     assert columns == (
         "account_key",
         "command_id",

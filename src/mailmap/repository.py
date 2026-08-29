@@ -5,14 +5,66 @@ import json
 import re
 import sqlite3
 from collections import defaultdict
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field, fields, is_dataclass, replace
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from enum import Enum, StrEnum
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
+from mailmap.cleanup_plan_domain import (
+    CleanupPlanCompositionLike,
+    cleanup_command_fingerprint,
+    compose_cleanup_plan_snapshot,
+    effective_plan_state,
+    prepare_cleanup_plan_cancellation,
+    prepare_cleanup_plan_creation,
+    prepare_cleanup_plan_revalidation,
+)
+from mailmap.cleanup_plan_model import (
+    MAX_CONSIDERED_MESSAGES,
+    AllTemporalFilter,
+    BeforeDateTemporalFilter,
+    CancelCleanupPlanCommand,
+    CleanupCommandStatus,
+    CleanupDisposition,
+    CleanupEventType,
+    CleanupExclusionReason,
+    CleanupLabelSnapshot,
+    CleanupMemberCurrentState,
+    CleanupMemberInitialState,
+    CleanupPlanError,
+    CleanupPlanErrorCode,
+    CleanupPlanEvent,
+    CleanupPlanMember,
+    CleanupPlanMemberRemoval,
+    CleanupPlanReceipt,
+    CleanupPlanSample,
+    CleanupPlanSelection,
+    CleanupPlanState,
+    CleanupReadState,
+    CleanupSampleKind,
+    CleanupStorageEffect,
+    CleanupTarget,
+    CleanupTargetKind,
+    CleanupTemporalFilter,
+    CreateCleanupPlanCommand,
+    DateRangeTemporalFilter,
+    FlowTargetSnapshot,
+    OlderThanDaysTemporalFilter,
+    PersistedCleanupPlan,
+    PreparedCleanupPlanCancellation,
+    PreparedCleanupPlanCreation,
+    PreparedCleanupPlanRevalidation,
+    ResolvedTemporalFilter,
+    RevalidateCleanupPlanCommand,
+    SenderTargetSnapshot,
+    SourceTargetSnapshot,
+    cleanup_creation_reason_codes,
+    cleanup_removal_reason_codes,
+)
 from mailmap.fixtures import synthetic_messages
 from mailmap.index_model import (
     IndexedMessageRecord,
@@ -74,6 +126,7 @@ MAP_POLICY_REQUEST_CONTRACT_VERSION = 1
 
 _MAP_INPUT_REVISION = re.compile(r"^input-v1-[0-9a-f]{64}$")
 _SHA256_FINGERPRINT = re.compile(r"^[0-9a-f]{64}$")
+_CLEANUP_REASON_ORDER = {reason: index for index, reason in enumerate(CleanupExclusionReason)}
 
 
 class MapRepositoryErrorCode(StrEnum):
@@ -787,7 +840,686 @@ MIGRATIONS: tuple[tuple[int, str], ...] = (
             ON map_policy_requests(account_key, command_id);
         """,
     ),
+    (
+        5,
+        """
+        CREATE TABLE cleanup_plans (
+            account_key TEXT NOT NULL,
+            plan_id TEXT NOT NULL CHECK(
+                length(plan_id) = 52
+                AND substr(plan_id, 1, 16) = 'cleanup-plan-v1-'
+                AND substr(plan_id, 25, 1) = '-'
+                AND substr(plan_id, 30, 1) = '-'
+                AND substr(plan_id, 31, 1) = '4'
+                AND substr(plan_id, 35, 1) = '-'
+                AND substr(plan_id, 36, 1) GLOB '[89ab]'
+                AND substr(plan_id, 40, 1) = '-'
+                AND length(replace(substr(plan_id, 17), '-', '')) = 32
+                AND replace(substr(plan_id, 17), '-', '') NOT GLOB '*[^0-9a-f]*'
+            ),
+            contract_version INTEGER NOT NULL CHECK(contract_version = 1),
+            snapshot_version INTEGER NOT NULL CHECK(snapshot_version = 1),
+            plan_revision INTEGER NOT NULL CHECK(plan_revision >= 1),
+            persisted_state TEXT NOT NULL CHECK(persisted_state IN (
+                'frozen', 'reduced', 'invalidated', 'cancelled'
+            )),
+            disposition TEXT NOT NULL CHECK(disposition IN ('archive', 'trash')),
+            created_at TEXT NOT NULL CHECK(
+                created_at = trim(created_at)
+                AND instr(created_at, 'T') = 11
+                AND substr(created_at, -6) = '+00:00'
+                AND julianday(created_at) IS NOT NULL
+            ),
+            expires_at TEXT NOT NULL CHECK(
+                expires_at = trim(expires_at)
+                AND instr(expires_at, 'T') = 11
+                AND substr(expires_at, -6) = '+00:00'
+                AND julianday(expires_at) IS NOT NULL
+            ),
+            last_revalidated_at TEXT CHECK(
+                last_revalidated_at IS NULL OR (
+                    last_revalidated_at = trim(last_revalidated_at)
+                    AND instr(last_revalidated_at, 'T') = 11
+                    AND substr(last_revalidated_at, -6) = '+00:00'
+                    AND julianday(last_revalidated_at) IS NOT NULL
+                )
+            ),
+            created_from_input_revision TEXT NOT NULL CHECK(
+                length(created_from_input_revision) = 73
+                AND substr(created_from_input_revision, 1, 9) = 'input-v1-'
+                AND substr(created_from_input_revision, 10) NOT GLOB '*[^0-9a-f]*'
+            ),
+            created_from_map_revision TEXT NOT NULL CHECK(
+                length(created_from_map_revision) = 71
+                AND substr(created_from_map_revision, 1, 7) = 'map-v1-'
+                AND substr(created_from_map_revision, 8) NOT GLOB '*[^0-9a-f]*'
+            ),
+            created_from_policy_revision INTEGER NOT NULL CHECK(
+                created_from_policy_revision >= 0
+            ),
+            created_from_scan_id TEXT NOT NULL CHECK(
+                length(trim(created_from_scan_id)) > 0
+            ),
+            created_from_sync_mode TEXT NOT NULL CHECK(
+                created_from_sync_mode IN ('full', 'partial')
+            ),
+            created_from_checkpoint_updated_at TEXT NOT NULL CHECK(
+                created_from_checkpoint_updated_at = trim(created_from_checkpoint_updated_at)
+                AND instr(created_from_checkpoint_updated_at, 'T') = 11
+                AND substr(created_from_checkpoint_updated_at, -6) = '+00:00'
+                AND julianday(created_from_checkpoint_updated_at) IS NOT NULL
+            ),
+            created_from_checkpoint_processed_count INTEGER NOT NULL CHECK(
+                created_from_checkpoint_processed_count >= 0
+            ),
+            fixture_version TEXT NOT NULL CHECK(length(trim(fixture_version)) > 0),
+            index_record_version INTEGER NOT NULL CHECK(index_record_version = 1),
+            classification_model_version INTEGER NOT NULL CHECK(
+                classification_model_version = 2
+            ),
+            policy_model_version INTEGER NOT NULL CHECK(policy_model_version = 1),
+            map_composition_version INTEGER NOT NULL CHECK(
+                map_composition_version = 1
+            ),
+            temporal_filter_kind TEXT NOT NULL CHECK(temporal_filter_kind IN (
+                'all', 'beforeDate', 'dateRange', 'olderThanDays'
+            )),
+            requested_on_or_after_date TEXT CHECK(
+                requested_on_or_after_date IS NULL OR (
+                    length(requested_on_or_after_date) = 10
+                    AND requested_on_or_after_date GLOB
+                        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+                    AND date(requested_on_or_after_date) IS NOT NULL
+                )
+            ),
+            requested_before_date TEXT CHECK(
+                requested_before_date IS NULL OR (
+                    length(requested_before_date) = 10
+                    AND requested_before_date GLOB
+                        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+                    AND date(requested_before_date) IS NOT NULL
+                )
+            ),
+            requested_older_than_days INTEGER CHECK(
+                requested_older_than_days IS NULL
+                OR requested_older_than_days BETWEEN 1 AND 36500
+            ),
+            resolved_on_or_after_utc TEXT CHECK(
+                resolved_on_or_after_utc IS NULL OR (
+                    resolved_on_or_after_utc = trim(resolved_on_or_after_utc)
+                    AND instr(resolved_on_or_after_utc, 'T') = 11
+                    AND substr(resolved_on_or_after_utc, -6) = '+00:00'
+                    AND julianday(resolved_on_or_after_utc) IS NOT NULL
+                )
+            ),
+            resolved_before_utc TEXT CHECK(
+                resolved_before_utc IS NULL OR (
+                    resolved_before_utc = trim(resolved_before_utc)
+                    AND instr(resolved_before_utc, 'T') = 11
+                    AND substr(resolved_before_utc, -6) = '+00:00'
+                    AND julianday(resolved_before_utc) IS NOT NULL
+                )
+            ),
+            time_zone TEXT NOT NULL CHECK(time_zone = 'America/Argentina/Cordoba'),
+            read_state TEXT NOT NULL CHECK(read_state IN ('any', 'read', 'unread')),
+            keep_latest_per_flow INTEGER NOT NULL CHECK(
+                keep_latest_per_flow BETWEEN 0 AND 10000
+            ),
+            selected_at_creation_count INTEGER NOT NULL CHECK(
+                selected_at_creation_count BETWEEN 0 AND 100000
+            ),
+            selected_at_creation_size_estimate_bytes INTEGER NOT NULL CHECK(
+                selected_at_creation_size_estimate_bytes
+                    BETWEEN 0 AND 214748364700000
+            ),
+            excluded_at_creation_count INTEGER NOT NULL CHECK(
+                excluded_at_creation_count BETWEEN 0 AND 100000
+            ),
+            excluded_at_creation_size_estimate_bytes INTEGER NOT NULL CHECK(
+                excluded_at_creation_size_estimate_bytes
+                    BETWEEN 0 AND 214748364700000
+            ),
+            current_eligible_count INTEGER NOT NULL CHECK(
+                current_eligible_count BETWEEN 0 AND 100000
+            ),
+            current_eligible_size_estimate_bytes INTEGER NOT NULL CHECK(
+                current_eligible_size_estimate_bytes
+                    BETWEEN 0 AND 214748364700000
+            ),
+            PRIMARY KEY (account_key, plan_id),
+            FOREIGN KEY (account_key) REFERENCES indexed_accounts(account_key)
+                ON DELETE CASCADE,
+            CHECK(
+                abs(
+                    (julianday(expires_at) - julianday(created_at)) * 86400
+                    - 86400
+                ) < 0.001
+            ),
+            CHECK(
+                last_revalidated_at IS NULL
+                OR julianday(last_revalidated_at) >= julianday(created_at)
+            ),
+            CHECK(
+                (temporal_filter_kind = 'all'
+                    AND requested_on_or_after_date IS NULL
+                    AND requested_before_date IS NULL
+                    AND requested_older_than_days IS NULL
+                    AND resolved_on_or_after_utc IS NULL
+                    AND resolved_before_utc IS NULL)
+                OR
+                (temporal_filter_kind = 'beforeDate'
+                    AND requested_on_or_after_date IS NULL
+                    AND requested_before_date IS NOT NULL
+                    AND requested_older_than_days IS NULL
+                    AND resolved_on_or_after_utc IS NULL
+                    AND resolved_before_utc IS NOT NULL)
+                OR
+                (temporal_filter_kind = 'dateRange'
+                    AND requested_on_or_after_date IS NOT NULL
+                    AND requested_before_date IS NOT NULL
+                    AND requested_on_or_after_date < requested_before_date
+                    AND requested_older_than_days IS NULL
+                    AND resolved_on_or_after_utc IS NOT NULL
+                    AND resolved_before_utc IS NOT NULL
+                    AND julianday(resolved_on_or_after_utc)
+                        < julianday(resolved_before_utc))
+                OR
+                (temporal_filter_kind = 'olderThanDays'
+                    AND requested_on_or_after_date IS NULL
+                    AND requested_before_date IS NULL
+                    AND requested_older_than_days IS NOT NULL
+                    AND resolved_on_or_after_utc IS NULL
+                    AND resolved_before_utc IS NOT NULL)
+            ),
+            CHECK(
+                selected_at_creation_count + excluded_at_creation_count
+                    BETWEEN 1 AND 100000
+            ),
+            CHECK(
+                selected_at_creation_size_estimate_bytes
+                    + excluded_at_creation_size_estimate_bytes
+                    <= 214748364700000
+            ),
+            CHECK(current_eligible_count <= selected_at_creation_count),
+            CHECK(
+                current_eligible_size_estimate_bytes
+                    <= selected_at_creation_size_estimate_bytes
+            ),
+            CHECK(
+                persisted_state != 'frozen' OR (
+                    current_eligible_count = selected_at_creation_count
+                    AND current_eligible_size_estimate_bytes
+                        = selected_at_creation_size_estimate_bytes
+                    AND selected_at_creation_count > 0
+                )
+            ),
+            CHECK(
+                persisted_state != 'reduced' OR (
+                    current_eligible_count < selected_at_creation_count
+                    AND current_eligible_count > 0
+                )
+            ),
+            CHECK(
+                persisted_state != 'invalidated' OR (
+                    current_eligible_count = 0
+                    AND current_eligible_size_estimate_bytes = 0
+                )
+            ),
+            CHECK(
+                selected_at_creation_count > 0 OR persisted_state = 'invalidated'
+            )
+        );
+
+        CREATE TABLE cleanup_plan_targets (
+            account_key TEXT NOT NULL,
+            plan_id TEXT NOT NULL,
+            target_role TEXT NOT NULL CHECK(
+                target_role IN ('selection', 'excluded_label')
+            ),
+            target_order INTEGER NOT NULL CHECK(target_order BETWEEN 0 AND 99),
+            target_version INTEGER NOT NULL CHECK(target_version = 1),
+            target_kind TEXT NOT NULL CHECK(
+                target_kind IN ('source', 'flow', 'sender', 'label')
+            ),
+            target_id TEXT NOT NULL CHECK(length(trim(target_id)) > 0),
+            display_value TEXT NOT NULL CHECK(
+                length(display_value) BETWEEN 1 AND 16384
+            ),
+            provider_label_id TEXT CHECK(
+                provider_label_id IS NULL OR length(trim(provider_label_id)) > 0
+            ),
+            selector_fingerprint TEXT CHECK(
+                selector_fingerprint IS NULL OR (
+                    length(selector_fingerprint) = 64
+                    AND selector_fingerprint NOT GLOB '*[^0-9a-f]*'
+                )
+            ),
+            PRIMARY KEY (account_key, plan_id, target_role, target_order),
+            UNIQUE (account_key, plan_id, target_role, target_kind, target_id),
+            FOREIGN KEY (account_key, plan_id)
+                REFERENCES cleanup_plans(account_key, plan_id) ON DELETE CASCADE,
+            CHECK(
+                (target_role = 'selection'
+                    AND target_kind IN ('source', 'flow', 'sender'))
+                OR
+                (target_role = 'excluded_label' AND target_kind = 'label')
+            ),
+            CHECK(target_role != 'excluded_label' OR target_order <= 5),
+            CHECK(
+                (target_kind = 'source'
+                    AND length(target_id) = 44
+                    AND substr(target_id, 1, 20) = 'effective-source-v1-'
+                    AND substr(target_id, 21) NOT GLOB '*[^0-9a-f]*')
+                OR
+                (target_kind = 'flow'
+                    AND length(target_id) = 42
+                    AND substr(target_id, 1, 18) = 'effective-flow-v1-'
+                    AND substr(target_id, 19) NOT GLOB '*[^0-9a-f]*')
+                OR
+                (target_kind = 'sender'
+                    AND length(target_id) = 74
+                    AND substr(target_id, 1, 10) = 'sender-v1-'
+                    AND substr(target_id, 11) NOT GLOB '*[^0-9a-f]*')
+                OR
+                (target_kind = 'label'
+                    AND length(target_id) = 73
+                    AND substr(target_id, 1, 9) = 'label-v1-'
+                    AND substr(target_id, 10) NOT GLOB '*[^0-9a-f]*')
+            ),
+            CHECK(
+                (target_kind IN ('source', 'flow')
+                    AND selector_fingerprint IS NOT NULL)
+                OR
+                (target_kind IN ('sender', 'label')
+                    AND selector_fingerprint IS NULL)
+            ),
+            CHECK(
+                (target_kind = 'label' AND provider_label_id IS NOT NULL)
+                OR (target_kind != 'label' AND provider_label_id IS NULL)
+            )
+        );
+
+        CREATE TABLE cleanup_plan_members (
+            account_key TEXT NOT NULL,
+            plan_id TEXT NOT NULL,
+            provider_message_id TEXT NOT NULL CHECK(
+                length(trim(provider_message_id)) > 0
+            ),
+            message_id TEXT NOT NULL CHECK(
+                length(message_id) = 75
+                AND substr(message_id, 1, 11) = 'message-v1-'
+                AND substr(message_id, 12) NOT GLOB '*[^0-9a-f]*'
+            ),
+            member_version INTEGER NOT NULL CHECK(member_version = 1),
+            record_version INTEGER NOT NULL CHECK(record_version = 1),
+            initial_state TEXT NOT NULL CHECK(
+                initial_state IN ('selected', 'excluded')
+            ),
+            received_at TEXT NOT NULL CHECK(
+                received_at = trim(received_at)
+                AND instr(received_at, 'T') = 11
+                AND substr(received_at, -6) = '+00:00'
+                AND julianday(received_at) IS NOT NULL
+            ),
+            size_estimate_bytes INTEGER NOT NULL CHECK(
+                size_estimate_bytes BETWEEN 0 AND 2147483647
+            ),
+            initial_read_state TEXT NOT NULL CHECK(
+                initial_read_state IN ('read', 'unread')
+            ),
+            frozen_source_id TEXT NOT NULL CHECK(
+                length(frozen_source_id) = 44
+                AND substr(frozen_source_id, 1, 20) = 'effective-source-v1-'
+                AND substr(frozen_source_id, 21) NOT GLOB '*[^0-9a-f]*'
+            ),
+            frozen_flow_id TEXT NOT NULL CHECK(
+                length(frozen_flow_id) = 42
+                AND substr(frozen_flow_id, 1, 18) = 'effective-flow-v1-'
+                AND substr(frozen_flow_id, 19) NOT GLOB '*[^0-9a-f]*'
+            ),
+            PRIMARY KEY (account_key, plan_id, provider_message_id),
+            UNIQUE (account_key, plan_id, message_id),
+            FOREIGN KEY (account_key, plan_id)
+                REFERENCES cleanup_plans(account_key, plan_id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE cleanup_plan_member_reasons (
+            account_key TEXT NOT NULL,
+            plan_id TEXT NOT NULL,
+            provider_message_id TEXT NOT NULL,
+            reason_context TEXT NOT NULL CHECK(
+                reason_context IN ('creation', 'removal')
+            ),
+            removal_revision INTEGER,
+            reason_order INTEGER NOT NULL CHECK(reason_order BETWEEN 0 AND 20),
+            reason_code TEXT NOT NULL CHECK(reason_code IN (
+                'sent', 'draft', 'trash', 'starred', 'important',
+                'protected_label', 'security', 'document', 'personal',
+                'low_confidence', 'contradiction', 'mixed_conversation',
+                'manual_policy', 'policy_review', 'outside_date',
+                'read_state_mismatch', 'excluded_label', 'keep_latest',
+                'missing_after_creation', 'scope_changed', 'protection_changed'
+            )),
+            reason_version INTEGER NOT NULL CHECK(reason_version = 1),
+            PRIMARY KEY (
+                account_key, plan_id, provider_message_id,
+                reason_context, reason_order
+            ),
+            UNIQUE (
+                account_key, plan_id, provider_message_id,
+                reason_context, reason_code
+            ),
+            FOREIGN KEY (account_key, plan_id, provider_message_id)
+                REFERENCES cleanup_plan_members(
+                    account_key, plan_id, provider_message_id
+                ) ON DELETE CASCADE,
+            FOREIGN KEY (
+                account_key, plan_id, provider_message_id, removal_revision
+            ) REFERENCES cleanup_plan_member_removals(
+                account_key, plan_id, provider_message_id, event_revision
+            ) ON DELETE CASCADE,
+            CHECK(
+                (reason_context = 'creation' AND removal_revision IS NULL)
+                OR
+                (reason_context = 'removal' AND removal_revision > 1)
+            ),
+            CHECK(reason_context != 'creation' OR reason_code NOT IN (
+                'missing_after_creation', 'scope_changed', 'protection_changed'
+            )),
+            CHECK(reason_order = CASE reason_code
+                WHEN 'sent' THEN 0
+                WHEN 'draft' THEN 1
+                WHEN 'trash' THEN 2
+                WHEN 'starred' THEN 3
+                WHEN 'important' THEN 4
+                WHEN 'protected_label' THEN 5
+                WHEN 'security' THEN 6
+                WHEN 'document' THEN 7
+                WHEN 'personal' THEN 8
+                WHEN 'low_confidence' THEN 9
+                WHEN 'contradiction' THEN 10
+                WHEN 'mixed_conversation' THEN 11
+                WHEN 'manual_policy' THEN 12
+                WHEN 'policy_review' THEN 13
+                WHEN 'outside_date' THEN 14
+                WHEN 'read_state_mismatch' THEN 15
+                WHEN 'excluded_label' THEN 16
+                WHEN 'keep_latest' THEN 17
+                WHEN 'missing_after_creation' THEN 18
+                WHEN 'scope_changed' THEN 19
+                WHEN 'protection_changed' THEN 20
+            END)
+        );
+
+        CREATE TABLE cleanup_plan_samples (
+            account_key TEXT NOT NULL,
+            plan_id TEXT NOT NULL,
+            sample_role TEXT NOT NULL CHECK(sample_role IN ('included', 'excluded')),
+            sample_order INTEGER NOT NULL CHECK(sample_order BETWEEN 0 AND 4),
+            sample_version INTEGER NOT NULL CHECK(sample_version = 1),
+            message_id TEXT NOT NULL CHECK(
+                length(message_id) = 75
+                AND substr(message_id, 1, 11) = 'message-v1-'
+                AND substr(message_id, 12) NOT GLOB '*[^0-9a-f]*'
+            ),
+            received_at TEXT NOT NULL CHECK(
+                received_at = trim(received_at)
+                AND instr(received_at, 'T') = 11
+                AND substr(received_at, -6) = '+00:00'
+                AND julianday(received_at) IS NOT NULL
+            ),
+            sender_name TEXT CHECK(sender_name IS NULL OR length(sender_name) <= 16384),
+            sender_address TEXT CHECK(
+                sender_address IS NULL OR length(sender_address) <= 16384
+            ),
+            subject TEXT CHECK(subject IS NULL OR length(subject) <= 16384),
+            size_estimate_bytes INTEGER NOT NULL CHECK(
+                size_estimate_bytes BETWEEN 0 AND 2147483647
+            ),
+            source_id TEXT NOT NULL CHECK(
+                length(source_id) = 44
+                AND substr(source_id, 1, 20) = 'effective-source-v1-'
+                AND substr(source_id, 21) NOT GLOB '*[^0-9a-f]*'
+            ),
+            flow_id TEXT NOT NULL CHECK(
+                length(flow_id) = 42
+                AND substr(flow_id, 1, 18) = 'effective-flow-v1-'
+                AND substr(flow_id, 19) NOT GLOB '*[^0-9a-f]*'
+            ),
+            read_state TEXT NOT NULL CHECK(read_state IN ('read', 'unread')),
+            PRIMARY KEY (account_key, plan_id, sample_role, sample_order),
+            UNIQUE (account_key, plan_id, message_id),
+            FOREIGN KEY (account_key, plan_id)
+                REFERENCES cleanup_plans(account_key, plan_id) ON DELETE CASCADE,
+            FOREIGN KEY (account_key, plan_id, message_id)
+                REFERENCES cleanup_plan_members(account_key, plan_id, message_id)
+                ON DELETE CASCADE
+        );
+
+        CREATE TABLE cleanup_plan_events (
+            account_key TEXT NOT NULL,
+            plan_id TEXT NOT NULL,
+            revision INTEGER NOT NULL CHECK(revision >= 1),
+            event_version INTEGER NOT NULL CHECK(event_version = 1),
+            event_type TEXT NOT NULL CHECK(event_type IN (
+                'created', 'revalidated', 'reduced', 'invalidated', 'cancelled'
+            )),
+            state TEXT NOT NULL CHECK(state IN (
+                'frozen', 'reduced', 'invalidated', 'cancelled'
+            )),
+            recorded_at TEXT NOT NULL CHECK(
+                recorded_at = trim(recorded_at)
+                AND instr(recorded_at, 'T') = 11
+                AND substr(recorded_at, -6) = '+00:00'
+                AND julianday(recorded_at) IS NOT NULL
+            ),
+            observed_map_revision TEXT CHECK(
+                observed_map_revision IS NULL OR (
+                    length(observed_map_revision) = 71
+                    AND substr(observed_map_revision, 1, 7) = 'map-v1-'
+                    AND substr(observed_map_revision, 8)
+                        NOT GLOB '*[^0-9a-f]*'
+                )
+            ),
+            observed_policy_revision INTEGER CHECK(
+                observed_policy_revision IS NULL OR observed_policy_revision >= 0
+            ),
+            removed_count INTEGER NOT NULL CHECK(removed_count BETWEEN 0 AND 100000),
+            remaining_count INTEGER NOT NULL CHECK(
+                remaining_count BETWEEN 0 AND 100000
+            ),
+            PRIMARY KEY (account_key, plan_id, revision),
+            FOREIGN KEY (account_key, plan_id)
+                REFERENCES cleanup_plans(account_key, plan_id) ON DELETE CASCADE,
+            CHECK(
+                (revision = 1 AND event_type = 'created')
+                OR (revision > 1 AND event_type != 'created')
+            ),
+            CHECK(
+                (event_type = 'cancelled'
+                    AND observed_map_revision IS NULL
+                    AND observed_policy_revision IS NULL)
+                OR
+                (event_type != 'cancelled'
+                    AND observed_map_revision IS NOT NULL
+                    AND observed_policy_revision IS NOT NULL)
+            ),
+            CHECK(
+                (event_type = 'created' AND state IN ('frozen', 'invalidated'))
+                OR (event_type = 'revalidated' AND state IN ('frozen', 'reduced'))
+                OR (event_type = 'reduced' AND state = 'reduced')
+                OR (event_type = 'invalidated' AND state = 'invalidated')
+                OR (event_type = 'cancelled' AND state = 'cancelled')
+            ),
+            CHECK(
+                (event_type IN ('created', 'revalidated', 'cancelled')
+                    AND removed_count = 0)
+                OR
+                (event_type IN ('reduced', 'invalidated') AND removed_count > 0)
+            ),
+            CHECK(state != 'invalidated' OR remaining_count = 0),
+            CHECK(state != 'reduced' OR remaining_count > 0),
+            CHECK(state != 'frozen' OR remaining_count > 0),
+            CHECK(state != 'cancelled' OR remaining_count > 0)
+        );
+
+        CREATE TABLE cleanup_plan_member_removals (
+            account_key TEXT NOT NULL,
+            plan_id TEXT NOT NULL,
+            provider_message_id TEXT NOT NULL,
+            event_revision INTEGER NOT NULL CHECK(event_revision > 1),
+            removal_version INTEGER NOT NULL CHECK(removal_version = 1),
+            PRIMARY KEY (account_key, plan_id, provider_message_id),
+            UNIQUE (account_key, plan_id, provider_message_id, event_revision),
+            FOREIGN KEY (account_key, plan_id, provider_message_id)
+                REFERENCES cleanup_plan_members(
+                    account_key, plan_id, provider_message_id
+                ) ON DELETE CASCADE,
+            FOREIGN KEY (account_key, plan_id, event_revision)
+                REFERENCES cleanup_plan_events(account_key, plan_id, revision)
+                ON DELETE CASCADE
+        );
+
+        CREATE TABLE cleanup_plan_requests (
+            account_key TEXT NOT NULL,
+            command_id TEXT NOT NULL CHECK(
+                length(command_id) = 36
+                AND substr(command_id, 9, 1) = '-'
+                AND substr(command_id, 14, 1) = '-'
+                AND substr(command_id, 15, 1) = '4'
+                AND substr(command_id, 19, 1) = '-'
+                AND substr(command_id, 20, 1) GLOB '[89ab]'
+                AND substr(command_id, 24, 1) = '-'
+                AND length(replace(command_id, '-', '')) = 32
+                AND replace(command_id, '-', '') NOT GLOB '*[^0-9a-f]*'
+            ),
+            request_version INTEGER NOT NULL CHECK(request_version = 1),
+            request_fingerprint TEXT NOT NULL CHECK(
+                length(request_fingerprint) = 64
+                AND request_fingerprint NOT GLOB '*[^0-9a-f]*'
+            ),
+            plan_id TEXT NOT NULL,
+            operation_type TEXT NOT NULL CHECK(
+                operation_type IN ('create', 'revalidate', 'cancel')
+            ),
+            result_status TEXT NOT NULL CHECK(
+                result_status IN ('created', 'revalidated', 'cancelled')
+            ),
+            command_revision INTEGER NOT NULL CHECK(command_revision >= 1),
+            removed_count INTEGER CHECK(
+                removed_count IS NULL OR removed_count BETWEEN 0 AND 100000
+            ),
+            PRIMARY KEY (account_key, command_id),
+            FOREIGN KEY (account_key, plan_id)
+                REFERENCES cleanup_plans(account_key, plan_id) ON DELETE CASCADE,
+            FOREIGN KEY (account_key, plan_id, command_revision)
+                REFERENCES cleanup_plan_events(account_key, plan_id, revision)
+                ON DELETE CASCADE,
+            CHECK(
+                (operation_type = 'create'
+                    AND result_status = 'created'
+                    AND removed_count IS NULL)
+                OR
+                (operation_type = 'revalidate'
+                    AND result_status = 'revalidated'
+                    AND removed_count IS NOT NULL)
+                OR
+                (operation_type = 'cancel'
+                    AND result_status = 'cancelled'
+                    AND removed_count IS NULL)
+            )
+        );
+
+        CREATE TABLE cleanup_plan_catalog_state (
+            account_key TEXT PRIMARY KEY,
+            catalog_version INTEGER NOT NULL CHECK(catalog_version = 1),
+            catalog_revision INTEGER NOT NULL CHECK(catalog_revision > 0),
+            FOREIGN KEY (account_key) REFERENCES indexed_accounts(account_key)
+                ON DELETE CASCADE
+        );
+
+        CREATE INDEX idx_cleanup_plans_listing
+            ON cleanup_plans(account_key, created_at DESC, plan_id ASC);
+        CREATE INDEX idx_cleanup_plans_state_listing
+            ON cleanup_plans(
+                account_key, persisted_state, created_at DESC, plan_id ASC
+            );
+        CREATE INDEX idx_cleanup_plan_members_page
+            ON cleanup_plan_members(
+                account_key, plan_id, received_at DESC, message_id ASC
+            );
+        CREATE INDEX idx_cleanup_plan_members_initial_state_page
+            ON cleanup_plan_members(
+                account_key, plan_id, initial_state,
+                received_at DESC, message_id ASC
+            );
+        CREATE INDEX idx_cleanup_plan_member_reasons_removal
+            ON cleanup_plan_member_reasons(
+                account_key, plan_id, provider_message_id, removal_revision
+            );
+        CREATE INDEX idx_cleanup_plan_member_removals_event
+            ON cleanup_plan_member_removals(
+                account_key, plan_id, event_revision, provider_message_id
+            );
+        CREATE INDEX idx_cleanup_plan_requests_plan
+            ON cleanup_plan_requests(
+                account_key, plan_id, command_revision, command_id
+            );
+        """,
+    ),
 )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True, repr=False)
+class CleanupPlanListingItem:
+    plan_id: str
+    plan_revision: int
+    state: CleanupPlanState
+    created_at: datetime
+    expires_at: datetime
+    last_revalidated_at: datetime | None
+    disposition: CleanupDisposition
+    selected_at_creation_count: int
+    selected_at_creation_size_estimate_bytes: int
+    excluded_at_creation_count: int
+    excluded_at_creation_size_estimate_bytes: int
+    current_eligible_count: int
+    current_eligible_size_estimate_bytes: int
+    storage_effect: CleanupStorageEffect
+
+
+@dataclass(frozen=True, slots=True, kw_only=True, repr=False)
+class CleanupPlanListingPage:
+    listing_as_of: datetime
+    catalog_revision: int
+    items: tuple[CleanupPlanListingItem, ...]
+    has_more: bool
+
+
+@dataclass(frozen=True, slots=True, kw_only=True, repr=False)
+class CleanupPlanMemberItem:
+    message_id: str
+    initial_state: CleanupMemberInitialState
+    current_state: CleanupMemberCurrentState
+    received_at: datetime
+    size_estimate_bytes: int
+    reason_codes: tuple[CleanupExclusionReason, ...]
+
+
+@dataclass(frozen=True, slots=True, kw_only=True, repr=False)
+class CleanupPlanMemberPage:
+    plan_id: str
+    plan_revision: int
+    items: tuple[CleanupPlanMemberItem, ...]
+    has_more: bool
+
+
+@dataclass(frozen=True, slots=True, kw_only=True, repr=False)
+class CleanupPlanEventPage:
+    plan_id: str
+    plan_revision: int
+    items: tuple[CleanupPlanEvent, ...]
+    has_more: bool
 
 
 class Repository:
@@ -3235,6 +3967,1991 @@ class Repository:
                 "DELETE FROM indexed_accounts WHERE account_key = ?",
                 (validated_account_key,),
             )
+
+    @staticmethod
+    def _cleanup_temporal_filter_from_row(
+        row: sqlite3.Row,
+    ) -> ResolvedTemporalFilter:
+        kind = str(row["temporal_filter_kind"])
+        requested: CleanupTemporalFilter
+        if kind == "all":
+            requested = AllTemporalFilter()
+        elif kind == "beforeDate":
+            requested_before = row["requested_before_date"]
+            if requested_before is None:
+                raise ValueError("beforeDate is missing its requested date")
+            requested = BeforeDateTemporalFilter(date=date.fromisoformat(str(requested_before)))
+        elif kind == "dateRange":
+            requested_on_or_after = row["requested_on_or_after_date"]
+            requested_before = row["requested_before_date"]
+            if requested_on_or_after is None or requested_before is None:
+                raise ValueError("dateRange is missing a requested bound")
+            requested = DateRangeTemporalFilter(
+                on_or_after_date=date.fromisoformat(str(requested_on_or_after)),
+                before_date=date.fromisoformat(str(requested_before)),
+            )
+        elif kind == "olderThanDays":
+            requested_days = row["requested_older_than_days"]
+            if requested_days is None:
+                raise ValueError("olderThanDays is missing its requested day count")
+            requested = OlderThanDaysTemporalFilter(days=int(requested_days))
+        else:
+            raise ValueError("unknown cleanup temporal filter")
+        resolved_on_or_after = row["resolved_on_or_after_utc"]
+        resolved_before = row["resolved_before_utc"]
+        return ResolvedTemporalFilter(
+            requested=requested,
+            resolved_on_or_after_utc=(
+                datetime.fromisoformat(str(resolved_on_or_after))
+                if resolved_on_or_after is not None
+                else None
+            ),
+            resolved_before_utc=(
+                datetime.fromisoformat(str(resolved_before))
+                if resolved_before is not None
+                else None
+            ),
+            time_zone=str(row["time_zone"]),
+        )
+
+    @staticmethod
+    def _cleanup_selection_conn(
+        connection: sqlite3.Connection,
+        row: sqlite3.Row,
+    ) -> CleanupPlanSelection:
+        account_key = str(row["account_key"])
+        plan_id = str(row["plan_id"])
+        target_rows = connection.execute(
+            "SELECT * FROM cleanup_plan_targets "
+            "WHERE account_key = ? AND plan_id = ? AND target_role = 'selection' "
+            "ORDER BY target_order ASC",
+            (account_key, plan_id),
+        ).fetchall()
+        targets: list[CleanupTarget] = []
+        snapshots: list[SourceTargetSnapshot | FlowTargetSnapshot | SenderTargetSnapshot] = []
+        for target_row in target_rows:
+            kind = CleanupTargetKind(str(target_row["target_kind"]))
+            target_id = str(target_row["target_id"])
+            display_value = str(target_row["display_value"])
+            targets.append(CleanupTarget(kind=kind, target_id=target_id))
+            if kind is CleanupTargetKind.SOURCE:
+                selector_fingerprint = target_row["selector_fingerprint"]
+                if selector_fingerprint is None:
+                    raise ValueError("source target is missing its selector fingerprint")
+                snapshots.append(
+                    SourceTargetSnapshot(
+                        target_id=target_id,
+                        display_name=display_value,
+                        selector_fingerprint=str(selector_fingerprint),
+                    )
+                )
+            elif kind is CleanupTargetKind.FLOW:
+                selector_fingerprint = target_row["selector_fingerprint"]
+                if selector_fingerprint is None:
+                    raise ValueError("flow target is missing its selector fingerprint")
+                snapshots.append(
+                    FlowTargetSnapshot(
+                        target_id=target_id,
+                        display_name=display_value,
+                        selector_fingerprint=str(selector_fingerprint),
+                    )
+                )
+            elif kind is CleanupTargetKind.SENDER:
+                snapshots.append(
+                    SenderTargetSnapshot(
+                        target_id=target_id,
+                        display_address=display_value,
+                    )
+                )
+            else:
+                raise ValueError("label cannot be a selection target")
+
+        label_rows = connection.execute(
+            "SELECT * FROM cleanup_plan_targets "
+            "WHERE account_key = ? AND plan_id = ? AND target_role = 'excluded_label' "
+            "ORDER BY target_order ASC",
+            (account_key, plan_id),
+        ).fetchall()
+        label_snapshots: list[CleanupLabelSnapshot] = []
+        for label_row in label_rows:
+            if CleanupTargetKind(str(label_row["target_kind"])) is not CleanupTargetKind.LABEL:
+                raise ValueError("excluded label row has an invalid target kind")
+            provider_label_id = label_row["provider_label_id"]
+            if provider_label_id is None:
+                raise ValueError("excluded label row is missing its provider identity")
+            label_snapshots.append(
+                CleanupLabelSnapshot(
+                    label_id=str(label_row["target_id"]),
+                    display_name=str(label_row["display_value"]),
+                    provider_label_id=str(provider_label_id),
+                )
+            )
+        excluded_label_ids = tuple(item.label_id for item in label_snapshots)
+        return CleanupPlanSelection(
+            disposition=CleanupDisposition(str(row["disposition"])),
+            targets=tuple(targets),
+            target_snapshots=tuple(snapshots),
+            temporal_filter=Repository._cleanup_temporal_filter_from_row(row),
+            read_state=CleanupReadState(str(row["read_state"])),
+            excluded_label_ids=excluded_label_ids,
+            excluded_label_snapshots=tuple(label_snapshots),
+            keep_latest_per_flow=int(row["keep_latest_per_flow"]),
+            version=int(row["snapshot_version"]),
+        )
+
+    @staticmethod
+    def _cleanup_reason_rows_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        plan_id: str,
+    ) -> tuple[
+        dict[str, tuple[CleanupExclusionReason, ...]],
+        dict[tuple[str, int], tuple[CleanupExclusionReason, ...]],
+    ]:
+        rows = connection.execute(
+            "SELECT provider_message_id, reason_context, removal_revision, reason_code "
+            "FROM cleanup_plan_member_reasons "
+            "WHERE account_key = ? AND plan_id = ? "
+            "ORDER BY provider_message_id ASC, reason_context ASC, reason_order ASC",
+            (account_key, plan_id),
+        ).fetchall()
+        creation_values: defaultdict[str, list[CleanupExclusionReason]] = defaultdict(list)
+        removal_values: defaultdict[tuple[str, int], list[CleanupExclusionReason]] = defaultdict(
+            list
+        )
+        for reason_row in rows:
+            provider_message_id = str(reason_row["provider_message_id"])
+            reason = CleanupExclusionReason(str(reason_row["reason_code"]))
+            if str(reason_row["reason_context"]) == "creation":
+                if reason_row["removal_revision"] is not None:
+                    raise ValueError("creation reason references a removal")
+                creation_values[provider_message_id].append(reason)
+            elif str(reason_row["reason_context"]) == "removal":
+                removal_revision = reason_row["removal_revision"]
+                if removal_revision is None:
+                    raise ValueError("removal reason is missing its revision")
+                removal_values[(provider_message_id, int(removal_revision))].append(reason)
+            else:
+                raise ValueError("unknown reason context")
+        return (
+            {key: tuple(value) for key, value in creation_values.items()},
+            {key: tuple(value) for key, value in removal_values.items()},
+        )
+
+    @staticmethod
+    def _cleanup_storage_datetime(value: object, field_name: str) -> datetime:
+        parsed = datetime.fromisoformat(str(value))
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            raise ValueError(f"{field_name} must be timezone-aware")
+        return parsed.astimezone(UTC)
+
+    @staticmethod
+    def _cleanup_event_from_row(row: sqlite3.Row) -> CleanupPlanEvent:
+        return CleanupPlanEvent(
+            revision=int(row["revision"]),
+            type=CleanupEventType(str(row["event_type"])),
+            recorded_at=Repository._cleanup_storage_datetime(
+                row["recorded_at"], "recorded_at"
+            ),
+            state=CleanupPlanState(str(row["state"])),
+            observed_map_revision=(
+                str(row["observed_map_revision"])
+                if row["observed_map_revision"] is not None
+                else None
+            ),
+            observed_policy_revision=(
+                int(row["observed_policy_revision"])
+                if row["observed_policy_revision"] is not None
+                else None
+            ),
+            removed_count=int(row["removed_count"]),
+            remaining_count=int(row["remaining_count"]),
+            version=int(row["event_version"]),
+        )
+
+    @staticmethod
+    def _cleanup_listing_item_from_row(row: sqlite3.Row) -> CleanupPlanListingItem:
+        plan_revision = int(row["plan_revision"])
+        selected_count = int(row["selected_at_creation_count"])
+        selected_size = int(row["selected_at_creation_size_estimate_bytes"])
+        excluded_count = int(row["excluded_at_creation_count"])
+        excluded_size = int(row["excluded_at_creation_size_estimate_bytes"])
+        current_count = int(row["current_eligible_count"])
+        current_size = int(row["current_eligible_size_estimate_bytes"])
+        if (
+            plan_revision < 1
+            or min(
+                selected_count,
+                selected_size,
+                excluded_count,
+                excluded_size,
+                current_count,
+                current_size,
+            )
+            < 0
+            or current_count > selected_count
+            or current_size > selected_size
+        ):
+            raise ValueError("cleanup plan listing aggregate is invalid")
+        disposition = CleanupDisposition(str(row["disposition"]))
+        last_revalidated = row["last_revalidated_at"]
+        return CleanupPlanListingItem(
+            plan_id=str(row["plan_id"]),
+            plan_revision=plan_revision,
+            state=CleanupPlanState(str(row["effective_state"])),
+            created_at=Repository._cleanup_storage_datetime(row["created_at"], "created_at"),
+            expires_at=Repository._cleanup_storage_datetime(row["expires_at"], "expires_at"),
+            last_revalidated_at=(
+                Repository._cleanup_storage_datetime(
+                    last_revalidated, "last_revalidated_at"
+                )
+                if last_revalidated is not None
+                else None
+            ),
+            disposition=disposition,
+            selected_at_creation_count=selected_count,
+            selected_at_creation_size_estimate_bytes=selected_size,
+            excluded_at_creation_count=excluded_count,
+            excluded_at_creation_size_estimate_bytes=excluded_size,
+            current_eligible_count=current_count,
+            current_eligible_size_estimate_bytes=current_size,
+            storage_effect=(
+                CleanupStorageEffect.NONE
+                if disposition is CleanupDisposition.ARCHIVE
+                else CleanupStorageEffect.NOT_GUARANTEED
+            ),
+        )
+
+    @staticmethod
+    def _cleanup_reason_rows_for_members_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        plan_id: str,
+        provider_message_ids: tuple[str, ...],
+    ) -> tuple[
+        dict[str, tuple[CleanupExclusionReason, ...]],
+        dict[tuple[str, int], tuple[CleanupExclusionReason, ...]],
+    ]:
+        if not provider_message_ids:
+            return {}, {}
+        placeholders = ", ".join("?" for _ in provider_message_ids)
+        rows = connection.execute(
+            "SELECT provider_message_id, reason_context, removal_revision, reason_code "
+            "FROM cleanup_plan_member_reasons "
+            f"WHERE account_key = ? AND plan_id = ? "
+            f"AND provider_message_id IN ({placeholders}) "
+            "ORDER BY provider_message_id ASC, reason_context ASC, "
+            "removal_revision ASC, reason_order ASC",
+            (account_key, plan_id, *provider_message_ids),
+        ).fetchall()
+        creation_values: defaultdict[str, list[CleanupExclusionReason]] = defaultdict(list)
+        removal_values: defaultdict[tuple[str, int], list[CleanupExclusionReason]] = defaultdict(
+            list
+        )
+        for reason_row in rows:
+            provider_message_id = str(reason_row["provider_message_id"])
+            reason = CleanupExclusionReason(str(reason_row["reason_code"]))
+            context = str(reason_row["reason_context"])
+            removal_revision = reason_row["removal_revision"]
+            if context == "creation" and removal_revision is None:
+                creation_values[provider_message_id].append(reason)
+            elif context == "removal" and removal_revision is not None:
+                removal_values[(provider_message_id, int(removal_revision))].append(reason)
+            else:
+                raise ValueError("cleanup member reason context is invalid")
+        return (
+            {key: tuple(value) for key, value in creation_values.items()},
+            {key: tuple(value) for key, value in removal_values.items()},
+        )
+
+    @staticmethod
+    def _cleanup_member_item_from_row(
+        row: sqlite3.Row,
+        creation_reasons: dict[str, tuple[CleanupExclusionReason, ...]],
+        removal_reasons: dict[tuple[str, int], tuple[CleanupExclusionReason, ...]],
+    ) -> CleanupPlanMemberItem:
+        provider_message_id = str(row["provider_message_id"])
+        initial_state = CleanupMemberInitialState(str(row["initial_state"]))
+        removal_revision_value = row["removal_revision"]
+        removal_revision = (
+            int(removal_revision_value) if removal_revision_value is not None else None
+        )
+        member_creation_reasons = creation_reasons.get(provider_message_id, ())
+        cleanup_creation_reason_codes(member_creation_reasons)
+        if initial_state is CleanupMemberInitialState.EXCLUDED:
+            if removal_revision is not None or not member_creation_reasons:
+                raise ValueError("excluded cleanup member projection is invalid")
+            current_state = CleanupMemberCurrentState.EXCLUDED
+            reason_codes = member_creation_reasons
+        elif removal_revision is not None:
+            if member_creation_reasons:
+                raise ValueError("selected cleanup member has creation reasons")
+            current_state = CleanupMemberCurrentState.REMOVED
+            reason_codes = removal_reasons.get((provider_message_id, removal_revision), ())
+            cleanup_removal_reason_codes(reason_codes)
+        else:
+            if member_creation_reasons:
+                raise ValueError("selected cleanup member has creation reasons")
+            current_state = CleanupMemberCurrentState.ELIGIBLE
+            reason_codes = ()
+        size_estimate_bytes = int(row["size_estimate_bytes"])
+        if size_estimate_bytes < 0:
+            raise ValueError("cleanup member size is invalid")
+        return CleanupPlanMemberItem(
+            message_id=str(row["message_id"]),
+            initial_state=initial_state,
+            current_state=current_state,
+            received_at=Repository._cleanup_storage_datetime(
+                row["received_at"], "received_at"
+            ),
+            size_estimate_bytes=size_estimate_bytes,
+            reason_codes=reason_codes,
+        )
+
+    @staticmethod
+    def _cleanup_plan_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        plan_id: str,
+    ) -> PersistedCleanupPlan | None:
+        row = connection.execute(
+            "SELECT * FROM cleanup_plans WHERE account_key = ? AND plan_id = ?",
+            (account_key, plan_id),
+        ).fetchone()
+        if row is None:
+            return None
+        try:
+            selection = Repository._cleanup_selection_conn(connection, row)
+            creation_reasons, removal_reasons = Repository._cleanup_reason_rows_conn(
+                connection, account_key, plan_id
+            )
+            member_rows = connection.execute(
+                "SELECT * FROM cleanup_plan_members "
+                "WHERE account_key = ? AND plan_id = ? ORDER BY message_id ASC",
+                (account_key, plan_id),
+            ).fetchall()
+            members = tuple(
+                CleanupPlanMember(
+                    provider_message_id=str(member_row["provider_message_id"]),
+                    message_id=str(member_row["message_id"]),
+                    initial_state=CleanupMemberInitialState(str(member_row["initial_state"])),
+                    received_at=datetime.fromisoformat(str(member_row["received_at"])),
+                    size_estimate_bytes=int(member_row["size_estimate_bytes"]),
+                    source_id=str(member_row["frozen_source_id"]),
+                    flow_id=str(member_row["frozen_flow_id"]),
+                    read_state=CleanupReadState(str(member_row["initial_read_state"])),
+                    reason_codes=creation_reasons.get(str(member_row["provider_message_id"]), ()),
+                    version=int(member_row["member_version"]),
+                )
+                for member_row in member_rows
+            )
+            members_by_message_id = {member.message_id: member for member in members}
+            members_by_provider_id = {member.provider_message_id: member for member in members}
+
+            sample_rows = connection.execute(
+                "SELECT * FROM cleanup_plan_samples "
+                "WHERE account_key = ? AND plan_id = ? "
+                "ORDER BY sample_role ASC, sample_order ASC",
+                (account_key, plan_id),
+            ).fetchall()
+            samples: list[CleanupPlanSample] = []
+            for sample_row in sample_rows:
+                message_id = str(sample_row["message_id"])
+                member = members_by_message_id.get(message_id)
+                if member is None:
+                    raise ValueError("sample references a missing plan member")
+                kind = CleanupSampleKind(str(sample_row["sample_role"]))
+                expected_kind = (
+                    CleanupSampleKind.INCLUDED
+                    if member.initial_state is CleanupMemberInitialState.SELECTED
+                    else CleanupSampleKind.EXCLUDED
+                )
+                if kind is not expected_kind:
+                    raise ValueError("sample role does not match its member")
+                if (
+                    datetime.fromisoformat(str(sample_row["received_at"])) != member.received_at
+                    or int(sample_row["size_estimate_bytes"]) != member.size_estimate_bytes
+                    or str(sample_row["source_id"]) != member.source_id
+                    or str(sample_row["flow_id"]) != member.flow_id
+                    or CleanupReadState(str(sample_row["read_state"])) is not member.read_state
+                ):
+                    raise ValueError("sample snapshot diverges from its member")
+                samples.append(
+                    CleanupPlanSample(
+                        kind=kind,
+                        position=int(sample_row["sample_order"]),
+                        message_id=message_id,
+                        received_at=member.received_at,
+                        sender_name=(
+                            str(sample_row["sender_name"])
+                            if sample_row["sender_name"] is not None
+                            else None
+                        ),
+                        sender_address=(
+                            str(sample_row["sender_address"])
+                            if sample_row["sender_address"] is not None
+                            else None
+                        ),
+                        subject=(
+                            str(sample_row["subject"])
+                            if sample_row["subject"] is not None
+                            else None
+                        ),
+                        size_estimate_bytes=member.size_estimate_bytes,
+                        source_id=member.source_id,
+                        flow_id=member.flow_id,
+                        read_state=member.read_state,
+                        exclusion_reasons=member.reason_codes,
+                        version=int(sample_row["sample_version"]),
+                    )
+                )
+
+            event_rows = connection.execute(
+                "SELECT * FROM cleanup_plan_events "
+                "WHERE account_key = ? AND plan_id = ? ORDER BY revision ASC",
+                (account_key, plan_id),
+            ).fetchall()
+            events = tuple(
+                Repository._cleanup_event_from_row(event_row)
+                for event_row in event_rows
+            )
+            events_by_revision = {event.revision: event for event in events}
+
+            removal_rows = connection.execute(
+                "SELECT * FROM cleanup_plan_member_removals "
+                "WHERE account_key = ? AND plan_id = ? "
+                "ORDER BY provider_message_id ASC",
+                (account_key, plan_id),
+            ).fetchall()
+            removals: list[CleanupPlanMemberRemoval] = []
+            for removal_row in removal_rows:
+                provider_message_id = str(removal_row["provider_message_id"])
+                revision = int(removal_row["event_revision"])
+                member = members_by_provider_id.get(provider_message_id)
+                event = events_by_revision.get(revision)
+                if member is None or event is None:
+                    raise ValueError("removal references a missing member or event")
+                removals.append(
+                    CleanupPlanMemberRemoval(
+                        provider_message_id=provider_message_id,
+                        message_id=member.message_id,
+                        revision=revision,
+                        recorded_at=event.recorded_at,
+                        reason_codes=removal_reasons.get((provider_message_id, revision), ()),
+                        version=int(removal_row["removal_version"]),
+                    )
+                )
+
+            plan = PersistedCleanupPlan(
+                account_key=account_key,
+                plan_id=plan_id,
+                selection=selection,
+                created_from_input_revision=str(row["created_from_input_revision"]),
+                created_from_map_revision=str(row["created_from_map_revision"]),
+                created_from_policy_revision=int(row["created_from_policy_revision"]),
+                created_at=datetime.fromisoformat(str(row["created_at"])),
+                expires_at=datetime.fromisoformat(str(row["expires_at"])),
+                members=members,
+                samples=tuple(samples),
+                events=events,
+                removals=tuple(removals),
+                version=int(row["snapshot_version"]),
+            )
+            stored_last_revalidated = (
+                datetime.fromisoformat(str(row["last_revalidated_at"]))
+                if row["last_revalidated_at"] is not None
+                else None
+            )
+            if (
+                int(row["plan_revision"]) != plan.plan_revision
+                or CleanupPlanState(str(row["persisted_state"])) is not plan.persisted_state
+                or stored_last_revalidated != plan.last_revalidated_at
+                or int(row["selected_at_creation_count"]) != plan.selected_at_creation_count
+                or int(row["selected_at_creation_size_estimate_bytes"])
+                != plan.selected_at_creation_size_estimate_bytes
+                or int(row["excluded_at_creation_count"]) != plan.excluded_at_creation_count
+                or int(row["excluded_at_creation_size_estimate_bytes"])
+                != plan.excluded_at_creation_size_estimate_bytes
+                or int(row["current_eligible_count"]) != plan.current_eligible_count
+                or int(row["current_eligible_size_estimate_bytes"])
+                != plan.current_eligible_size_estimate_bytes
+            ):
+                raise ValueError("cleanup plan aggregate columns diverge from its ledger")
+            return plan
+        except (TypeError, ValueError) as error:
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE) from error
+
+    @staticmethod
+    def _cleanup_temporal_storage_values(
+        selection: CleanupPlanSelection,
+    ) -> tuple[
+        str,
+        str | None,
+        str | None,
+        int | None,
+        str | None,
+        str | None,
+        str,
+    ]:
+        requested = selection.temporal_filter.requested
+        requested_on_or_after: str | None = None
+        requested_before: str | None = None
+        requested_days: int | None = None
+        if isinstance(requested, BeforeDateTemporalFilter):
+            requested_before = requested.date.isoformat()
+        elif isinstance(requested, DateRangeTemporalFilter):
+            requested_on_or_after = requested.on_or_after_date.isoformat()
+            requested_before = requested.before_date.isoformat()
+        elif isinstance(requested, OlderThanDaysTemporalFilter):
+            requested_days = requested.days
+        elif not isinstance(requested, AllTemporalFilter):
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST)
+        return (
+            requested.kind.value,
+            requested_on_or_after,
+            requested_before,
+            requested_days,
+            (
+                selection.temporal_filter.resolved_on_or_after_utc.isoformat()
+                if selection.temporal_filter.resolved_on_or_after_utc is not None
+                else None
+            ),
+            (
+                selection.temporal_filter.resolved_before_utc.isoformat()
+                if selection.temporal_filter.resolved_before_utc is not None
+                else None
+            ),
+            selection.temporal_filter.time_zone,
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_row_conn(
+        connection: sqlite3.Connection,
+        plan: PersistedCleanupPlan,
+        snapshot: MapInputSnapshot,
+    ) -> None:
+        checkpoint = snapshot.checkpoint
+        if (
+            not snapshot.account_exists
+            or checkpoint is None
+            or checkpoint.state is not SyncState.COMPLETED
+            or snapshot.fixture_version is None
+            or plan.account_key != snapshot.account_key
+            or plan.created_from_input_revision != snapshot.input_revision
+        ):
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+        (
+            temporal_kind,
+            requested_on_or_after,
+            requested_before,
+            requested_days,
+            resolved_on_or_after,
+            resolved_before,
+            time_zone,
+        ) = Repository._cleanup_temporal_storage_values(plan.selection)
+        connection.execute(
+            """
+            INSERT INTO cleanup_plans(
+                account_key, plan_id, contract_version, snapshot_version,
+                plan_revision, persisted_state, disposition, created_at, expires_at,
+                last_revalidated_at, created_from_input_revision,
+                created_from_map_revision, created_from_policy_revision,
+                created_from_scan_id, created_from_sync_mode,
+                created_from_checkpoint_updated_at,
+                created_from_checkpoint_processed_count, fixture_version,
+                index_record_version, classification_model_version,
+                policy_model_version, map_composition_version,
+                temporal_filter_kind, requested_on_or_after_date,
+                requested_before_date, requested_older_than_days,
+                resolved_on_or_after_utc, resolved_before_utc, time_zone, read_state,
+                keep_latest_per_flow, selected_at_creation_count,
+                selected_at_creation_size_estimate_bytes,
+                excluded_at_creation_count,
+                excluded_at_creation_size_estimate_bytes, current_eligible_count,
+                current_eligible_size_estimate_bytes
+            ) VALUES (
+                ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?,
+                ?, ?
+            )
+            """,
+            (
+                plan.account_key,
+                plan.plan_id,
+                1,
+                plan.version,
+                plan.plan_revision,
+                plan.persisted_state.value,
+                plan.selection.disposition.value,
+                plan.created_at.isoformat(),
+                plan.expires_at.isoformat(),
+                (
+                    plan.last_revalidated_at.isoformat()
+                    if plan.last_revalidated_at is not None
+                    else None
+                ),
+                plan.created_from_input_revision,
+                plan.created_from_map_revision,
+                plan.created_from_policy_revision,
+                checkpoint.scan_id,
+                checkpoint.mode.value,
+                checkpoint.updated_at.isoformat(),
+                checkpoint.processed_count,
+                snapshot.fixture_version,
+                1,
+                2,
+                1,
+                1,
+                temporal_kind,
+                requested_on_or_after,
+                requested_before,
+                requested_days,
+                resolved_on_or_after,
+                resolved_before,
+                time_zone,
+                plan.selection.read_state.value,
+                plan.selection.keep_latest_per_flow,
+                plan.selected_at_creation_count,
+                plan.selected_at_creation_size_estimate_bytes,
+                plan.excluded_at_creation_count,
+                plan.excluded_at_creation_size_estimate_bytes,
+                plan.current_eligible_count,
+                plan.current_eligible_size_estimate_bytes,
+            ),
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_targets_conn(
+        connection: sqlite3.Connection,
+        plan: PersistedCleanupPlan,
+    ) -> None:
+        target_rows: list[tuple[object, ...]] = []
+        for target_order, (target, snapshot) in enumerate(
+            zip(
+                plan.selection.targets,
+                plan.selection.target_snapshots,
+                strict=True,
+            )
+        ):
+            if isinstance(snapshot, SourceTargetSnapshot):
+                display_value = snapshot.display_name
+                selector_fingerprint: str | None = snapshot.selector_fingerprint
+            elif isinstance(snapshot, FlowTargetSnapshot):
+                display_value = snapshot.display_name
+                selector_fingerprint = snapshot.selector_fingerprint
+            elif isinstance(snapshot, SenderTargetSnapshot):
+                display_value = snapshot.display_address
+                selector_fingerprint = None
+            else:
+                raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST)
+            if snapshot.kind is not target.kind or snapshot.target_id != target.target_id:
+                raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST)
+            target_rows.append(
+                (
+                    plan.account_key,
+                    plan.plan_id,
+                    "selection",
+                    target_order,
+                    snapshot.version,
+                    target.kind.value,
+                    target.target_id,
+                    display_value,
+                    None,
+                    selector_fingerprint,
+                )
+            )
+        target_rows.extend(
+            (
+                plan.account_key,
+                plan.plan_id,
+                "excluded_label",
+                target_order,
+                snapshot.version,
+                CleanupTargetKind.LABEL.value,
+                snapshot.label_id,
+                snapshot.display_name,
+                snapshot.provider_label_id,
+                None,
+            )
+            for target_order, snapshot in enumerate(plan.selection.excluded_label_snapshots)
+        )
+        connection.executemany(
+            """
+            INSERT INTO cleanup_plan_targets(
+                account_key, plan_id, target_role, target_order, target_version,
+                target_kind, target_id, display_value, provider_label_id,
+                selector_fingerprint
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            target_rows,
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_members_conn(
+        connection: sqlite3.Connection,
+        plan: PersistedCleanupPlan,
+    ) -> None:
+        connection.executemany(
+            """
+            INSERT INTO cleanup_plan_members(
+                account_key, plan_id, provider_message_id, message_id,
+                member_version, record_version, initial_state, received_at,
+                size_estimate_bytes, initial_read_state, frozen_source_id,
+                frozen_flow_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                (
+                    plan.account_key,
+                    plan.plan_id,
+                    member.provider_message_id,
+                    member.message_id,
+                    member.version,
+                    1,
+                    member.initial_state.value,
+                    member.received_at.isoformat(),
+                    member.size_estimate_bytes,
+                    member.read_state.value,
+                    member.source_id,
+                    member.flow_id,
+                )
+                for member in plan.members
+            ],
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_creation_reasons_conn(
+        connection: sqlite3.Connection,
+        plan: PersistedCleanupPlan,
+    ) -> None:
+        connection.executemany(
+            """
+            INSERT INTO cleanup_plan_member_reasons(
+                account_key, plan_id, provider_message_id, reason_context,
+                removal_revision, reason_order, reason_code, reason_version
+            ) VALUES (?, ?, ?, 'creation', NULL, ?, ?, ?)
+            """,
+            [
+                (
+                    plan.account_key,
+                    plan.plan_id,
+                    member.provider_message_id,
+                    _CLEANUP_REASON_ORDER[reason],
+                    reason.value,
+                    member.version,
+                )
+                for member in plan.members
+                for reason in member.reason_codes
+            ],
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_samples_conn(
+        connection: sqlite3.Connection,
+        plan: PersistedCleanupPlan,
+    ) -> None:
+        connection.executemany(
+            """
+            INSERT INTO cleanup_plan_samples(
+                account_key, plan_id, sample_role, sample_order, sample_version,
+                message_id, received_at, sender_name, sender_address, subject,
+                size_estimate_bytes, source_id, flow_id, read_state
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                (
+                    plan.account_key,
+                    plan.plan_id,
+                    sample.kind.value,
+                    sample.position,
+                    sample.version,
+                    sample.message_id,
+                    sample.received_at.isoformat(),
+                    sample.sender_name,
+                    sample.sender_address,
+                    sample.subject,
+                    sample.size_estimate_bytes,
+                    sample.source_id,
+                    sample.flow_id,
+                    sample.read_state.value,
+                )
+                for sample in plan.samples
+            ],
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_event_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        plan_id: str,
+        event: CleanupPlanEvent,
+    ) -> None:
+        connection.execute(
+            """
+            INSERT INTO cleanup_plan_events(
+                account_key, plan_id, revision, event_version, event_type, state,
+                recorded_at, observed_map_revision, observed_policy_revision,
+                removed_count, remaining_count
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                account_key,
+                plan_id,
+                event.revision,
+                event.version,
+                event.type.value,
+                event.state.value,
+                event.recorded_at.isoformat(),
+                event.observed_map_revision,
+                event.observed_policy_revision,
+                event.removed_count,
+                event.remaining_count,
+            ),
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_removals_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        plan_id: str,
+        removals: tuple[CleanupPlanMemberRemoval, ...],
+    ) -> None:
+        connection.executemany(
+            """
+            INSERT INTO cleanup_plan_member_removals(
+                account_key, plan_id, provider_message_id, event_revision,
+                removal_version
+            ) VALUES (?, ?, ?, ?, ?)
+            """,
+            [
+                (
+                    account_key,
+                    plan_id,
+                    removal.provider_message_id,
+                    removal.revision,
+                    removal.version,
+                )
+                for removal in removals
+            ],
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_removal_reasons_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        plan_id: str,
+        removals: tuple[CleanupPlanMemberRemoval, ...],
+    ) -> None:
+        connection.executemany(
+            """
+            INSERT INTO cleanup_plan_member_reasons(
+                account_key, plan_id, provider_message_id, reason_context,
+                removal_revision, reason_order, reason_code, reason_version
+            ) VALUES (?, ?, ?, 'removal', ?, ?, ?, ?)
+            """,
+            [
+                (
+                    account_key,
+                    plan_id,
+                    removal.provider_message_id,
+                    removal.revision,
+                    _CLEANUP_REASON_ORDER[reason],
+                    reason.value,
+                    removal.version,
+                )
+                for removal in removals
+                for reason in removal.reason_codes
+            ],
+        )
+
+    @staticmethod
+    def _insert_cleanup_plan_receipt_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        receipt: CleanupPlanReceipt,
+    ) -> None:
+        operation_type = {
+            CleanupCommandStatus.CREATED: "create",
+            CleanupCommandStatus.REVALIDATED: "revalidate",
+            CleanupCommandStatus.CANCELLED: "cancel",
+        }[receipt.status]
+        connection.execute(
+            """
+            INSERT INTO cleanup_plan_requests(
+                account_key, command_id, request_version, request_fingerprint,
+                plan_id, operation_type, result_status, command_revision,
+                removed_count
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                account_key,
+                receipt.command_id,
+                receipt.version,
+                receipt.request_fingerprint,
+                receipt.plan_id,
+                operation_type,
+                receipt.status.value,
+                receipt.command_revision,
+                receipt.removed_count,
+            ),
+        )
+
+    @staticmethod
+    def _update_cleanup_plan_aggregate_conn(
+        connection: sqlite3.Connection,
+        plan: PersistedCleanupPlan,
+        *,
+        expected_previous_revision: int,
+    ) -> None:
+        updated = connection.execute(
+            """
+            UPDATE cleanup_plans SET
+                plan_revision = ?,
+                persisted_state = ?,
+                last_revalidated_at = ?,
+                current_eligible_count = ?,
+                current_eligible_size_estimate_bytes = ?
+            WHERE account_key = ? AND plan_id = ? AND plan_revision = ?
+            """,
+            (
+                plan.plan_revision,
+                plan.persisted_state.value,
+                (
+                    plan.last_revalidated_at.isoformat()
+                    if plan.last_revalidated_at is not None
+                    else None
+                ),
+                plan.current_eligible_count,
+                plan.current_eligible_size_estimate_bytes,
+                plan.account_key,
+                plan.plan_id,
+                expected_previous_revision,
+            ),
+        )
+        if updated.rowcount != 1:
+            raise CleanupPlanError(CleanupPlanErrorCode.PLAN_REVISION_CONFLICT)
+
+    @staticmethod
+    def _advance_cleanup_plan_catalog_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        expected_revision: int,
+    ) -> int:
+        next_revision = expected_revision + 1
+        if expected_revision == 0:
+            connection.execute(
+                "INSERT INTO cleanup_plan_catalog_state("
+                "account_key, catalog_version, catalog_revision) VALUES (?, 1, 1)",
+                (account_key,),
+            )
+            return next_revision
+        updated = connection.execute(
+            "UPDATE cleanup_plan_catalog_state SET catalog_revision = ? "
+            "WHERE account_key = ? AND catalog_revision = ?",
+            (next_revision, account_key, expected_revision),
+        )
+        if updated.rowcount != 1:
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+        return next_revision
+
+    @staticmethod
+    def _cleanup_catalog_revision_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+    ) -> int:
+        row = connection.execute(
+            "SELECT catalog_revision FROM cleanup_plan_catalog_state WHERE account_key = ?",
+            (account_key,),
+        ).fetchone()
+        if row is not None:
+            return int(row["catalog_revision"])
+        plan_exists = connection.execute(
+            "SELECT 1 FROM cleanup_plans WHERE account_key = ? LIMIT 1",
+            (account_key,),
+        ).fetchone()
+        if plan_exists is not None:
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+        return 0
+
+    @staticmethod
+    def _cleanup_composition_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+    ) -> tuple[MapInputSnapshot, CleanupPlanCompositionLike]:
+        snapshot = Repository._map_input_snapshot_conn(connection, account_key)
+        if not snapshot.account_exists:
+            raise CleanupPlanError(CleanupPlanErrorCode.ACCOUNT_UNAVAILABLE)
+        if snapshot.checkpoint is None or snapshot.checkpoint.state is not SyncState.COMPLETED:
+            raise CleanupPlanError(CleanupPlanErrorCode.INVENTORY_INCOMPLETE)
+        try:
+            return snapshot, compose_cleanup_plan_snapshot(snapshot)
+        except CleanupPlanError:
+            raise
+        except (AttributeError, KeyError, TypeError, ValueError) as error:
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE) from error
+
+    @staticmethod
+    def _cleanup_request_fingerprint(
+        command: (
+            CreateCleanupPlanCommand | RevalidateCleanupPlanCommand | CancelCleanupPlanCommand
+        ),
+        request_fingerprint: str,
+        *,
+        plan_id: str | None = None,
+    ) -> str:
+        if (
+            not isinstance(request_fingerprint, str)
+            or _SHA256_FINGERPRINT.fullmatch(request_fingerprint) is None
+        ):
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST)
+        canonical = cleanup_command_fingerprint(command, plan_id=plan_id)
+        if request_fingerprint != canonical:
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST)
+        return canonical
+
+    @staticmethod
+    def _cleanup_plan_replay_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        command_id: str,
+        request_fingerprint: str,
+    ) -> CleanupPlanReceipt | None:
+        row = connection.execute(
+            "SELECT * FROM cleanup_plan_requests WHERE account_key = ? AND command_id = ?",
+            (account_key, command_id),
+        ).fetchone()
+        if row is None:
+            return None
+        if str(row["request_fingerprint"]) != request_fingerprint:
+            raise CleanupPlanError(CleanupPlanErrorCode.COMMAND_ID_CONFLICT)
+        try:
+            status = CleanupCommandStatus(str(row["result_status"]))
+            operation_type = str(row["operation_type"])
+            expected_operation = {
+                CleanupCommandStatus.CREATED: "create",
+                CleanupCommandStatus.REVALIDATED: "revalidate",
+                CleanupCommandStatus.CANCELLED: "cancel",
+            }[status]
+            if operation_type != expected_operation:
+                raise ValueError("cleanup receipt operation does not match its result")
+            receipt = CleanupPlanReceipt(
+                command_id=str(row["command_id"]),
+                request_fingerprint=str(row["request_fingerprint"]),
+                status=status,
+                replayed=True,
+                command_revision=int(row["command_revision"]),
+                plan_id=str(row["plan_id"]),
+                removed_count=(
+                    int(row["removed_count"]) if row["removed_count"] is not None else None
+                ),
+                version=int(row["request_version"]),
+            )
+            event_row = connection.execute(
+                "SELECT event_type, removed_count FROM cleanup_plan_events "
+                "WHERE account_key = ? AND plan_id = ? AND revision = ?",
+                (account_key, receipt.plan_id, receipt.command_revision),
+            ).fetchone()
+            plan_row = connection.execute(
+                "SELECT plan_revision FROM cleanup_plans WHERE account_key = ? AND plan_id = ?",
+                (account_key, receipt.plan_id),
+            ).fetchone()
+            if (
+                event_row is None
+                or plan_row is None
+                or int(plan_row["plan_revision"]) < receipt.command_revision
+            ):
+                raise ValueError("cleanup receipt references a missing ledger entry")
+            event_type = CleanupEventType(str(event_row["event_type"]))
+            event_removed_count = int(event_row["removed_count"])
+            if status is CleanupCommandStatus.CREATED:
+                valid_event = (
+                    receipt.command_revision == 1
+                    and event_type is CleanupEventType.CREATED
+                    and event_removed_count == 0
+                )
+            elif status is CleanupCommandStatus.REVALIDATED:
+                valid_event = (
+                    event_type
+                    in (
+                        CleanupEventType.REVALIDATED,
+                        CleanupEventType.REDUCED,
+                        CleanupEventType.INVALIDATED,
+                    )
+                    and receipt.removed_count == event_removed_count
+                )
+            else:
+                valid_event = event_type is CleanupEventType.CANCELLED and event_removed_count == 0
+            if not valid_event:
+                raise ValueError("cleanup receipt diverges from its event")
+            Repository._cleanup_catalog_revision_conn(connection, account_key)
+            return receipt
+        except CleanupPlanError:
+            raise
+        except (KeyError, TypeError, ValueError) as error:
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE) from error
+
+    def _persist_cleanup_plan_creation_conn(
+        self,
+        connection: sqlite3.Connection,
+        prepared: PreparedCleanupPlanCreation,
+        snapshot: MapInputSnapshot,
+        *,
+        request_fingerprint: str,
+        expected_catalog_revision: int,
+    ) -> None:
+        plan = prepared.plan
+        receipt = prepared.receipt
+        if (
+            plan.account_key != snapshot.account_key
+            or receipt.plan_id != plan.plan_id
+            or receipt.status is not CleanupCommandStatus.CREATED
+            or receipt.replayed
+            or receipt.request_fingerprint != request_fingerprint
+            or receipt.command_revision != plan.plan_revision
+            or len(plan.events) != 1
+            or plan.events[0].type is not CleanupEventType.CREATED
+        ):
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+        self._insert_cleanup_plan_row_conn(connection, plan, snapshot)
+        self._insert_cleanup_plan_targets_conn(connection, plan)
+        self._insert_cleanup_plan_members_conn(connection, plan)
+        self._insert_cleanup_plan_creation_reasons_conn(connection, plan)
+        self._insert_cleanup_plan_samples_conn(connection, plan)
+        self._insert_cleanup_plan_event_conn(
+            connection,
+            plan.account_key,
+            plan.plan_id,
+            plan.events[0],
+        )
+        self._insert_cleanup_plan_receipt_conn(connection, plan.account_key, receipt)
+        self._advance_cleanup_plan_catalog_conn(
+            connection,
+            plan.account_key,
+            expected_catalog_revision,
+        )
+
+    def _persist_cleanup_plan_revalidation_conn(
+        self,
+        connection: sqlite3.Connection,
+        prepared: PreparedCleanupPlanRevalidation,
+        *,
+        request_fingerprint: str,
+        expected_previous_revision: int,
+        expected_catalog_revision: int,
+    ) -> None:
+        plan = prepared.plan
+        receipt = prepared.receipt
+        if (
+            receipt.plan_id != plan.plan_id
+            or receipt.status is not CleanupCommandStatus.REVALIDATED
+            or receipt.replayed
+            or receipt.request_fingerprint != request_fingerprint
+            or receipt.command_revision != expected_previous_revision + 1
+            or prepared.event.revision != receipt.command_revision
+            or prepared.event != plan.events[-1]
+            or receipt.removed_count != len(prepared.removals)
+            or any(removal.revision != prepared.event.revision for removal in prepared.removals)
+        ):
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+        self._insert_cleanup_plan_event_conn(
+            connection,
+            plan.account_key,
+            plan.plan_id,
+            prepared.event,
+        )
+        self._insert_cleanup_plan_removals_conn(
+            connection,
+            plan.account_key,
+            plan.plan_id,
+            prepared.removals,
+        )
+        self._insert_cleanup_plan_removal_reasons_conn(
+            connection,
+            plan.account_key,
+            plan.plan_id,
+            prepared.removals,
+        )
+        self._update_cleanup_plan_aggregate_conn(
+            connection,
+            plan,
+            expected_previous_revision=expected_previous_revision,
+        )
+        self._insert_cleanup_plan_receipt_conn(connection, plan.account_key, receipt)
+        self._advance_cleanup_plan_catalog_conn(
+            connection,
+            plan.account_key,
+            expected_catalog_revision,
+        )
+
+    def _persist_cleanup_plan_cancellation_conn(
+        self,
+        connection: sqlite3.Connection,
+        prepared: PreparedCleanupPlanCancellation,
+        *,
+        request_fingerprint: str,
+        expected_previous_revision: int,
+        expected_catalog_revision: int,
+    ) -> None:
+        plan = prepared.plan
+        receipt = prepared.receipt
+        if (
+            receipt.plan_id != plan.plan_id
+            or receipt.status is not CleanupCommandStatus.CANCELLED
+            or receipt.replayed
+            or receipt.request_fingerprint != request_fingerprint
+            or receipt.command_revision != expected_previous_revision + 1
+            or prepared.event.revision != receipt.command_revision
+            or prepared.event != plan.events[-1]
+            or prepared.event.type is not CleanupEventType.CANCELLED
+        ):
+            raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+        self._insert_cleanup_plan_event_conn(
+            connection,
+            plan.account_key,
+            plan.plan_id,
+            prepared.event,
+        )
+        self._update_cleanup_plan_aggregate_conn(
+            connection,
+            plan,
+            expected_previous_revision=expected_previous_revision,
+        )
+        self._insert_cleanup_plan_receipt_conn(connection, plan.account_key, receipt)
+        self._advance_cleanup_plan_catalog_conn(
+            connection,
+            plan.account_key,
+            expected_catalog_revision,
+        )
+
+    def create_cleanup_plan(
+        self,
+        account_key: str,
+        command: CreateCleanupPlanCommand,
+        *,
+        request_fingerprint: str,
+        clock: Callable[[], datetime],
+    ) -> CleanupPlanReceipt:
+        try:
+            validated_account_key = validate_account_key(account_key)
+        except (TypeError, ValueError):
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST) from None
+        if not isinstance(command, CreateCleanupPlanCommand) or not callable(clock):
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST)
+        canonical_fingerprint = self._cleanup_request_fingerprint(
+            command,
+            request_fingerprint,
+        )
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            replay = self._cleanup_plan_replay_conn(
+                connection,
+                validated_account_key,
+                command.command_id,
+                canonical_fingerprint,
+            )
+            if replay is not None:
+                return replay
+            expected_catalog_revision = self._cleanup_catalog_revision_conn(
+                connection,
+                validated_account_key,
+            )
+            command_now = clock()
+            plan_id = f"cleanup-plan-v1-{uuid4()}"
+            snapshot, composition = self._cleanup_composition_conn(
+                connection,
+                validated_account_key,
+            )
+            prepared = prepare_cleanup_plan_creation(
+                composition,
+                command,
+                plan_id=plan_id,
+                command_now=command_now,
+                input_revision=snapshot.input_revision,
+            )
+            self._persist_cleanup_plan_creation_conn(
+                connection,
+                prepared,
+                snapshot,
+                request_fingerprint=canonical_fingerprint,
+                expected_catalog_revision=expected_catalog_revision,
+            )
+            return prepared.receipt
+
+    def revalidate_cleanup_plan(
+        self,
+        account_key: str,
+        plan_id: str,
+        command: RevalidateCleanupPlanCommand,
+        *,
+        request_fingerprint: str,
+        clock: Callable[[], datetime],
+    ) -> CleanupPlanReceipt:
+        try:
+            validated_account_key = validate_account_key(account_key)
+            validated_plan_id = validate_opaque_identifier(plan_id, "plan_id")
+        except (TypeError, ValueError):
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST) from None
+        if not isinstance(command, RevalidateCleanupPlanCommand) or not callable(clock):
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST)
+        canonical_fingerprint = self._cleanup_request_fingerprint(
+            command,
+            request_fingerprint,
+            plan_id=validated_plan_id,
+        )
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            replay = self._cleanup_plan_replay_conn(
+                connection,
+                validated_account_key,
+                command.command_id,
+                canonical_fingerprint,
+            )
+            if replay is not None:
+                return replay
+            expected_catalog_revision = self._cleanup_catalog_revision_conn(
+                connection,
+                validated_account_key,
+            )
+            command_now = clock()
+            plan = self._cleanup_plan_conn(
+                connection,
+                validated_account_key,
+                validated_plan_id,
+            )
+            if plan is None:
+                raise CleanupPlanError(CleanupPlanErrorCode.PLAN_NOT_FOUND)
+            state = effective_plan_state(plan, command_now)
+            if state is CleanupPlanState.EXPIRED:
+                raise CleanupPlanError(CleanupPlanErrorCode.PLAN_EXPIRED)
+            if state in (CleanupPlanState.CANCELLED, CleanupPlanState.INVALIDATED):
+                raise CleanupPlanError(CleanupPlanErrorCode.INVALID_TRANSITION)
+            if command.expected_plan_revision != plan.plan_revision:
+                raise CleanupPlanError(CleanupPlanErrorCode.PLAN_REVISION_CONFLICT)
+            _snapshot, composition = self._cleanup_composition_conn(
+                connection,
+                validated_account_key,
+            )
+            prepared = prepare_cleanup_plan_revalidation(
+                composition,
+                plan,
+                command,
+                command_now=command_now,
+            )
+            self._persist_cleanup_plan_revalidation_conn(
+                connection,
+                prepared,
+                request_fingerprint=canonical_fingerprint,
+                expected_previous_revision=plan.plan_revision,
+                expected_catalog_revision=expected_catalog_revision,
+            )
+            return prepared.receipt
+
+    def cancel_cleanup_plan(
+        self,
+        account_key: str,
+        plan_id: str,
+        command: CancelCleanupPlanCommand,
+        *,
+        request_fingerprint: str,
+        clock: Callable[[], datetime],
+    ) -> CleanupPlanReceipt:
+        try:
+            validated_account_key = validate_account_key(account_key)
+            validated_plan_id = validate_opaque_identifier(plan_id, "plan_id")
+        except (TypeError, ValueError):
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST) from None
+        if not isinstance(command, CancelCleanupPlanCommand) or not callable(clock):
+            raise CleanupPlanError(CleanupPlanErrorCode.INVALID_REQUEST)
+        canonical_fingerprint = self._cleanup_request_fingerprint(
+            command,
+            request_fingerprint,
+            plan_id=validated_plan_id,
+        )
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            replay = self._cleanup_plan_replay_conn(
+                connection,
+                validated_account_key,
+                command.command_id,
+                canonical_fingerprint,
+            )
+            if replay is not None:
+                return replay
+            expected_catalog_revision = self._cleanup_catalog_revision_conn(
+                connection,
+                validated_account_key,
+            )
+            command_now = clock()
+            plan = self._cleanup_plan_conn(
+                connection,
+                validated_account_key,
+                validated_plan_id,
+            )
+            if plan is None:
+                raise CleanupPlanError(CleanupPlanErrorCode.PLAN_NOT_FOUND)
+            state = effective_plan_state(plan, command_now)
+            if state is CleanupPlanState.EXPIRED:
+                raise CleanupPlanError(CleanupPlanErrorCode.PLAN_EXPIRED)
+            if state in (CleanupPlanState.CANCELLED, CleanupPlanState.INVALIDATED):
+                raise CleanupPlanError(CleanupPlanErrorCode.INVALID_TRANSITION)
+            if command.expected_plan_revision != plan.plan_revision:
+                raise CleanupPlanError(CleanupPlanErrorCode.PLAN_REVISION_CONFLICT)
+            prepared = prepare_cleanup_plan_cancellation(
+                plan,
+                command,
+                command_now=command_now,
+            )
+            self._persist_cleanup_plan_cancellation_conn(
+                connection,
+                prepared,
+                request_fingerprint=canonical_fingerprint,
+                expected_previous_revision=plan.plan_revision,
+                expected_catalog_revision=expected_catalog_revision,
+            )
+            return prepared.receipt
+
+    def cleanup_plan_context(self, account_key: str) -> MapInputSnapshot:
+        validated_account_key = validate_account_key(account_key)
+        with self._connect() as connection:
+            connection.execute("BEGIN")
+            self._cleanup_catalog_revision_conn(connection, validated_account_key)
+            return self._map_input_snapshot_conn(connection, validated_account_key)
+
+    def cleanup_plan_targets(self, account_key: str) -> CleanupPlanCompositionLike:
+        validated_account_key = validate_account_key(account_key)
+        with self._connect() as connection:
+            connection.execute("BEGIN")
+            self._cleanup_catalog_revision_conn(connection, validated_account_key)
+            _snapshot, composition = self._cleanup_composition_conn(
+                connection, validated_account_key
+            )
+            return composition
+
+    @staticmethod
+    def _cleanup_plans_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+    ) -> tuple[PersistedCleanupPlan, ...]:
+        rows = connection.execute(
+            "SELECT plan_id FROM cleanup_plans WHERE account_key = ? "
+            "ORDER BY created_at DESC, plan_id ASC",
+            (account_key,),
+        ).fetchall()
+        values: list[PersistedCleanupPlan] = []
+        for row in rows:
+            plan = Repository._cleanup_plan_conn(connection, account_key, str(row["plan_id"]))
+            if plan is None:
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+            values.append(plan)
+        return tuple(values)
+
+    def cleanup_plans(self, account_key: str) -> tuple[PersistedCleanupPlan, ...]:
+        validated_account_key = validate_account_key(account_key)
+        with self._connect() as connection:
+            connection.execute("BEGIN")
+            self._cleanup_catalog_revision_conn(connection, validated_account_key)
+            return self._cleanup_plans_conn(connection, validated_account_key)
+
+    def cleanup_plan_listing_snapshot(
+        self,
+        account_key: str,
+        *,
+        clock: Callable[[], datetime],
+    ) -> tuple[datetime, int, tuple[PersistedCleanupPlan, ...]]:
+        validated_account_key = validate_account_key(account_key)
+        if not callable(clock):
+            raise TypeError("clock must be callable")
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            catalog_revision = self._cleanup_catalog_revision_conn(
+                connection,
+                validated_account_key,
+            )
+            listing_as_of = clock()
+            if (
+                not isinstance(listing_as_of, datetime)
+                or listing_as_of.tzinfo is None
+                or listing_as_of.utcoffset() is None
+            ):
+                raise ValueError("clock must return an aware datetime")
+            plans = self._cleanup_plans_conn(connection, validated_account_key)
+            return listing_as_of.astimezone(UTC), catalog_revision, plans
+
+    @staticmethod
+    def _cleanup_page_bounds(limit: int, offset: int, *, maximum: int) -> None:
+        if (
+            isinstance(limit, bool)
+            or not isinstance(limit, int)
+            or not 1 <= limit <= maximum
+            or isinstance(offset, bool)
+            or not isinstance(offset, int)
+            or offset < 0
+        ):
+            raise ValueError("cleanup page bounds are invalid")
+
+    def cleanup_plan_listing_page(
+        self,
+        account_key: str,
+        *,
+        state: CleanupPlanState | None,
+        limit: int,
+        offset: int,
+        expected_catalog_revision: int | None,
+        clock: Callable[[], datetime],
+    ) -> CleanupPlanListingPage:
+        validated_account_key = validate_account_key(account_key)
+        if state is not None and not isinstance(state, CleanupPlanState):
+            raise TypeError("state must be a CleanupPlanState or None")
+        self._cleanup_page_bounds(limit, offset, maximum=100)
+        if expected_catalog_revision is not None and (
+            isinstance(expected_catalog_revision, bool)
+            or not isinstance(expected_catalog_revision, int)
+            or expected_catalog_revision < 0
+        ):
+            raise ValueError("expected_catalog_revision is invalid")
+        if not callable(clock):
+            raise TypeError("clock must be callable")
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            catalog_revision = self._cleanup_catalog_revision_conn(
+                connection,
+                validated_account_key,
+            )
+            if (
+                expected_catalog_revision is not None
+                and catalog_revision != expected_catalog_revision
+            ):
+                raise CleanupPlanError(CleanupPlanErrorCode.CURSOR_STALE)
+            listing_as_of = clock()
+            if (
+                not isinstance(listing_as_of, datetime)
+                or listing_as_of.tzinfo is None
+                or listing_as_of.utcoffset() is None
+            ):
+                raise ValueError("clock must return an aware datetime")
+            normalized_as_of = listing_as_of.astimezone(UTC)
+            projection_sql = (
+                "SELECT plan_id, plan_revision, created_at, expires_at, "
+                "last_revalidated_at, disposition, selected_at_creation_count, "
+                "selected_at_creation_size_estimate_bytes, excluded_at_creation_count, "
+                "excluded_at_creation_size_estimate_bytes, current_eligible_count, "
+                "current_eligible_size_estimate_bytes, "
+                "CASE WHEN persisted_state IN ('cancelled', 'invalidated') "
+                "THEN persisted_state WHEN expires_at <= ? THEN 'expired' "
+                "ELSE persisted_state END AS effective_state "
+                "FROM cleanup_plans WHERE account_key = ?"
+            )
+            filter_sql = ""
+            projection_parameters: tuple[object, ...] = (
+                normalized_as_of.isoformat(),
+                validated_account_key,
+            )
+            filter_parameters: tuple[object, ...] = ()
+            if state is not None:
+                filter_sql = " WHERE effective_state = ?"
+                filter_parameters = (state.value,)
+            page_sql = (
+                f"WITH projected AS ({projection_sql}) "
+                f"SELECT * FROM projected{filter_sql} "
+                "ORDER BY created_at DESC, plan_id ASC LIMIT ? OFFSET ?"
+            )
+            rows = connection.execute(
+                page_sql,
+                (*projection_parameters, *filter_parameters, limit, offset),
+            ).fetchall()
+            try:
+                items = tuple(self._cleanup_listing_item_from_row(row) for row in rows)
+            except (TypeError, ValueError) as error:
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE) from error
+            next_offset = offset + len(items)
+            exists_sql = (
+                f"WITH projected AS ({projection_sql}) "
+                "SELECT EXISTS(SELECT 1 FROM projected"
+                f"{filter_sql} ORDER BY created_at DESC, plan_id ASC "
+                "LIMIT 1 OFFSET ?)"
+            )
+            has_more_row = connection.execute(
+                exists_sql,
+                (*projection_parameters, *filter_parameters, next_offset),
+            ).fetchone()
+            if has_more_row is None or int(has_more_row[0]) not in (0, 1):
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+            return CleanupPlanListingPage(
+                listing_as_of=normalized_as_of,
+                catalog_revision=catalog_revision,
+                items=items,
+                has_more=bool(has_more_row[0]),
+            )
+
+    @staticmethod
+    def _cleanup_member_filter_sql(state: str) -> str:
+        values = {
+            "all": "",
+            "selected": " AND m.initial_state = 'selected'",
+            "eligible": (
+                " AND m.initial_state = 'selected' "
+                "AND r.provider_message_id IS NULL"
+            ),
+            "excluded": " AND m.initial_state = 'excluded'",
+            "removed": (
+                " AND m.initial_state = 'selected' "
+                "AND r.provider_message_id IS NOT NULL"
+            ),
+        }
+        try:
+            return values[state]
+        except KeyError as error:
+            raise ValueError("cleanup member page state is invalid") from error
+
+    @staticmethod
+    def _cleanup_member_ledger_is_consistent_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        plan_id: str,
+        *,
+        plan_revision: int,
+        selected_count: int,
+        excluded_count: int,
+        current_count: int,
+    ) -> bool:
+        member_stats = connection.execute(
+            """
+            SELECT
+                COUNT(*) AS total_count,
+                COUNT(DISTINCT m.provider_message_id) AS provider_message_count,
+                COUNT(DISTINCT m.message_id) AS message_count,
+                COALESCE(SUM(CASE
+                    WHEN m.initial_state = 'selected' THEN 1 ELSE 0 END), 0)
+                    AS selected_count,
+                COALESCE(SUM(CASE
+                    WHEN m.initial_state = 'excluded' THEN 1 ELSE 0 END), 0)
+                    AS excluded_count,
+                COALESCE(SUM(CASE
+                    WHEN m.initial_state = 'selected' AND NOT EXISTS (
+                        SELECT 1 FROM cleanup_plan_member_removals AS eligible_r
+                        WHERE eligible_r.account_key = m.account_key
+                            AND eligible_r.plan_id = m.plan_id
+                            AND eligible_r.provider_message_id = m.provider_message_id
+                    ) THEN 1 ELSE 0 END), 0) AS eligible_count,
+                COALESCE(SUM(CASE
+                    WHEN m.initial_state = 'selected' AND EXISTS (
+                        SELECT 1 FROM cleanup_plan_member_removals AS removed_r
+                        WHERE removed_r.account_key = m.account_key
+                            AND removed_r.plan_id = m.plan_id
+                            AND removed_r.provider_message_id = m.provider_message_id
+                    ) THEN 1 ELSE 0 END), 0) AS removed_selected_count,
+                COALESCE(SUM(CASE
+                    WHEN m.initial_state = 'excluded' AND EXISTS (
+                        SELECT 1 FROM cleanup_plan_member_removals AS excluded_r
+                        WHERE excluded_r.account_key = m.account_key
+                            AND excluded_r.plan_id = m.plan_id
+                            AND excluded_r.provider_message_id = m.provider_message_id
+                    ) THEN 1 ELSE 0 END), 0) AS removed_excluded_count
+            FROM cleanup_plan_members AS m
+            WHERE m.account_key = ? AND m.plan_id = ?
+            """,
+            (account_key, plan_id),
+        ).fetchone()
+        removal_stats = connection.execute(
+            """
+            SELECT
+                COUNT(*) AS removal_count,
+                COUNT(DISTINCT r.provider_message_id) AS unique_removal_count,
+                COALESCE(SUM(CASE WHEN NOT EXISTS (
+                    SELECT 1 FROM cleanup_plan_members AS selected_m
+                    WHERE selected_m.account_key = r.account_key
+                        AND selected_m.plan_id = r.plan_id
+                        AND selected_m.provider_message_id = r.provider_message_id
+                        AND selected_m.initial_state = 'selected'
+                ) THEN 1 ELSE 0 END), 0) AS invalid_member_count,
+                COALESCE(SUM(CASE
+                    WHEN r.event_revision < 2 OR r.event_revision > ? OR NOT EXISTS (
+                        SELECT 1 FROM cleanup_plan_events AS removal_e
+                        WHERE removal_e.account_key = r.account_key
+                            AND removal_e.plan_id = r.plan_id
+                            AND removal_e.revision = r.event_revision
+                    ) THEN 1 ELSE 0 END), 0) AS invalid_event_count
+            FROM cleanup_plan_member_removals AS r
+            WHERE r.account_key = ? AND r.plan_id = ?
+            """,
+            (plan_revision, account_key, plan_id),
+        ).fetchone()
+        expected_total = selected_count + excluded_count
+        expected_removed = selected_count - current_count
+        return (
+            member_stats is not None
+            and removal_stats is not None
+            and int(member_stats["total_count"]) == expected_total
+            and int(member_stats["provider_message_count"]) == expected_total
+            and int(member_stats["message_count"]) == expected_total
+            and int(member_stats["selected_count"]) == selected_count
+            and int(member_stats["excluded_count"]) == excluded_count
+            and int(member_stats["eligible_count"]) == current_count
+            and int(member_stats["removed_selected_count"]) == expected_removed
+            and int(member_stats["removed_excluded_count"]) == 0
+            and int(removal_stats["removal_count"]) == expected_removed
+            and int(removal_stats["unique_removal_count"]) == expected_removed
+            and int(removal_stats["invalid_member_count"]) == 0
+            and int(removal_stats["invalid_event_count"]) == 0
+        )
+
+    @staticmethod
+    def _cleanup_event_ledger_is_consistent_conn(
+        connection: sqlite3.Connection,
+        account_key: str,
+        plan_id: str,
+        *,
+        plan_revision: int,
+    ) -> bool:
+        stats = connection.execute(
+            """
+            SELECT
+                COUNT(*) AS event_count,
+                COUNT(DISTINCT revision) AS unique_revision_count,
+                COALESCE(MIN(revision), 0) AS min_revision,
+                COALESCE(MAX(revision), 0) AS max_revision,
+                COALESCE(SUM(CASE
+                    WHEN revision < 1 OR revision > ? THEN 1 ELSE 0 END), 0)
+                    AS out_of_range_count
+            FROM cleanup_plan_events
+            WHERE account_key = ? AND plan_id = ?
+            """,
+            (plan_revision, account_key, plan_id),
+        ).fetchone()
+        return (
+            stats is not None
+            and int(stats["event_count"]) == plan_revision
+            and int(stats["unique_revision_count"]) == plan_revision
+            and int(stats["min_revision"]) == 1
+            and int(stats["max_revision"]) == plan_revision
+            and int(stats["out_of_range_count"]) == 0
+        )
+
+    def cleanup_plan_member_page(
+        self,
+        account_key: str,
+        plan_id: str,
+        *,
+        state: str,
+        limit: int,
+        offset: int,
+        expected_plan_revision: int | None,
+    ) -> CleanupPlanMemberPage | None:
+        validated_account_key = validate_account_key(account_key)
+        validated_plan_id = validate_opaque_identifier(plan_id, "plan_id")
+        filter_sql = self._cleanup_member_filter_sql(state)
+        self._cleanup_page_bounds(limit, offset, maximum=500)
+        if expected_plan_revision is not None and (
+            isinstance(expected_plan_revision, bool)
+            or not isinstance(expected_plan_revision, int)
+            or expected_plan_revision < 1
+        ):
+            raise ValueError("expected_plan_revision is invalid")
+        with self._connect() as connection:
+            connection.execute("BEGIN")
+            self._cleanup_catalog_revision_conn(connection, validated_account_key)
+            header = connection.execute(
+                "SELECT plan_revision, selected_at_creation_count, "
+                "excluded_at_creation_count, current_eligible_count "
+                "FROM cleanup_plans "
+                "WHERE account_key = ? AND plan_id = ?",
+                (validated_account_key, validated_plan_id),
+            ).fetchone()
+            if header is None:
+                return None
+            plan_revision = int(header["plan_revision"])
+            selected_count = int(header["selected_at_creation_count"])
+            excluded_count = int(header["excluded_at_creation_count"])
+            current_count = int(header["current_eligible_count"])
+            if (
+                plan_revision < 1
+                or min(selected_count, excluded_count, current_count) < 0
+                or current_count > selected_count
+                or not 1
+                <= selected_count + excluded_count
+                <= MAX_CONSIDERED_MESSAGES
+            ):
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+            if (
+                expected_plan_revision is not None
+                and plan_revision != expected_plan_revision
+            ):
+                raise CleanupPlanError(CleanupPlanErrorCode.CURSOR_STALE)
+            if not self._cleanup_member_ledger_is_consistent_conn(
+                connection,
+                validated_account_key,
+                validated_plan_id,
+                plan_revision=plan_revision,
+                selected_count=selected_count,
+                excluded_count=excluded_count,
+                current_count=current_count,
+            ):
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+            total_count = {
+                "all": selected_count + excluded_count,
+                "selected": selected_count,
+                "eligible": current_count,
+                "excluded": excluded_count,
+                "removed": selected_count - current_count,
+            }[state]
+            page_sql = (
+                "SELECT m.provider_message_id, m.message_id, m.initial_state, "
+                "m.received_at, m.size_estimate_bytes, "
+                "r.event_revision AS removal_revision "
+                "FROM cleanup_plan_members AS m "
+                "LEFT JOIN cleanup_plan_member_removals AS r "
+                "ON r.account_key = m.account_key AND r.plan_id = m.plan_id "
+                "AND r.provider_message_id = m.provider_message_id "
+                "WHERE m.account_key = ? AND m.plan_id = ?"
+                f"{filter_sql} "
+                "ORDER BY m.received_at DESC, m.message_id ASC LIMIT ? OFFSET ?"
+            )
+            rows = connection.execute(
+                page_sql,
+                (validated_account_key, validated_plan_id, limit, offset),
+            ).fetchall()
+            provider_message_ids = tuple(
+                str(row["provider_message_id"]) for row in rows
+            )
+            try:
+                creation_reasons, removal_reasons = (
+                    self._cleanup_reason_rows_for_members_conn(
+                        connection,
+                        validated_account_key,
+                        validated_plan_id,
+                        provider_message_ids,
+                    )
+                )
+                items = tuple(
+                    self._cleanup_member_item_from_row(
+                        row,
+                        creation_reasons,
+                        removal_reasons,
+                    )
+                    for row in rows
+                )
+            except (TypeError, ValueError) as error:
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE) from error
+            next_offset = offset + len(items)
+            expected_length = min(limit, max(total_count - offset, 0))
+            if len(items) != expected_length:
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+            return CleanupPlanMemberPage(
+                plan_id=validated_plan_id,
+                plan_revision=plan_revision,
+                items=items,
+                has_more=next_offset < total_count,
+            )
+
+    def cleanup_plan_event_page(
+        self,
+        account_key: str,
+        plan_id: str,
+        *,
+        limit: int,
+        offset: int,
+        expected_plan_revision: int | None,
+    ) -> CleanupPlanEventPage | None:
+        validated_account_key = validate_account_key(account_key)
+        validated_plan_id = validate_opaque_identifier(plan_id, "plan_id")
+        self._cleanup_page_bounds(limit, offset, maximum=100)
+        if expected_plan_revision is not None and (
+            isinstance(expected_plan_revision, bool)
+            or not isinstance(expected_plan_revision, int)
+            or expected_plan_revision < 1
+        ):
+            raise ValueError("expected_plan_revision is invalid")
+        with self._connect() as connection:
+            connection.execute("BEGIN")
+            self._cleanup_catalog_revision_conn(connection, validated_account_key)
+            header = connection.execute(
+                "SELECT plan_revision FROM cleanup_plans "
+                "WHERE account_key = ? AND plan_id = ?",
+                (validated_account_key, validated_plan_id),
+            ).fetchone()
+            if header is None:
+                return None
+            plan_revision = int(header["plan_revision"])
+            if plan_revision < 1:
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+            if (
+                expected_plan_revision is not None
+                and plan_revision != expected_plan_revision
+            ):
+                raise CleanupPlanError(CleanupPlanErrorCode.CURSOR_STALE)
+            if not self._cleanup_event_ledger_is_consistent_conn(
+                connection,
+                validated_account_key,
+                validated_plan_id,
+                plan_revision=plan_revision,
+            ):
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+            rows = connection.execute(
+                "SELECT revision, event_type, recorded_at, state, "
+                "observed_map_revision, observed_policy_revision, removed_count, "
+                "remaining_count, event_version FROM cleanup_plan_events "
+                "WHERE account_key = ? AND plan_id = ? "
+                "ORDER BY revision ASC LIMIT ? OFFSET ?",
+                (validated_account_key, validated_plan_id, limit, offset),
+            ).fetchall()
+            try:
+                items = tuple(self._cleanup_event_from_row(row) for row in rows)
+            except (TypeError, ValueError) as error:
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE) from error
+            next_offset = offset + len(items)
+            expected_length = min(limit, max(plan_revision - offset, 0))
+            expected_revisions = tuple(range(offset + 1, offset + len(items) + 1))
+            if (
+                len(items) != expected_length
+                or tuple(item.revision for item in items) != expected_revisions
+            ):
+                raise CleanupPlanError(CleanupPlanErrorCode.STUDY_UNAVAILABLE)
+            return CleanupPlanEventPage(
+                plan_id=validated_plan_id,
+                plan_revision=plan_revision,
+                items=items,
+                has_more=next_offset < plan_revision,
+            )
+
+    def cleanup_plan(
+        self,
+        account_key: str,
+        plan_id: str,
+    ) -> PersistedCleanupPlan | None:
+        validated_account_key = validate_account_key(account_key)
+        validated_plan_id = validate_opaque_identifier(plan_id, "plan_id")
+        with self._connect() as connection:
+            connection.execute("BEGIN")
+            self._cleanup_catalog_revision_conn(connection, validated_account_key)
+            plan = self._cleanup_plan_conn(connection, validated_account_key, validated_plan_id)
+            return plan
+
+    def cleanup_plan_members(
+        self,
+        account_key: str,
+        plan_id: str,
+    ) -> tuple[CleanupPlanMember, ...] | None:
+        plan = self.cleanup_plan(account_key, plan_id)
+        return plan.members if plan is not None else None
+
+    def cleanup_plan_events(
+        self,
+        account_key: str,
+        plan_id: str,
+    ) -> tuple[CleanupPlanEvent, ...] | None:
+        plan = self.cleanup_plan(account_key, plan_id)
+        return plan.events if plan is not None else None
+
+    def cleanup_plan_catalog_revision(self, account_key: str) -> int:
+        validated_account_key = validate_account_key(account_key)
+        with self._connect() as connection:
+            connection.execute("BEGIN")
+            return self._cleanup_catalog_revision_conn(connection, validated_account_key)
 
     def schema_version(self) -> int:
         with self._connect() as connection:

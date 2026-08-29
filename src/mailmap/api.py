@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from mailmap import __version__
+from mailmap.cleanup_plan_api import install_cleanup_plan_api
 from mailmap.map_api import install_map_api
 from mailmap.map_fixtures import ensure_synthetic_map_fixture
 from mailmap.map_model import MapCompositionError
@@ -117,6 +118,7 @@ def create_app(db_path: Path | None = None, *, serve_frontend: bool = True) -> F
         return service.configuration()
 
     install_map_api(app, repository)
+    install_cleanup_plan_api(app, repository)
 
     frontend_dist = PROJECT_ROOT / "frontend" / "dist"
     if serve_frontend and frontend_dist.exists():

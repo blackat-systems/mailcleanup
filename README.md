@@ -39,8 +39,10 @@ actual es una Base Segura aceptada y un Mapa Total sintético también aceptado:
   de MAIN. El contrato
   define planes congelados, revalidables, cancelables y todavía incapaces de
   ejecutar;
-- MAIN preparó y auditó `docs/prompts/D7_REAL_PLAN_ENGINE.md` por autorización
-  posterior de Joa; D7 no fue creado ni implementado;
+- MAIN preparó, auditó y consolidó `docs/prompts/D7_REAL_PLAN_ENGINE.md` en
+  `e92a77a`. Joa autorizó después crear e iniciar D7; el especialista la entregó
+  y MAIN la auditó e integró con correcciones. Joa autorizó su commit y
+  publicación; queda consolidada por el commit que contiene este estado;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -58,7 +60,7 @@ Leer en este orden:
 7. [`docs/DECISIONES.md`](docs/DECISIONES.md)
 8. [`docs/contracts/MAPA_TOTAL_API_V1.md`](docs/contracts/MAPA_TOTAL_API_V1.md), para C5 y D6
 9. [`docs/contracts/CLEANUP_PLAN_V1.md`](docs/contracts/CLEANUP_PLAN_V1.md), contrato C6 aceptado
-10. [`docs/prompts/D7_REAL_PLAN_ENGINE.md`](docs/prompts/D7_REAL_PLAN_ENGINE.md), delegación D7 preparada pero no iniciada
+10. [`docs/prompts/D7_REAL_PLAN_ENGINE.md`](docs/prompts/D7_REAL_PLAN_ENGINE.md), delegación D7 consolidada; el worktree fuente se conserva como evidencia
 
 ## Organización y arquitectura candidata
 
@@ -85,8 +87,7 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso es que Joa revise el prompt autosuficiente D7. Consolidarlo en un
-SHA limpio y crear el único worktree especialista requieren autorización
-explícita; la existencia del prompt no inicia D7. Conectar una cuenta real
-continúa fuera de alcance: exige otra autorización y resolver antes la
-protección del índice local.
+El próximo paso requiere una autorización independiente de Joa para preparar
+D8. D8 continúa bloqueada y no se crea automáticamente por haber consolidado
+D7. Conectar una cuenta real sigue fuera de alcance: exige otra autorización y
+resolver antes la protección del índice local.

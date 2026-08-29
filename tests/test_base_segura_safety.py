@@ -26,6 +26,9 @@ MAP_COMPOSITION_PATH = ACTIVE_PACKAGE / "map_composition.py"
 MAP_FIXTURES_PATH = ACTIVE_PACKAGE / "map_fixtures.py"
 MAP_MODEL_PATH = ACTIVE_PACKAGE / "map_model.py"
 MAP_SYNTHETIC_GATE_PATH = ACTIVE_PACKAGE / "map_synthetic_gate.py"
+CLEANUP_PLAN_MODEL_PATH = ACTIVE_PACKAGE / "cleanup_plan_model.py"
+CLEANUP_PLAN_DOMAIN_PATH = ACTIVE_PACKAGE / "cleanup_plan_domain.py"
+CLEANUP_PLAN_API_PATH = ACTIVE_PACKAGE / "cleanup_plan_api.py"
 REPOSITORY_PATH = ACTIVE_PACKAGE / "repository.py"
 SAFE_STDLIB_URL_IMPORT_ALLOWLIST = {
     OAUTH_SESSION_PATH: {"urllib.parse"},
@@ -138,6 +141,68 @@ D5_IMPORT_ALLOWLIST = {
         "mailmap.policy_model",
     },
 }
+D7_IMPORT_ALLOWLIST = {
+    CLEANUP_PLAN_MODEL_PATH: {
+        "__future__",
+        "collections.abc",
+        "dataclasses",
+        "datetime",
+        "enum",
+        "mailmap.index_model",
+        "re",
+        "typing",
+        "uuid",
+    },
+    CLEANUP_PLAN_DOMAIN_PATH: {
+        "__future__",
+        "collections",
+        "collections.abc",
+        "dataclasses",
+        "datetime",
+        "enum",
+        "hashlib",
+        "itertools",
+        "json",
+        "mailmap.classification_model",
+        "mailmap.cleanup_plan_model",
+        "mailmap.index_model",
+        "mailmap.map_composition",
+        "mailmap.map_model",
+        "mailmap.model",
+        "mailmap.policy_model",
+        "re",
+        "typing",
+        "uuid",
+        "zoneinfo",
+    },
+    CLEANUP_PLAN_API_PATH: {
+        "__future__",
+        "base64",
+        "binascii",
+        "collections.abc",
+        "dataclasses",
+        "datetime",
+        "enum",
+        "hashlib",
+        "hmac",
+        "json",
+        "mailmap",
+        "mailmap.cleanup_plan_domain",
+        "mailmap.cleanup_plan_model",
+        "mailmap.index_model",
+        "mailmap.map_synthetic_gate",
+        "mailmap.repository",
+        "pydantic",
+        "re",
+        "starlette.datastructures",
+        "starlette.responses",
+        "starlette.types",
+        "threading",
+        "typing",
+        "uuid",
+        "fastapi",
+    },
+}
 
 
 def _import_modules(path: Path) -> set[str]:
@@ -242,7 +307,7 @@ def test_d3_inventory_has_no_external_transport_network_browser_or_scope_literal
         )
 
 
-def test_d4_classification_is_local_closed_and_has_only_c5_consumers() -> None:
+def test_d4_classification_is_local_closed_and_has_only_authorized_consumers() -> None:
     for path in (CLASSIFICATION_MODEL_PATH, CLASSIFICATION_DOMAIN_PATH):
         imports = _import_modules(path)
         assert imports == D4_IMPORT_ALLOWLIST[path]
@@ -290,10 +355,12 @@ def test_d4_classification_is_local_closed_and_has_only_c5_consumers() -> None:
         ):
             consumer_findings.append(path)
     assert consumer_findings == [
+        CLEANUP_PLAN_DOMAIN_PATH,
         MAP_API_PATH,
         MAP_COMPOSITION_PATH,
         MAP_FIXTURES_PATH,
         MAP_MODEL_PATH,
+        REPOSITORY_PATH,
     ]
 
 
@@ -347,6 +414,7 @@ def test_d5_policy_memory_is_local_closed_and_has_only_authorized_consumers() ->
         if "mailmap.policy_domain" in imports:
             policy_domain_consumers.append(path)
     assert policy_model_consumers == [
+        CLEANUP_PLAN_DOMAIN_PATH,
         MAP_API_PATH,
         MAP_COMPOSITION_PATH,
         MAP_FIXTURES_PATH,
@@ -367,6 +435,55 @@ def test_d5_policy_memory_is_local_closed_and_has_only_authorized_consumers() ->
     }
     assert set(d5_writers) == {"record_policy", "undo_policy"}
     assert all("_ensure_index_account" not in source for source in d5_writers.values())
+
+
+def test_d7_plan_engine_is_local_closed_and_keeps_layer_dependencies_one_way() -> None:
+    for path, allowed_imports in D7_IMPORT_ALLOWLIST.items():
+        imports = _import_modules(path)
+        assert imports <= allowed_imports
+        assert all(not _matches_forbidden_import(module) for module in imports)
+        lowered = path.read_text(encoding="utf-8").casefold()
+        assert all(
+            marker not in lowered
+            for marker in (
+                "urlopen(",
+                "webbrowser.",
+                "socket.",
+                "requests.",
+                "httpx.",
+                "googleapiclient",
+                "installedappflow",
+                "credentials.json",
+                "token.json",
+                "basicconfig(",
+            )
+        )
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        assert not any(
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "print"
+            for node in ast.walk(tree)
+        )
+
+    model_imports = _import_modules(CLEANUP_PLAN_MODEL_PATH)
+    domain_imports = _import_modules(CLEANUP_PLAN_DOMAIN_PATH)
+    api_imports = _import_modules(CLEANUP_PLAN_API_PATH)
+    repository_imports = _import_modules(REPOSITORY_PATH)
+
+    assert {"fastapi", "pydantic", "sqlite3"}.isdisjoint(model_imports)
+    assert {"fastapi", "pydantic", "sqlite3", "mailmap.repository"}.isdisjoint(
+        domain_imports
+    )
+    assert "sqlite3" not in api_imports
+    assert "mailmap.cleanup_plan_domain" in repository_imports
+    assert "mailmap.map_composition" not in repository_imports
+    assert "mailmap.cleanup_plan_model" in domain_imports
+    assert "mailmap.map_composition" in domain_imports
+    assert "mailmap.classification_domain" not in domain_imports
+    assert "mailmap.policy_domain" not in domain_imports
+    assert "mailmap.cleanup_plan_model" in api_imports
+    assert "mailmap.repository" in api_imports
 
 
 def test_d4_does_not_expand_shared_taxonomies() -> None:
@@ -487,6 +604,9 @@ def test_active_api_exposes_only_local_policy_writes_and_no_external_actions(
         "/api/v1/plans/{plan_id}/revalidate",
         "/api/v2/decisions",
         "/api/v2/decisions/{decisionId}/undo",
+        "/api/v3/study/plans",
+        "/api/v3/study/plans/{planId}/cancel",
+        "/api/v3/study/plans/{planId}/revalidate",
     }
     assert all(
         blocked not in path.casefold()

@@ -2,8 +2,9 @@
 
 Estado del plan: ejecución controlada; D1-D6 y C5 están consolidadas y Mapa
 Total fue aceptado. Joa autorizó comenzar Estudio de Limpieza, MAIN preparó C6 y
-Joa aceptó el contrato. D7 y D8 continúan bloqueadas por sus puertas técnicas y
-de autorización posteriores.
+Joa aceptó el contrato. D7 fue entregada, auditada e integrada con correcciones
+en el árbol de MAIN. Joa autorizó su consolidación y publicación. D8 continúa
+bloqueada por contrato y autorización posterior.
 
 Fecha de inspección: 29 de agosto de 2026.
 
@@ -19,17 +20,18 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | Rama | `main` |
 | HEAD limpio previo a C6 | `963af89067eab382ee0315708ff4d2817353d084` |
 | HEAD que consolida C6 | `5c913f2baed3c943c159df8e495ee3ce548d78d9` |
-| Estado actual | D1-D6 y C5 sintéticas consolidadas; C6 aceptada y consolidada; prompt D7 preparado y auditado en el árbol de MAIN, todavía sin commit ni worktree |
-| Worktrees | Siete: MAIN y D1-D6 conservadas como fuentes de evidencia; no existe D7 |
+| HEAD base D7 | `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
+| Estado actual | D1-D7 y C5 sintéticas consolidadas; C6 aceptada; D7 consolidada por el commit que contiene este estado |
+| Worktrees | Ocho: MAIN y D1-D7 conservadas como fuentes de evidencia |
 | Remotos | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git`; `main` publicada desde `6310c76`; ninguna rama especialista publicada |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental completada después en escritorio y 390 px |
-| Capacidades autorizadas | C6 sintética sin efectos aceptada y prompt D7 autorizado; ninguna conexión Gmail, OAuth abierto, credencial, dato real, creación/inicio del worktree D7 ni acción sobre mensajes |
+| Capacidades autorizadas | Implementación D7 sintética sin efectos; ninguna conexión Gmail, OAuth abierto, credencial, dato real, D8 ni acción sobre mensajes |
 
-El primer SHA indicado consolida y publica D6; `5c913f2` consolida C6. No existe
-un worktree C5 ni C6. El
+El primer SHA indicado consolida y publica D6; `5c913f2` consolida C6 y
+`e92a77a` el prompt D7. No existe un worktree C5 ni C6. El
 archivo no rastreado `New folder/grafo.txt` es una excepción preexistente
-conocida y no forma parte del contrato, el diff ni un futuro commit del prompt.
+conocida: quedó fuera de `e92a77a` y no forma parte de D7 ni de este diff.
 
 ## 2. Inventario de lo que ya existe
 
@@ -169,9 +171,11 @@ Estado contractual: `ACEPTADA POR JOA`. Joa autorizó preparar C6 y lo aceptó e
 29 de agosto de 2026.
 `docs/contracts/CLEANUP_PLAN_V1.md` separa los planes v1 legados, fija
 `/api/v3/study`, IDs congelados, exclusiones, caducidad, revalidación monotónica,
-cancelación, tamaños y ausencia de efectos. D7 permanece sin crear hasta que MAIN
-consolide el prompt ya preparado en un nuevo SHA limpio y Joa autorice crear e
-iniciar el worktree.
+cancelación, tamaños y ausencia de efectos. MAIN consolidó el prompt en
+`e92a77a`; Joa autorizó crear e iniciar D7 desde esa base exacta. El especialista
+la entregó y MAIN auditó e integró la API y los fixtures contractuales en el
+árbol de trabajo. Joa autorizó consolidar y publicar D7. D8 permanece bloqueada
+hasta contar con su prompt y autorización propia.
 
 ### C7. Ejecución controlada
 
@@ -352,21 +356,21 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Proceso | Estudio de Limpieza |
 | Responsabilidad única | Crear, congelar, revalidar, invalidar y cancelar planes reales sin efectos. |
 | Razón para separarlo | Es un agregado transaccional con invariantes propias y sigue siendo completamente incapaz de modificar Gmail. |
-| Estado actual | `BLOQUEADA POR AUTORIZACIÓN` |
+| Estado actual | `INTEGRADA`; auditoría MAIN aprobada con correcciones y consolidada por el commit que contiene este estado |
 | Dependencias previas | Mapa Total aceptado; Estudio de Limpieza autorizado; D1-D6 integradas; C6 aprobado. |
 | Contratos que consume | Índice, políticas, protecciones y `CLEANUP_PLAN_V1.md` aceptado. |
 | Resultados que produce | Snapshot de IDs, exclusiones, muestras, tamaños, advertencias, caducidad e historial. |
 | Consumidores posteriores | D8, D9 y aceptación de Estudio de Limpieza. |
 | Permitido | Nuevos módulos de planificación, API `/api/v3/study`, persistencia/migración v5 delimitada y pruebas. |
 | Prohibido | Cliente Gmail de escritura, ejecución, UI, desuscripción y reducción automática de protecciones. |
-| Rama propuesta | `codex/real-plan-engine` |
-| Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-real-plan-engine` |
-| Commit base requerido | SHA limpio que contenga C6 aceptada y `docs/prompts/D7_REAL_PLAN_ENGINE.md`, descendiente de `5c913f2`; MAIN debe registrarlo al consolidar el prompt. |
+| Rama | `codex/real-plan-engine` |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\4d09\mailcleanup` |
+| Commit base | `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
 | Verificaciones específicas | Snapshot inmutable, IDs opacos, fechas de Córdoba, filtros, exclusiones, tamaños, cambio de protecciones, caducidad, cancelación, migraciones, seguridad HTTP y `canExecute: false`. |
 | Criterios de aceptación | El plan enumera exactamente el alcance, nunca ejecuta y se reduce o invalida ante cambios relevantes. |
 | Riesgos de integración | Confundir estimaciones, IDs obsoletos, carrera con sincronización y reutilizar un plan después de cambios. |
 | Paralelización real | Ninguna con D8: los DTO, cursores, migración y replay deben existir y superar auditoría MAIN antes de abrir su consumidor. |
-| Condición exacta de desbloqueo | El prompt autosuficiente está preparado y auditado, pero D7 continúa bloqueada. Pendiente: Joa revisa el prompt, autoriza su consolidación, MAIN registra el nuevo SHA limpio y Joa autoriza crear e iniciar el único worktree; recién entonces D7 pasa a `LISTA PARA CREAR`. |
+| Condición exacta de desbloqueo | Cumplida: entrega, auditoría, integración, batería global y consolidación autorizada por Joa. D8 sigue bloqueada hasta contar con prompt autosuficiente y autorización propia. |
 
 ### D8 — `estudio-ui`
 
@@ -390,7 +394,7 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Criterios de aceptación | El usuario entiende qué ocurriría, qué queda protegido y que todavía no existen efectos. |
 | Riesgos de integración | UI adelantada al contrato, acciones ambiguas y pérdida de exclusiones al revalidar. |
 | Paralelización real | No se abre en paralelo con D7; consume su API ejecutable y sus fixtures ya auditados. |
-| Condición exacta de desbloqueo | C6 y Estudio ya están aceptados; siguen pendientes API y fixtures implementados por D7, integración auditada, SHA limpio, batería y prompt D8. |
+| Condición exacta de desbloqueo | La API y los fixtures D7 ya están consolidados. Pendientes: prompt D8 y autorización explícita de Joa para crear e iniciar su worktree. |
 
 ### D9 — `controlled-action-engine`
 
@@ -513,10 +517,9 @@ Orden de apertura recomendado: persistencia del índice (D1), sesión segura
 estudio (D8), ejecución por lotes (D9) y desuscripción segura (D10). El orden
 expresa consumo real. D1-D6 fueron consolidadas con alcance sintético y D6 fue
 aceptada por Joa. La autorización de Estudio ya fue recibida y C6 quedó
-preparada y aceptada. D7 permanece bloqueada hasta que MAIN complete el SHA
-limpio y el prompt, y Joa autorice el worktree. D8 se abre recién después de
-integrar, auditar y consolidar D7; no se adelanta con fixtures contractuales
-aislados.
+preparada y aceptada. D7 fue entregada, auditada e integrada en el árbol de
+MAIN; Joa autorizó consolidarla y publicarla. D8 no se abre hasta contar con su
+prompt y autorización específica.
 
 ## 8. Primer worktree creado e integrado
 
@@ -579,8 +582,7 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
 | Uso real de `gmail.metadata` sin `q` | D3 | Joa autoriza la conexión; MAIN conserva inventario completo y filtrado local |
 | Validación física de DPAPI y ubicación local | D2 antes de datos reales | MAIN audita; Joa autoriza la conexión |
 | Protección, retención y borrado del índice local | C4, D1 | MAIN propone; Joa decide si cambia el tratamiento de datos |
-| Implementación de `/api/v3/study` aceptada en C6 | D7-D8 | D7 implementa; MAIN audita antes de habilitar D8 |
-| SHA limpio con el prompt y autorización para D7 | D7 | MAIN consolida el prompt preparado; Joa autoriza crear e iniciar el worktree |
+| Prompt y autorización de D8 | D8 | MAIN prepara la frontera sólo con autorización; Joa autoriza su creación |
 | Autorización de Limpieza Controlada y `gmail.modify` | D9 | Joa |
 | Consentimiento y contrato RFC 8058 | D10 | Joa y MAIN |
 

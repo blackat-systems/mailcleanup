@@ -12,17 +12,22 @@ por Joa el 28 de agosto de 2026; quedó consolidada y publicada en `963af89`.
 Joa autorizó después comenzar Estudio de Limpieza y preparar C6;
 MAIN auditó su contrato, Joa lo aceptó el 29 de agosto de 2026 y quedó
 consolidado en `5c913f2`. Joa autorizó después preparar el prompt autosuficiente
-D7; está redactado y auditado en MAIN, sin crear el worktree ni modificar el
-producto.
+D7; quedó auditado y consolidado en `e92a77a`. Joa autorizó después crear e
+iniciar el único worktree D7 desde esa base. El especialista entregó el motor
+sintético y MAIN lo auditó e integró con correcciones en el árbol de trabajo.
+Joa autorizó después su commit y publicación; D7 queda consolidada por el commit
+que contiene este estado.
 
 ## Qué existe
 
 - una aplicación Python/FastAPI en `src/mailmap`;
 - una interfaz React/TypeScript en `frontend`;
-- SQLite local con migraciones acumulativas v1-v4;
+- SQLite local con migraciones acumulativas v1-v5;
 - un corpus legado de Base Segura y un fixture canónico C5, ambos sintéticos;
 - vistas D6 de panorama, fuentes, detalle, correcciones y estado;
 - contratos verificados de API v1 para Base Segura y `/api/v2` para Mapa Total;
+- un motor sintético D7 de planes congelados, revalidables y cancelables, con
+  nueve rutas `/api/v3/study` y `canExecute: false`;
 - una barrera automática que inspecciona imports, marcadores de capacidad,
   empaquetado y rutas activas.
 
@@ -97,6 +102,10 @@ solicitaron credenciales ni se conectó una cuenta.
   se inicia como servidor web local.
 - D6 completó su recorrido visual inicial, recibió una pasada minimalista y fue
   aceptada explícitamente por Joa el 28 de agosto de 2026.
+- D7 valida la integridad global del ledger mediante agregados SQL en cada página.
+  No hidrata filas fuera de la página y los miembros están acotados a 100.000,
+  pero un recorrido completo repite ese costo. Es una optimización futura, no un
+  defecto contractual ni una razón para debilitar la detección de corrupción.
 
 ## Cierre de Base Segura
 
@@ -133,14 +142,16 @@ reduce la navegación primaria y pliega filtros, evidencia y diagnósticos
 secundarios, preservando advertencias y correcciones. D6 fue aceptada por Joa y
 quedó consolidada y publicada en `963af89`.
 
-La batería global actual pasó con 296 pruebas Python, Ruff, mypy estricto sobre
-24 archivos, ESLint, 98 pruebas Vitest y build Vite. El recorrido HTTP local
+La batería global actual pasó con 391 pruebas Python, Ruff, mypy estricto sobre
+27 archivos, ESLint, 98 pruebas Vitest y build Vite. El recorrido HTTP local
 responde sobre loopback. El recorrido visual inicial de D6 pasó en escritorio y
 390 px, sin desborde horizontal ni errores de consola; la pasada minimalista
 posterior fue revisada y aceptada por Joa. El roundtrip DPAPI real pudo
 ejecutarse bajo el perfil de usuario actual en una verificación anterior. Este
 estado y la integración D6 no permiten abrir OAuth, usar credenciales, conectar
 Gmail real, persistir metadatos privados ni ejecutar acciones. La autorización
-posterior permitió preparar y aceptar C6 sintética y redactar el prompt D7. El
-próximo paso es que Joa revise ese prompt; consolidarlo y crear el worktree
-requieren autorizaciones explícitas posteriores.
+posterior permitió preparar y aceptar C6 sintética, consolidar el prompt D7 e
+iniciar su único worktree. D7 fue entregada, auditada e integrada con
+correcciones en el árbol de MAIN. Joa autorizó su consolidación y publicación.
+El próximo paso requiere una autorización independiente para preparar D8. D8,
+Gmail real, OAuth, credenciales, datos privados y acciones permanecen bloqueados.

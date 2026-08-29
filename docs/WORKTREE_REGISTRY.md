@@ -18,8 +18,8 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Remoto actual | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git` |
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
-| Base consolidada | El commit que contiene este registro |
-| Estado | Base Segura, Mapa Total y C6 aceptadas con alcance sintético; D1-D6 y C5 consolidadas; prompt D7 preparado y auditado en MAIN, sin worktree D7 |
+| Base consolidada | El commit que contiene este registro consolida D7; la fuente especialista conserva base `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
+| Estado | Base Segura, Mapa Total, C6 y D7 aceptadas con alcance sintético; D1-D7 y C5 consolidadas; D8 bloqueada |
 
 MAIN implementó C5 directamente porque conserva composición, contratos y API
 transversales. No se creó un worktree C5. El candidato agrega
@@ -260,7 +260,38 @@ autorizó después preparar C6 de Estudio de Limpieza, pero no se creó ni regis
 un worktree D7. Joa aceptó C6 el 29 de agosto de 2026 y autorizó su commit; esa
 decisión tampoco crea ni registra D7. Joa autorizó posteriormente redactar y
 auditar el prompt `docs/prompts/D7_REAL_PLAN_ENGINE.md`; el archivo no representa
-un worktree real y por eso D7 continúa ausente de este registro.
+por sí mismo un worktree real. Joa autorizó después consolidarlo, crear e iniciar
+D7; la instancia real queda registrada a continuación.
+
+## D7 — `real-plan-engine`
+
+| Campo | Estado real |
+|---|---|
+| Proceso | Estudio de Limpieza, motor sintético de planes sin efectos |
+| Estado | `INTEGRADA`; MAIN la aprobó con correcciones y Joa autorizó consolidarla y publicarla |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\4d09\mailcleanup` |
+| Rama | `codex/real-plan-engine` |
+| Base y HEAD al despachar | `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
+| Tarea | `01a04b9f-8d9d-7181-8935-c156b669c05a` — `D7 · Motor de Estudio de Limpieza` |
+| Prompt | `docs/prompts/D7_REAL_PLAN_ENGINE.md` |
+| Contratos | `CLEANUP_PLAN_V1.md`, `SECURITY_PRIVACY_V1.md`, `MAPA_TOTAL_API_V1.md`, `INDEX_PERSISTENCE_V1.md`, `CLASSIFICATION_DOMAIN_V1.md`, `LOCAL_POLICY_MEMORY_V1.md` y compatibilidad `API_V1.md` |
+| Alcance | Modelos y dominio de planes, migración SQLite v5, transacciones/CAS/replay, nueve rutas cerradas `/api/v3/study` y pruebas sintéticas |
+| Archivos nuevos permitidos | `cleanup_plan_model.py`, `cleanup_plan_domain.py`, `cleanup_plan_api.py` y tres pruebas específicas D7 |
+| Archivos modificables | `repository.py`, `api.py`, `test_base_segura_safety.py` y `test_map_snapshot_repository.py`, sólo según el prompt |
+| Frontend, contratos, scripts, configuración y dependencias | Prohibidos |
+| Gmail, OAuth, navegador, red externa, credenciales y datos reales | Prohibidos |
+| D8, acciones sobre mensajes, ejecución y Limpieza Controlada | Prohibidos |
+| Commit y publicación del especialista | No autorizados |
+| Auditoría MAIN | Invariantes persistidas, coherencia de muestras, paginación SQL acotada e integridad N+1 corregidas; batería global verde |
+| Integración en `main` | Consolidada y publicada por el commit que contiene este registro |
+
+Codex creó el checkout inicialmente en `detached HEAD` sobre la base exacta.
+MAIN verificó que estaba limpio, creó allí la rama
+`codex/real-plan-engine`, volvió a comprobar ruta, rama, HEAD y limpieza y recién
+entonces envió el prompt. El especialista confirmó la pausa inicial y recibió
+después la autorización de comienzo. El remoto se observó pero no está
+autorizado para esta dependencia. La fuente especialista conserva exactamente
+los diez archivos autorizados sin commit y permanece como evidencia.
 
 ## Reglas de actualización
 

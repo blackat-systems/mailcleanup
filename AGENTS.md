@@ -66,8 +66,8 @@ worktree D5. MAIN consolidó la base `663d8a9`, creó D5 en
 MAIN quedó aprobada con una corrección conservadora: los fragmentos de un flujo
 particionado conservan la confianza automática original de D4. D5 queda
 consolidada por el commit que contiene este estado. No están autorizados abrir
-OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen siete
-worktrees: MAIN y las fuentes D1-D6 conservadas como evidencia; no existe D7. D6
+OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen ocho
+worktrees: MAIN y las fuentes D1-D7 conservadas como evidencia. D6
 permanece en
 `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup`, rama
 `codex/mapa-total-ui`. `origin` apunta al repositorio privado
@@ -92,19 +92,24 @@ quedó consolidada y publicada en `963af89`. Joa autorizó después comenzar
 Estudio de Limpieza y preparar C6. MAIN auditó el contrato
 `CLEANUP_PLAN_V1.md`; Joa lo aceptó el 29 de agosto de 2026 y autorizó su commit.
 Quedó consolidado en `5c913f2`. Joa autorizó después a MAIN a preparar el prompt
-autosuficiente D7. `docs/prompts/D7_REAL_PLAN_ENGINE.md` está redactado en el
-árbol de MAIN y pasó auditoría documental; todavía no existe un worktree D7 ni
-comenzó su implementación.
-Esta autorización cubre solamente el prompt de planificación sintética sin
-efectos y no habilita capacidades externas.
+autosuficiente D7. El prompt quedó auditado y consolidado en `e92a77a`. Joa
+autorizó después crear e iniciar el único worktree D7, ubicado en
+`C:\Users\Joaquin\.codex\worktrees\4d09\mailcleanup`, rama
+`codex/real-plan-engine`, desde esa base exacta. MAIN verificó ruta, rama, HEAD y
+limpieza antes de enviar `docs/prompts/D7_REAL_PLAN_ENGINE.md`. El especialista
+entregó D7 y MAIN la auditó e integró en el árbol de trabajo con correcciones de
+invariantes persistidas, coherencia de muestras y paginación SQL acotada. La
+batería global quedó verde con 391 pruebas Python y 98 pruebas frontend. D7 aún
+no estaba consolidada; Joa autorizó después su commit y publicación. Queda
+consolidada y publicada por el commit que contiene este estado. Su alcance
+permanece sintético, sin efectos, y no habilita capacidades externas ni D8.
 
 ## Objetivo actual
 
-Esperar la revisión de Joa sobre el prompt D7 auditado. Consolidarlo en un nuevo
-SHA limpio y crear el único worktree requieren autorizaciones explícitas
-posteriores. La interfaz aceptada consume solamente `/api/v2`;
-`/api/v3/study` todavía no está implementada. No abrir OAuth, conectar una
-cuenta real, persistir metadatos privados ni usar credenciales.
+Conservar verde D7 consolidada y esperar una autorización específica antes de
+preparar o crear D8. `/api/v3/study` permanece exclusivamente sintética y
+`canExecute: false`. No abrir OAuth, conectar una cuenta real, persistir
+metadatos privados ni usar credenciales.
 
 ---
 
@@ -115,10 +120,10 @@ respetar el permiso mínimo, la allowlist de lectura,
 la atomicidad del índice, la clasificación conservadora, la separación de
 secretos y la barrera de no escritura sobre Gmail o mensajes.
 
-Mapa Total está aceptado con alcance sintético. Joa autorizó preparar Estudio de
-Limpieza mediante C6, todavía sin implementación. Limpieza Controlada permanece
-detrás de otra puerta independiente. Las ideas futuras se registran sin
-incorporarlas al alcance activo.
+Mapa Total está aceptado con alcance sintético. C6 está aceptada y D7 fue
+integrada en el árbol de MAIN, todavía sin consolidación. Limpieza Controlada
+permanece detrás de otra puerta independiente. Las ideas futuras se registran
+sin incorporarlas al alcance activo.
 
 ---
 
@@ -136,7 +141,7 @@ Para determinar implementación y estado actual:
 2. pruebas en `tests` y `frontend/src`;
 3. `docs/contracts/API_V1.md`;
 4. `docs/contracts/MAPA_TOTAL_API_V1.md` para C5 y D6;
-5. `docs/contracts/CLEANUP_PLAN_V1.md` para C6 y la futura D7;
+5. `docs/contracts/CLEANUP_PLAN_V1.md` para C6 y D7 integrada;
 6. `docs/adr/0001-arquitectura-base-segura.md`;
 7. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
 8. `docs/ESTADO_BASE_SEGURA.md`;
@@ -148,7 +153,7 @@ Para coordinación de MAIN y dependencias:
 2. `docs/PLAN_DEPENDENCIAS.md`;
 3. `docs/WORKTREE_REGISTRY.md`;
 4. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
-5. `docs/prompts/D7_REAL_PLAN_ENGINE.md` para la futura delegación D7.
+5. `docs/prompts/D7_REAL_PLAN_ENGINE.md` para la delegación D7 entregada.
 
 Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/SECURITY_PRIVACY_V1.md` y
@@ -158,10 +163,11 @@ aprobado `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`. Su integración sintética 
 habilita Gmail, OAuth ni datos reales. Para C5 y D6 prevalece
 `docs/contracts/MAPA_TOTAL_API_V1.md`; su API `/api/v2` es exclusivamente local
 y sintética. Para C6 prevalece el contrato aceptado
-`docs/contracts/CLEANUP_PLAN_V1.md`. Es base para redactar D7, pero no autoriza
-crear su worktree ni habilita datos reales o ejecución. El prompt D7 traduce ese
-contrato a una frontera especialista, pero tampoco constituye autorización de
-implementación.
+`docs/contracts/CLEANUP_PLAN_V1.md`. Es el contrato de D7, pero no autoriza
+por sí solo datos reales o ejecución. El prompt D7 traduce ese contrato a una
+frontera especialista. Joa ya autorizó su implementación sintética en el único
+worktree registrado; esa autorización no se extiende a D8 ni a capacidades
+reales.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -252,6 +258,9 @@ API local v2 cerrada
 - `map_model.py`, `map_composition.py`, `map_fixtures.py`,
   `map_synthetic_gate.py` y `map_api.py`: contrato ejecutable C5, composición,
   fixture `.example`, puerta sintética y API local v2; no conectan Gmail.
+- `cleanup_plan_model.py`, `cleanup_plan_domain.py` y `cleanup_plan_api.py`:
+  planes sintéticos congelados, migración SQLite v5 y nueve rutas cerradas
+  `/api/v3/study`; no ejecutan acciones.
 - `frontend/src`: presentación, navegación, selección y consumo tipado de la API;
   no duplica reglas de clasificación o seguridad.
 - `tests`, pruebas frontend y `scripts/check.ps1`: invariantes, contrato HTTP,
@@ -382,8 +391,10 @@ Los worktrees fuente de D1 `real-index-persistence`, D2
 `real-classification-domain` y D5 `local-policy-memory` se conservan como
 evidencia de entregas integradas. La fuente D6 `mapa-total-ui` también se
 conserva: su entrega fue auditada, integrada, aceptada por Joa y consolidada por
-el commit que contiene este estado. No existe un worktree D7; su prompt durable
-está preparado en MAIN y no altera ese registro.
+el commit que contiene este estado. D7 `real-plan-engine` fue entregada, auditada
+e integrada con correcciones en el árbol de MAIN; su worktree desde `e92a77a`
+se conserva como evidencia. La integración quedó consolidada en `main` por el
+commit que contiene este estado; la fuente especialista continúa sin commit.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -410,9 +421,13 @@ D3 con dobles sintéticos → auditoría MAIN → integración consolidada
         ↓
 D4 + D5 + C5 + D6 sintéticas aceptadas
         ↓ autorización de Estudio recibida
-C6 aceptada y consolidada → prompt D7 preparado
-        ↓ revisión de Joa + SHA limpio + autorización independiente
-único worktree D7
+C6 aceptada + prompt D7 consolidado en `e92a77a`
+        ↓ autorización independiente recibida
+D7 `real-plan-engine` INTEGRADA EN EL ÁRBOL DE MAIN
+        ↓ commit y publicación autorizados por Joa
+D7 CONSOLIDADA EN MAIN
+        ↓ prompt y autorización propios
+D8 todavía bloqueada
 ```
 
 Las puertas de producto son secuenciales:
@@ -523,7 +538,7 @@ por Joa el 28 de agosto de 2026.
 # 17. SEGURIDAD Y PRIVACIDAD
 
 - No conectar Gmail ni abrir OAuth hasta una autorización específica posterior;
-  C6 y la futura D7 son sintéticas.
+  C6 y D7 integrada son sintéticas.
 - No solicitar ni almacenar `credentials.json`, `token.json`, contraseñas o
   tokens.
 - No usar mensajes, nombres ni direcciones reales en fixtures, pruebas, logs,
@@ -573,7 +588,7 @@ No desactivar la barrera automática de Base Segura para hacer pasar otro cambio
 - aceptar Base Segura y habilitar Mapa Total;
 - conectar Gmail, abrir OAuth o usar credenciales y datos reales;
 - solicitar permisos de lectura o modificación;
-- crear o iniciar D7, o habilitar Limpieza Controlada;
+- preparar, crear o aceptar D8, o habilitar Limpieza Controlada;
 - modificar mensajes reales o enviar desuscripciones;
 - cambiar arquitectura, plataforma o persistencia central;
 - agregar dependencias importantes o servicios externos;

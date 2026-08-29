@@ -48,7 +48,9 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-039 | Aceptar D6 y autorizar a MAIN a crear el commit de Mapa Total y publicarlo en `origin/main`, preservando `grafo.txt` fuera del commit y manteniendo bloqueados Estudio de Limpieza y las capacidades reales. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 28 de agosto de 2026 |
 | D-040 | Autorizar el comienzo de Estudio de Limpieza y la preparación de C6 como contrato de planes congelados, revalidables y sin efectos; mantener D7 bloqueada hasta que Joa acepte el contrato, exista un SHA limpio y MAIN prepare su prompt. | Ejecutada; C6 aceptado por D-041 | Autorización explícita de Joa del 28 de agosto de 2026 y `CLEANUP_PLAN_V1.md` |
 | D-041 | Aceptar C6 después de su auditoría contractual y autorizar a MAIN a consolidar exclusivamente su documentación en `main`, preservando `grafo.txt` y sin crear D7 ni publicar el commit. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 29 de agosto de 2026 |
-| D-042 | Autorizar a MAIN a preparar y auditar el prompt autosuficiente D7 `real-plan-engine`, sin crear todavía el worktree, implementar, hacer commit ni publicar. | Ejecutada y auditada en el árbol de MAIN; pendiente de revisión y consolidación | Confirmación explícita de Joa del 29 de agosto de 2026 y `CLEANUP_PLAN_V1.md` |
+| D-042 | Autorizar a MAIN a preparar y auditar el prompt autosuficiente D7 `real-plan-engine`, sin crear todavía el worktree, implementar ni publicar. | Ejecutada y consolidada en `e92a77a` | Autorizaciones explícitas de Joa del 29 de agosto de 2026 para preparar y después commitear el prompt; `CLEANUP_PLAN_V1.md` |
+| D-043 | Crear e iniciar un único worktree D7 `real-plan-engine` desde `e92a77a`, limitado a planes sintéticos sin efectos, migración v5, API `/api/v3/study` y pruebas; sin D8 ni capacidades reales. | Ejecutada: worktree `4d09`, tarea `01a04b9f-8d9d-7181-8935-c156b669c05a` | Autorización explícita de Joa del 29 de agosto de 2026, prompt D7 y Puerta 0 verificada |
+| D-044 | Aceptar la integración auditada de D7 y autorizar a MAIN a consolidarla en `main` y publicarla en el `origin` privado, preservando `grafo.txt` fuera del commit y manteniendo D8 y toda capacidad real bloqueadas. | Confirmada; consolidada por el commit que contiene esta decisión | Autorización explícita de Joa del 29 de agosto de 2026 y auditoría MAIN con batería global verde |
 
 ## Decisiones suficientemente definidas
 
@@ -83,8 +85,10 @@ retirar contenido contractual. Joa aceptó D6 y autorizó su publicación median
 D-039. Después autorizó comenzar Estudio de Limpieza y preparar C6 mediante
 D-040, y aceptó el contrato mediante D-041. Ninguna autorización permite abrir
 OAuth, conectar Gmail, solicitar credenciales, usar datos reales o ejecutar
-acciones externas. D-042 permite redactar el prompt D7, pero no crear ni iniciar
-su worktree ni comenzar Limpieza Controlada.
+acciones externas. D-043 permite implementar D7 únicamente con datos sintéticos
+y sin efectos; no habilita D8, Gmail, OAuth, datos reales ni Limpieza
+Controlada. D-044 autoriza consolidar y publicar esa integración, sin ampliar su
+alcance ni habilitar el siguiente worktree.
 
 ## Resultado de la implementación autorizada
 
