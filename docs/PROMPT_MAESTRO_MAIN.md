@@ -13,7 +13,10 @@ estabilizó y consolidó C5 en `67b00c7`, consolidó el prompt D6 en `75764c9` y
 creó un único worktree para la interfaz sintética de Mapa Total. D6 fue
 auditada, corregida, aceptada por Joa y consolidada en `963af89`. Joa autorizó
 después comenzar Estudio de Limpieza y preparar C6; Joa aceptó el contrato el 29
-de agosto de 2026 y todavía no existe D7.
+de agosto de 2026 y MAIN lo consolidó en `5c913f2`. Joa autorizó después preparar
+el prompt autosuficiente D7. Ese prompt está redactado en
+`docs/prompts/D7_REAL_PLAN_ENGINE.md` y pasó auditoría documental, pero todavía
+no existe D7.
 La revisión visual instrumental de Base Segura está completada. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
@@ -59,8 +62,8 @@ D6 sólo habilita su consumidor frontend sintético y no habilita Gmail, OAuth,
 credenciales ni datos reales.
 
 Para C6 prevalece `docs/contracts/CLEANUP_PLAN_V1.md`, aceptado por Joa. D7
-continúa bloqueada hasta que MAIN consolide un SHA limpio, prepare un prompt
-autosuficiente y Joa autorice crear el worktree.
+continúa bloqueada hasta que Joa revise el prompt preparado, MAIN lo consolide
+en un SHA limpio y Joa autorice crear el worktree.
 
 ## Procesos y puertas
 
@@ -69,8 +72,8 @@ Base Segura aceptada
         ↓ preparación sintética autorizada
 Mapa Total: D1 → D2 → D3 → D4 → D5 → C5 → D6 aceptadas
         ↓ autorización de Estudio recibida
-C6 aceptada sin efectos
-        ↓ SHA limpio + prompt + autorización de worktree
+C6 aceptada sin efectos + prompt D7 preparado
+        ↓ revisión + SHA limpio + autorización de worktree
 D7 y luego D8
         ↓ autorización independiente de Joa
 Limpieza Controlada
@@ -81,10 +84,10 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Preparar el prompt autosuficiente D7 desde el SHA limpio que consolida C6. No
-crear D7 sin autorización explícita de Joa. No agregar adaptadores
-productivos ni habilitar conexiones, sincronización operativa, datos reales o
-acciones.
+Esperar la revisión de Joa sobre el prompt D7 auditado. No hacer commit ni crear
+D7 sin autorizaciones explícitas posteriores. No agregar
+adaptadores productivos ni habilitar conexiones, sincronización operativa,
+datos reales o acciones.
 
 ## Línea base de privacidad
 
@@ -153,10 +156,12 @@ MAIN debe:
 - No abrir OAuth, navegador ni Gmail.
 - No solicitar credenciales ni usar mensajes reales.
 - No crear rutas Gmail en la API ni cambiar `oauthAvailable: false`.
-- Mantener `canExecute: false` y ausencia de operaciones de escritura.
+- Mantener `canExecute: false` y ausencia de operaciones de escritura sobre
+  Gmail o mensajes.
 - No agregar dependencias para D4, D5, D6 o C6.
-- Conservar los worktrees D1-D6 como evidencia. No existe un worktree D7 y C6
-  aceptada no autoriza crearlo ni habilita datos o conexiones reales.
+- Conservar los worktrees D1-D6 como evidencia. No existe un worktree D7; el
+  prompt preparado y C6 aceptada no autorizan crearlo ni habilitan datos o
+  conexiones reales.
 - Publicar sólo `main` en el `origin` privado cuando Joa lo autorice y el destino
   haya sido verificado; nunca publicar ramas o entregas especialistas por defecto.
 

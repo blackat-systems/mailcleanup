@@ -19,7 +19,7 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
 | Base consolidada | El commit que contiene este registro |
-| Estado | Base Segura, Mapa Total y C6 aceptadas con alcance sintético; D1-D6 y C5 consolidadas; no existe D7 |
+| Estado | Base Segura, Mapa Total y C6 aceptadas con alcance sintético; D1-D6 y C5 consolidadas; prompt D7 preparado y auditado en MAIN, sin worktree D7 |
 
 MAIN implementó C5 directamente porque conserva composición, contratos y API
 transversales. No se creó un worktree C5. El candidato agrega
@@ -258,7 +258,9 @@ consolidarla y publicarla el 28 de agosto de 2026. Esa aceptación no habilita
 por sí sola Gmail real, OAuth, credenciales, datos privados ni acciones. Joa
 autorizó después preparar C6 de Estudio de Limpieza, pero no se creó ni registró
 un worktree D7. Joa aceptó C6 el 29 de agosto de 2026 y autorizó su commit; esa
-decisión tampoco crea ni registra D7.
+decisión tampoco crea ni registra D7. Joa autorizó posteriormente redactar y
+auditar el prompt `docs/prompts/D7_REAL_PLAN_ENGINE.md`; el archivo no representa
+un worktree real y por eso D7 continúa ausente de este registro.
 
 ## Reglas de actualización
 

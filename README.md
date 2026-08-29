@@ -38,7 +38,9 @@ actual es una Base Segura aceptada y un Mapa Total sintético también aceptado:
 - Joa autorizó comenzar Estudio de Limpieza y aceptó C6 después de la auditoría
   de MAIN. El contrato
   define planes congelados, revalidables, cancelables y todavía incapaces de
-  ejecutar; D7 no fue creado;
+  ejecutar;
+- MAIN preparó y auditó `docs/prompts/D7_REAL_PLAN_ENGINE.md` por autorización
+  posterior de Joa; D7 no fue creado ni implementado;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -56,6 +58,7 @@ Leer en este orden:
 7. [`docs/DECISIONES.md`](docs/DECISIONES.md)
 8. [`docs/contracts/MAPA_TOTAL_API_V1.md`](docs/contracts/MAPA_TOTAL_API_V1.md), para C5 y D6
 9. [`docs/contracts/CLEANUP_PLAN_V1.md`](docs/contracts/CLEANUP_PLAN_V1.md), contrato C6 aceptado
+10. [`docs/prompts/D7_REAL_PLAN_ENGINE.md`](docs/prompts/D7_REAL_PLAN_ENGINE.md), delegación D7 preparada pero no iniciada
 
 ## Organización y arquitectura candidata
 
@@ -82,7 +85,8 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso es que MAIN prepare el prompt autosuficiente D7 desde C6 y el SHA
-limpio consolidado. Crear ese único worktree requiere una autorización separada.
-Conectar una cuenta real continúa fuera de alcance y exige otra autorización más
-resolver la protección del índice local.
+El próximo paso es que Joa revise el prompt autosuficiente D7. Consolidarlo en un
+SHA limpio y crear el único worktree especialista requieren autorización
+explícita; la existencia del prompt no inicia D7. Conectar una cuenta real
+continúa fuera de alcance: exige otra autorización y resolver antes la
+protección del índice local.

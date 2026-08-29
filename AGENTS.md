@@ -91,17 +91,20 @@ global y HTTP local verdes. Joa aceptó explícitamente D6 el 28 de agosto de 20
 quedó consolidada y publicada en `963af89`. Joa autorizó después comenzar
 Estudio de Limpieza y preparar C6. MAIN auditó el contrato
 `CLEANUP_PLAN_V1.md`; Joa lo aceptó el 29 de agosto de 2026 y autorizó su commit.
-Queda consolidado por el commit que contiene este estado. D7 todavía no existe.
-Esta aceptación cubre solamente planificación sintética sin efectos y no
-habilita capacidades externas.
+Quedó consolidado en `5c913f2`. Joa autorizó después a MAIN a preparar el prompt
+autosuficiente D7. `docs/prompts/D7_REAL_PLAN_ENGINE.md` está redactado en el
+árbol de MAIN y pasó auditoría documental; todavía no existe un worktree D7 ni
+comenzó su implementación.
+Esta autorización cubre solamente el prompt de planificación sintética sin
+efectos y no habilita capacidades externas.
 
 ## Objetivo actual
 
-Preparar el prompt autosuficiente D7 desde el SHA limpio que consolida C6. No
-crear el worktree sin autorización explícita. La interfaz
-aceptada consume solamente `/api/v2`; `/api/v3/study` todavía no está
-implementada. No abrir OAuth, conectar una cuenta real, persistir metadatos
-privados ni usar credenciales.
+Esperar la revisión de Joa sobre el prompt D7 auditado. Consolidarlo en un nuevo
+SHA limpio y crear el único worktree requieren autorizaciones explícitas
+posteriores. La interfaz aceptada consume solamente `/api/v2`;
+`/api/v3/study` todavía no está implementada. No abrir OAuth, conectar una
+cuenta real, persistir metadatos privados ni usar credenciales.
 
 ---
 
@@ -110,7 +113,7 @@ privados ni usar credenciales.
 Conservar verdes y auditables D3 y D4 sintéticas consolidadas. Todo cambio debe
 respetar el permiso mínimo, la allowlist de lectura,
 la atomicidad del índice, la clasificación conservadora, la separación de
-secretos y la barrera de no escritura.
+secretos y la barrera de no escritura sobre Gmail o mensajes.
 
 Mapa Total está aceptado con alcance sintético. Joa autorizó preparar Estudio de
 Limpieza mediante C6, todavía sin implementación. Limpieza Controlada permanece
@@ -145,6 +148,7 @@ Para coordinación de MAIN y dependencias:
 2. `docs/PLAN_DEPENDENCIAS.md`;
 3. `docs/WORKTREE_REGISTRY.md`;
 4. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
+5. `docs/prompts/D7_REAL_PLAN_ENGINE.md` para la futura delegación D7.
 
 Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/SECURITY_PRIVACY_V1.md` y
@@ -155,7 +159,9 @@ habilita Gmail, OAuth ni datos reales. Para C5 y D6 prevalece
 `docs/contracts/MAPA_TOTAL_API_V1.md`; su API `/api/v2` es exclusivamente local
 y sintética. Para C6 prevalece el contrato aceptado
 `docs/contracts/CLEANUP_PLAN_V1.md`. Es base para redactar D7, pero no autoriza
-crear su worktree ni habilita datos reales o ejecución.
+crear su worktree ni habilita datos reales o ejecución. El prompt D7 traduce ese
+contrato a una frontera especialista, pero tampoco constituye autorización de
+implementación.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -376,7 +382,8 @@ Los worktrees fuente de D1 `real-index-persistence`, D2
 `real-classification-domain` y D5 `local-policy-memory` se conservan como
 evidencia de entregas integradas. La fuente D6 `mapa-total-ui` también se
 conserva: su entrega fue auditada, integrada, aceptada por Joa y consolidada por
-el commit que contiene este estado.
+el commit que contiene este estado. No existe un worktree D7; su prompt durable
+está preparado en MAIN y no altera ese registro.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -403,7 +410,9 @@ D3 con dobles sintéticos → auditoría MAIN → integración consolidada
         ↓
 D4 + D5 + C5 + D6 sintéticas aceptadas
         ↓ autorización de Estudio recibida
-C6 aceptada → SHA limpio → prompt D7 → autorización de worktree
+C6 aceptada y consolidada → prompt D7 preparado
+        ↓ revisión de Joa + SHA limpio + autorización independiente
+único worktree D7
 ```
 
 Las puertas de producto son secuenciales:
@@ -564,7 +573,7 @@ No desactivar la barrera automática de Base Segura para hacer pasar otro cambio
 - aceptar Base Segura y habilitar Mapa Total;
 - conectar Gmail, abrir OAuth o usar credenciales y datos reales;
 - solicitar permisos de lectura o modificación;
-- aceptar C6, crear D7 o habilitar Limpieza Controlada;
+- crear o iniciar D7, o habilitar Limpieza Controlada;
 - modificar mensajes reales o enviar desuscripciones;
 - cambiar arquitectura, plataforma o persistencia central;
 - agregar dependencias importantes o servicios externos;

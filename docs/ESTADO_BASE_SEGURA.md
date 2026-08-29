@@ -10,8 +10,10 @@ integrada con dobles o registros sintéticos, sin abrir OAuth ni conectar datos
 reales. D5 está consolidada. D6 fue auditada, integrada y aceptada explícitamente
 por Joa el 28 de agosto de 2026; quedó consolidada y publicada en `963af89`.
 Joa autorizó después comenzar Estudio de Limpieza y preparar C6;
-MAIN auditó su contrato y Joa lo aceptó el 29 de agosto de 2026, sin crear D7 ni
-modificar el producto.
+MAIN auditó su contrato, Joa lo aceptó el 29 de agosto de 2026 y quedó
+consolidado en `5c913f2`. Joa autorizó después preparar el prompt autosuficiente
+D7; está redactado y auditado en MAIN, sin crear el worktree ni modificar el
+producto.
 
 ## Qué existe
 
@@ -139,5 +141,6 @@ posterior fue revisada y aceptada por Joa. El roundtrip DPAPI real pudo
 ejecutarse bajo el perfil de usuario actual en una verificación anterior. Este
 estado y la integración D6 no permiten abrir OAuth, usar credenciales, conectar
 Gmail real, persistir metadatos privados ni ejecutar acciones. La autorización
-posterior permitió preparar y aceptar C6 sintética. El próximo paso es redactar
-el prompt especialista desde el SHA limpio; crear D7 requiere otra autorización.
+posterior permitió preparar y aceptar C6 sintética y redactar el prompt D7. El
+próximo paso es que Joa revise ese prompt; consolidarlo y crear el worktree
+requieren autorizaciones explícitas posteriores.

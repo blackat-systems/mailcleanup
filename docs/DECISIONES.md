@@ -48,6 +48,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-039 | Aceptar D6 y autorizar a MAIN a crear el commit de Mapa Total y publicarlo en `origin/main`, preservando `grafo.txt` fuera del commit y manteniendo bloqueados Estudio de Limpieza y las capacidades reales. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 28 de agosto de 2026 |
 | D-040 | Autorizar el comienzo de Estudio de Limpieza y la preparación de C6 como contrato de planes congelados, revalidables y sin efectos; mantener D7 bloqueada hasta que Joa acepte el contrato, exista un SHA limpio y MAIN prepare su prompt. | Ejecutada; C6 aceptado por D-041 | Autorización explícita de Joa del 28 de agosto de 2026 y `CLEANUP_PLAN_V1.md` |
 | D-041 | Aceptar C6 después de su auditoría contractual y autorizar a MAIN a consolidar exclusivamente su documentación en `main`, preservando `grafo.txt` y sin crear D7 ni publicar el commit. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 29 de agosto de 2026 |
+| D-042 | Autorizar a MAIN a preparar y auditar el prompt autosuficiente D7 `real-plan-engine`, sin crear todavía el worktree, implementar, hacer commit ni publicar. | Ejecutada y auditada en el árbol de MAIN; pendiente de revisión y consolidación | Confirmación explícita de Joa del 29 de agosto de 2026 y `CLEANUP_PLAN_V1.md` |
 
 ## Decisiones suficientemente definidas
 
@@ -81,8 +82,9 @@ presuponer su aceptación, y aplicó la simplificación de jerarquía D-038 sin
 retirar contenido contractual. Joa aceptó D6 y autorizó su publicación mediante
 D-039. Después autorizó comenzar Estudio de Limpieza y preparar C6 mediante
 D-040, y aceptó el contrato mediante D-041. Ninguna autorización permite abrir
-OAuth, conectar Gmail, solicitar credenciales, usar datos reales, ejecutar
-acciones externas, crear D7 ni iniciar Limpieza Controlada.
+OAuth, conectar Gmail, solicitar credenciales, usar datos reales o ejecutar
+acciones externas. D-042 permite redactar el prompt D7, pero no crear ni iniciar
+su worktree ni comenzar Limpieza Controlada.
 
 ## Resultado de la implementación autorizada
 
