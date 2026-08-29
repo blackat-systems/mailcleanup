@@ -43,9 +43,11 @@ actual es una Base Segura aceptada y un Mapa Total sintético también aceptado:
   `e92a77a`. Joa autorizó después crear e iniciar D7; el especialista la entregó
   y MAIN la auditó e integró con correcciones. Joa autorizó su commit y
   publicación; quedó consolidada en `c8c7b32`;
-- Joa autorizó preparar y crear D8 `estudio-ui`. Su prompt autosuficiente limita
-  la entrega a `frontend/src/**`, consume la API sintética `/api/v3/study` y
-  mantiene `canExecute: false`;
+- Joa autorizó preparar y crear D8 `estudio-ui`. Su prompt quedó consolidado en
+  `a1cf0ff` y el worktree activo está en
+  `C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
+  `codex/estudio-ui`. La entrega se limita a `frontend/src/**`, consume la API
+  sintética `/api/v3/study` y mantiene `canExecute: false`;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -91,8 +93,8 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso autorizado es consolidar este prompt y crear un único worktree
-D8 desde ese SHA exacto. La entrega especialista será auditada por MAIN antes de
-integrarse. Conectar una cuenta real y Limpieza Controlada siguen fuera de
-alcance: exigen puertas independientes y resolver antes la protección del índice
-local.
+El próximo paso es esperar la entrega especialista D8. MAIN deberá auditarla y
+repetir la batería y el recorrido visual antes de proponer su integración y la
+aceptación de Joa. Conectar una cuenta real y Limpieza Controlada siguen fuera
+de alcance: exigen puertas independientes y resolver antes la protección del
+índice local.

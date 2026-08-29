@@ -66,8 +66,9 @@ worktree D5. MAIN consolidó la base `663d8a9`, creó D5 en
 MAIN quedó aprobada con una corrección conservadora: los fragmentos de un flujo
 particionado conservan la confianza automática original de D4. D5 queda
 consolidada por el commit que contiene este estado. No están autorizados abrir
-OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen ocho
-worktrees: MAIN y las fuentes D1-D7 conservadas como evidencia. D6
+OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen
+nueve worktrees: MAIN, las fuentes D1-D7 conservadas como evidencia y D8 activa.
+D6
 permanece en
 `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup`, rama
 `codex/mapa-total-ui`. `origin` apunta al repositorio privado
@@ -104,15 +105,18 @@ autorizó después su commit y publicación; D7 quedó consolidada y publicada e
 `c8c7b32`. Su alcance permanece sintético y sin efectos. Joa autorizó luego a
 MAIN a preparar, consolidar y despachar un único worktree D8 `estudio-ui`.
 `docs/prompts/D8_ESTUDIO_UI.md` fija una frontera exclusivamente frontend y
-sintética. Hasta crear y verificar el worktree real, D8 queda `LISTA PARA
-CREAR`; esta autorización no habilita capacidades externas ni acciones.
+sintética. MAIN consolidó el prompt en `a1cf0ff`, creó y verificó D8 en
+`C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
+`codex/estudio-ui`, y le entregó el prompt completo en la tarea
+`01a04d55-2cae-7051-a2d9-2534c15dd793`. D8 está `EN DESARROLLO`; esta
+autorización no habilita capacidades externas ni acciones.
 
 ## Objetivo actual
 
-Conservar verde D7 consolidada, auditar y consolidar el prompt D8 y crear un
-único worktree `estudio-ui` desde el SHA limpio que lo contenga. El especialista
-debe trabajar sólo en `frontend/src/**`; `/api/v3/study` permanece sintética y
-`canExecute: false`. No abrir OAuth, conectar una cuenta real, persistir
+Esperar la entrega especialista D8 sin intervenir en su implementación. MAIN
+deberá auditar el diff completo, los archivos no rastreados, el consumo estricto
+de `/api/v3/study`, seguridad, accesibilidad, escritorio, 390 px y la batería
+global antes de integrar. No abrir OAuth, conectar una cuenta real, persistir
 metadatos privados, usar credenciales ni comenzar Limpieza Controlada.
 
 ---
@@ -401,9 +405,10 @@ conserva: su entrega fue auditada, integrada, aceptada por Joa y consolidada por
 el commit que contiene este estado. D7 `real-plan-engine` fue entregada, auditada
 e integrada con correcciones en el árbol de MAIN; su worktree desde `e92a77a`
 se conserva como evidencia. La integración quedó consolidada en `c8c7b32`; la
-fuente especialista continúa sin commit. D8 `estudio-ui` tiene prompt y
-autorización propios, pero no se considera creada hasta que MAIN registre y
-verifique su worktree real.
+fuente especialista continúa sin commit. D8 `estudio-ui` está activa en
+`C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
+`codex/estudio-ui`, desde la base exacta `a1cf0ff`; todavía no fue entregada ni
+auditada.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -435,8 +440,10 @@ C6 aceptada + prompt D7 consolidado en `e92a77a`
 D7 `real-plan-engine` INTEGRADA EN EL ÁRBOL DE MAIN
         ↓ commit y publicación autorizados por Joa
 D7 CONSOLIDADA EN MAIN (`c8c7b32`)
-        ↓ prompt y autorización D8 recibidos
-D8 `estudio-ui` LISTA PARA CREAR
+        ↓ prompt consolidado en `a1cf0ff` + autorización recibida
+D8 `estudio-ui` EN DESARROLLO
+        ↓ entrega → auditoría MAIN → integración → aceptación de Joa
+Limpieza Controlada continúa bloqueada
 ```
 
 Las puertas de producto son secuenciales:

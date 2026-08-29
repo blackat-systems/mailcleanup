@@ -22,8 +22,9 @@ activo en `C:\Users\Joaquin\.codex\worktrees\4d09\mailcleanup`, rama
 integrada con correcciones en el árbol de MAIN. Joa autorizó su commit y
 publicación; quedó consolidada en `c8c7b32`. Joa autorizó después a MAIN a
 preparar, consolidar y despachar un único worktree D8 `estudio-ui`. El prompt
-autosuficiente está en `docs/prompts/D8_ESTUDIO_UI.md` y limita la entrega al
-frontend sintético.
+autosuficiente quedó consolidado en `a1cf0ff`; D8 está activa en
+`C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
+`codex/estudio-ui`, y limita la entrega al frontend sintético.
 La revisión visual instrumental de Base Segura está completada. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
@@ -85,9 +86,9 @@ C6 aceptada + prompt D7 consolidado en `e92a77a`
 D7 INTEGRADA EN EL ÁRBOL DE MAIN
         ↓ commit y publicación autorizados
 D7 CONSOLIDADA EN MAIN (`c8c7b32`)
-        ↓ prompt y autorización recibidos
-D8 `estudio-ui` LISTA PARA CREAR
-        ↓ worktree, entrega y auditoría/integración MAIN
+        ↓ prompt `a1cf0ff` + autorización + Puerta 0
+D8 `estudio-ui` EN DESARROLLO
+        ↓ entrega y auditoría/integración MAIN
 revisión y aceptación de Estudio de Limpieza por Joa
         ↓ autorización independiente de Joa
 Limpieza Controlada
@@ -98,10 +99,9 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Auditar y consolidar el prompt D8, crear un único worktree desde ese SHA y
-despachar allí la implementación frontend sintética. No implementar D8 en MAIN
-ni agregar adaptadores productivos, conexiones, sincronización operativa, datos
-reales o acciones.
+Esperar la entrega especialista D8 y luego auditarla independientemente antes de
+integrar. No implementar D8 en MAIN ni agregar adaptadores productivos,
+conexiones, sincronización operativa, datos reales o acciones.
 
 ## Línea base de privacidad
 
@@ -173,8 +173,8 @@ MAIN debe:
 - Mantener `canExecute: false` y ausencia de operaciones de escritura sobre
   Gmail o mensajes.
 - No agregar dependencias para D4, D5, D6, C6, D7 o D8.
-- Conservar los worktrees D1-D7 como evidencia. D8 sólo puede abrirse con el
-  prompt, SHA y worktree autorizados; no habilita datos o conexiones reales.
+- Conservar los worktrees D1-D7 como evidencia y D8 aislada en su worktree
+  verificado. D8 no habilita datos o conexiones reales.
 - Publicar sólo `main` en el `origin` privado cuando Joa lo autorice y el destino
   haya sido verificado; nunca publicar ramas o entregas especialistas por defecto.
 

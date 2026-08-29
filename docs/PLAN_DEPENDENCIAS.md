@@ -4,8 +4,9 @@ Estado del plan: ejecución controlada; D1-D7 y C5 están consolidadas y Mapa
 Total fue aceptado. Joa autorizó comenzar Estudio de Limpieza, MAIN preparó C6 y
 Joa aceptó el contrato. D7 fue entregada, auditada, corregida, consolidada y
 publicada en `c8c7b32`. Joa autorizó después preparar, consolidar y despachar un
-único D8 `estudio-ui`. Su prompt queda listo por el commit que contiene este
-estado; el worktree todavía no existe y no se registra como real hasta crearlo.
+único D8 `estudio-ui`. Su prompt quedó consolidado en `a1cf0ff`; MAIN creó y
+verificó el worktree real `83bb`, rama `codex/estudio-ui`, desde esa base exacta
+y despachó la tarea especialista.
 
 Fecha de inspección: 29 de agosto de 2026.
 
@@ -22,8 +23,8 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | HEAD limpio previo a C6 | `963af89067eab382ee0315708ff4d2817353d084` |
 | HEAD que consolida C6 | `5c913f2baed3c943c159df8e495ee3ce548d78d9` |
 | HEAD base D7 | `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
-| Estado actual | D1-D7 y C5 sintéticas consolidadas; C6 aceptada; prompt D8 autorizado y listo para crear su worktree |
-| Worktrees | Ocho: MAIN y D1-D7 conservadas como fuentes de evidencia |
+| Estado actual | D1-D7 y C5 sintéticas consolidadas; C6 aceptada; D8 frontend sintética `EN DESARROLLO` |
+| Worktrees | Nueve: MAIN, D1-D7 conservadas como fuentes de evidencia y D8 activa |
 | Remotos | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git`; `main` publicada desde `6310c76`; ninguna rama especialista publicada |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental completada después en escritorio y 390 px |
@@ -177,7 +178,8 @@ cancelación, tamaños y ausencia de efectos. MAIN consolidó el prompt en
 la entregó y MAIN auditó e integró la API y los fixtures contractuales en el
 árbol de trabajo. Joa autorizó consolidar y publicar D7 en `c8c7b32` y después
 autorizó preparar y crear D8. El prompt D8 queda listo por el commit que contiene
-este estado; no habilita capacidades reales.
+este estado y fue consolidado en `a1cf0ff`. MAIN creó y verificó D8 desde esa
+base; no habilita capacidades reales.
 
 ### C7. Ejecución controlada
 
@@ -382,21 +384,21 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Proceso | Estudio de Limpieza |
 | Responsabilidad única | Presentar selección, alcance exacto, muestras, exclusiones, tamaños, advertencias, revalidación, cancelación e historial sin ejecución. |
 | Razón para separarlo | Es una ampliación cohesiva de frontend que consume un plan estable y no debe implementar reglas de planificación. |
-| Estado actual | `LISTA PARA CREAR` |
+| Estado actual | `EN DESARROLLO` |
 | Dependencias previas | D7 auditada, integrada y consolidada en un SHA limpio. |
 | Contratos que consume | `CLEANUP_PLAN_V1.md` y la API `/api/v3/study`. |
 | Resultados que produce | Experiencia verificable de Estudio de Limpieza. |
 | Consumidores posteriores | Aceptación de Estudio de Limpieza y D9. |
 | Permitido | Exclusivamente `frontend/src/**`, incluidas pruebas y fixtures TypeScript contractuales. |
 | Prohibido | Backend, mutaciones Gmail, inferencias nuevas y representación engañosa del espacio liberado. |
-| Rama propuesta | `codex/estudio-ui` |
-| Ruta propuesta | La ruta aislada que Codex asigne al crear el único worktree; se registrará después de verificarla. |
-| Commit base requerido | SHA limpio que contenga D7 `c8c7b32`, la autorización D8 y `docs/prompts/D8_ESTUDIO_UI.md`. |
+| Rama | `codex/estudio-ui` |
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup` |
+| Commit base | `a1cf0ff5b0ea71b6656a5bf14951df189f874cc4` |
 | Verificaciones específicas | ESLint, Vitest, build, escritorio, 390 px, accesibilidad básica, planes vencidos y errores parciales simulados. |
 | Criterios de aceptación | El usuario entiende qué ocurriría, qué queda protegido y que todavía no existen efectos. |
 | Riesgos de integración | UI adelantada al contrato, acciones ambiguas y pérdida de exclusiones al revalidar. |
 | Paralelización real | No se abre en paralelo con D7; consume su API ejecutable y sus fixtures ya auditados. |
-| Condición exacta de desbloqueo | Cumplida para creación: D7 y su API están consolidadas, Joa autorizó el siguiente paso y el prompt D8 está completo. MAIN debe crear un único worktree desde el SHA exacto de este estado, registrar ruta/rama/base y verificar Puerta 0 antes de editar. |
+| Condición exacta de desbloqueo | Cumplida: D7 y su API están consolidadas, el prompt D8 quedó en `a1cf0ff`, Joa autorizó el comienzo y MAIN verificó ruta, rama, HEAD y limpieza antes de despachar. |
 
 ### D9 — `controlled-action-engine`
 
@@ -521,7 +523,7 @@ expresa consumo real. D1-D6 fueron consolidadas con alcance sintético y D6 fue
 aceptada por Joa. La autorización de Estudio ya fue recibida y C6 quedó
 preparada y aceptada. D7 fue entregada, auditada e integrada en el árbol de
 MAIN y quedó consolidada en `c8c7b32`. Joa autorizó después preparar y crear D8;
-el worktree sólo se abre desde el SHA limpio que contiene su prompt.
+el worktree `83bb` fue abierto y verificado desde `a1cf0ff` y está en desarrollo.
 
 ## 8. Primer worktree creado e integrado
 
@@ -584,7 +586,7 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
 | Uso real de `gmail.metadata` sin `q` | D3 | Joa autoriza la conexión; MAIN conserva inventario completo y filtrado local |
 | Validación física de DPAPI y ubicación local | D2 antes de datos reales | MAIN audita; Joa autoriza la conexión |
 | Protección, retención y borrado del índice local | C4, D1 | MAIN propone; Joa decide si cambia el tratamiento de datos |
-| Creación y Puerta 0 del worktree D8 | D8 | MAIN, desde el SHA limpio que contiene el prompt y la autorización ya recibida |
+| Entrega, auditoría, integración y aceptación de D8 | D8 | Especialista entrega; MAIN audita e integra; Joa acepta Estudio de Limpieza antes de evaluar D9 |
 | Autorización de Limpieza Controlada y `gmail.modify` | D9 | Joa |
 | Consentimiento y contrato RFC 8058 | D10 | Joa y MAIN |
 
