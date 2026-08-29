@@ -18,8 +18,8 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Remoto actual | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git` |
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
-| Base consolidada | El commit que contiene este registro consolida D7; la fuente especialista conserva base `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
-| Estado | Base Segura, Mapa Total, C6 y D7 aceptadas con alcance sintético; D1-D7 y C5 consolidadas; D8 bloqueada |
+| Base consolidada | `c8c7b3241d7731679fd9f775bb05c1c3d8acd38a` consolida D7; la fuente especialista conserva base `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
+| Estado | Base Segura, Mapa Total, C6 y D7 aceptadas con alcance sintético; D1-D7 y C5 consolidadas; D8 autorizada y con prompt, todavía sin worktree real |
 
 MAIN implementó C5 directamente porque conserva composición, contratos y API
 transversales. No se creó un worktree C5. El candidato agrega
@@ -292,6 +292,14 @@ entonces envió el prompt. El especialista confirmó la pausa inicial y recibió
 después la autorización de comienzo. El remoto se observó pero no está
 autorizado para esta dependencia. La fuente especialista conserva exactamente
 los diez archivos autorizados sin commit y permanece como evidencia.
+
+## D8 — `estudio-ui`
+
+Joa autorizó a MAIN a preparar, consolidar y despachar D8. El prompt durable es
+`docs/prompts/D8_ESTUDIO_UI.md`. Este apartado no registra todavía una instancia:
+la ruta, rama, base, tarea y estado se agregarán únicamente después de crear y
+verificar el worktree real. Hasta entonces `git worktree list` continúa mostrando
+ocho worktrees: MAIN y D1-D7.
 
 ## Reglas de actualización
 

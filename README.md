@@ -42,7 +42,10 @@ actual es una Base Segura aceptada y un Mapa Total sintético también aceptado:
 - MAIN preparó, auditó y consolidó `docs/prompts/D7_REAL_PLAN_ENGINE.md` en
   `e92a77a`. Joa autorizó después crear e iniciar D7; el especialista la entregó
   y MAIN la auditó e integró con correcciones. Joa autorizó su commit y
-  publicación; queda consolidada por el commit que contiene este estado;
+  publicación; quedó consolidada en `c8c7b32`;
+- Joa autorizó preparar y crear D8 `estudio-ui`. Su prompt autosuficiente limita
+  la entrega a `frontend/src/**`, consume la API sintética `/api/v3/study` y
+  mantiene `canExecute: false`;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -61,6 +64,7 @@ Leer en este orden:
 8. [`docs/contracts/MAPA_TOTAL_API_V1.md`](docs/contracts/MAPA_TOTAL_API_V1.md), para C5 y D6
 9. [`docs/contracts/CLEANUP_PLAN_V1.md`](docs/contracts/CLEANUP_PLAN_V1.md), contrato C6 aceptado
 10. [`docs/prompts/D7_REAL_PLAN_ENGINE.md`](docs/prompts/D7_REAL_PLAN_ENGINE.md), delegación D7 consolidada; el worktree fuente se conserva como evidencia
+11. [`docs/prompts/D8_ESTUDIO_UI.md`](docs/prompts/D8_ESTUDIO_UI.md), frontera frontend sintética autorizada para D8
 
 ## Organización y arquitectura candidata
 
@@ -87,7 +91,8 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso requiere una autorización independiente de Joa para preparar
-D8. D8 continúa bloqueada y no se crea automáticamente por haber consolidado
-D7. Conectar una cuenta real sigue fuera de alcance: exige otra autorización y
-resolver antes la protección del índice local.
+El próximo paso autorizado es consolidar este prompt y crear un único worktree
+D8 desde ese SHA exacto. La entrega especialista será auditada por MAIN antes de
+integrarse. Conectar una cuenta real y Limpieza Controlada siguen fuera de
+alcance: exigen puertas independientes y resolver antes la protección del índice
+local.

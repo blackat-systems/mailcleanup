@@ -16,7 +16,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-007 | El candidato `0a90b71` no está aceptado como Base Segura terminada. | Vigente | Instrucción actual de Joa |
 | D-008 | Retirar `src/gmail_cleaner`, su configuración y dependencias del árbol activo; conservarlo sólo en Git. | Ejecutada | Portado selectivo confirmado por Joa |
 | D-009 | No crear worktrees especialistas en esta inicialización. | Vigente | Instrucción actual de Joa |
-| D-010 | Limpieza Controlada y todo acceso real siguen sin autorización. Estudio de Limpieza está autorizado sólo hasta C6 sintética aceptada; D7 requiere su propia puerta. | Vigente con excepciones registradas | Contrato, D-020, D-040 y D-041 |
+| D-010 | Limpieza Controlada y todo acceso real siguen sin autorización. Estudio de Limpieza está autorizado únicamente en su recorrido sintético C6-D8 y cada dependencia conserva su puerta propia. | Vigente con excepciones registradas | Contrato, D-020, D-040, D-041, D-043 y D-045 |
 | D-011 | El candidato sólo puede presentarse para aceptación cuando pasen pruebas, lint, tipos, build y HTTP; la revisión visual se informa por separado. | Vigente | Criterios de calidad y auditoría de MAIN |
 | D-012 | MAIN conserva contratos, arquitectura, batería e integración, pero no implementa por defecto cada módulo funcional. | Vigente | Instrucción explícita de Joa |
 | D-013 | No se crea ningún worktree mientras `main` tenga cambios sin commit o carezca de un commit base limpio confirmado. | Vigente | Instrucción explícita de Joa |
@@ -51,6 +51,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-042 | Autorizar a MAIN a preparar y auditar el prompt autosuficiente D7 `real-plan-engine`, sin crear todavía el worktree, implementar ni publicar. | Ejecutada y consolidada en `e92a77a` | Autorizaciones explícitas de Joa del 29 de agosto de 2026 para preparar y después commitear el prompt; `CLEANUP_PLAN_V1.md` |
 | D-043 | Crear e iniciar un único worktree D7 `real-plan-engine` desde `e92a77a`, limitado a planes sintéticos sin efectos, migración v5, API `/api/v3/study` y pruebas; sin D8 ni capacidades reales. | Ejecutada: worktree `4d09`, tarea `01a04b9f-8d9d-7181-8935-c156b669c05a` | Autorización explícita de Joa del 29 de agosto de 2026, prompt D7 y Puerta 0 verificada |
 | D-044 | Aceptar la integración auditada de D7 y autorizar a MAIN a consolidarla en `main` y publicarla en el `origin` privado, preservando `grafo.txt` fuera del commit y manteniendo D8 y toda capacidad real bloqueadas. | Confirmada; consolidada por el commit que contiene esta decisión | Autorización explícita de Joa del 29 de agosto de 2026 y auditoría MAIN con batería global verde |
+| D-045 | Autorizar a MAIN a preparar y consolidar el prompt D8 `estudio-ui`, crear un único worktree desde ese SHA y despacharle la implementación exclusivamente frontend y sintética de Estudio de Limpieza. No autoriza push, Gmail, OAuth, credenciales, datos reales, acciones sobre mensajes, D9 ni Limpieza Controlada. | Autorizada; prompt listo, creación pendiente | Instrucción explícita de Joa del 29 de agosto de 2026, `CLEANUP_PLAN_V1.md` y D7 consolidada en `c8c7b32` |
 
 ## Decisiones suficientemente definidas
 
@@ -86,9 +87,10 @@ D-039. Después autorizó comenzar Estudio de Limpieza y preparar C6 mediante
 D-040, y aceptó el contrato mediante D-041. Ninguna autorización permite abrir
 OAuth, conectar Gmail, solicitar credenciales, usar datos reales o ejecutar
 acciones externas. D-043 permite implementar D7 únicamente con datos sintéticos
-y sin efectos; no habilita D8, Gmail, OAuth, datos reales ni Limpieza
-Controlada. D-044 autoriza consolidar y publicar esa integración, sin ampliar su
-alcance ni habilitar el siguiente worktree.
+y sin efectos. D-044 autoriza consolidar y publicar esa integración. D-045
+autoriza preparar, consolidar y crear el único worktree D8 dentro de la frontera
+frontend sintética; no habilita Gmail, OAuth, datos reales, ejecución ni
+Limpieza Controlada.
 
 ## Resultado de la implementación autorizada
 

@@ -15,8 +15,11 @@ consolidado en `5c913f2`. Joa autorizó después preparar el prompt autosuficien
 D7; quedó auditado y consolidado en `e92a77a`. Joa autorizó después crear e
 iniciar el único worktree D7 desde esa base. El especialista entregó el motor
 sintético y MAIN lo auditó e integró con correcciones en el árbol de trabajo.
-Joa autorizó después su commit y publicación; D7 queda consolidada por el commit
-que contiene este estado.
+Joa autorizó después su commit y publicación; D7 quedó consolidada en
+`c8c7b32`. Joa autorizó luego preparar, consolidar y despachar un único worktree
+D8 `estudio-ui`. El prompt autosuficiente queda en
+`docs/prompts/D8_ESTUDIO_UI.md`; hasta verificar la instancia real, el registro
+continúa mostrando únicamente MAIN y D1-D7.
 
 ## Qué existe
 
@@ -153,5 +156,7 @@ Gmail real, persistir metadatos privados ni ejecutar acciones. La autorización
 posterior permitió preparar y aceptar C6 sintética, consolidar el prompt D7 e
 iniciar su único worktree. D7 fue entregada, auditada e integrada con
 correcciones en el árbol de MAIN. Joa autorizó su consolidación y publicación.
-El próximo paso requiere una autorización independiente para preparar D8. D8,
-Gmail real, OAuth, credenciales, datos privados y acciones permanecen bloqueados.
+El próximo paso autorizado es crear D8 desde el SHA limpio que contiene su
+prompt y verificar su Puerta 0. D8 continúa limitada al frontend sintético;
+Gmail real, OAuth, credenciales, datos privados, acciones y Limpieza Controlada
+permanecen bloqueados.

@@ -99,17 +99,21 @@ autorizó después crear e iniciar el único worktree D7, ubicado en
 limpieza antes de enviar `docs/prompts/D7_REAL_PLAN_ENGINE.md`. El especialista
 entregó D7 y MAIN la auditó e integró en el árbol de trabajo con correcciones de
 invariantes persistidas, coherencia de muestras y paginación SQL acotada. La
-batería global quedó verde con 391 pruebas Python y 98 pruebas frontend. D7 aún
-no estaba consolidada; Joa autorizó después su commit y publicación. Queda
-consolidada y publicada por el commit que contiene este estado. Su alcance
-permanece sintético, sin efectos, y no habilita capacidades externas ni D8.
+batería global quedó verde con 391 pruebas Python y 98 pruebas frontend. Joa
+autorizó después su commit y publicación; D7 quedó consolidada y publicada en
+`c8c7b32`. Su alcance permanece sintético y sin efectos. Joa autorizó luego a
+MAIN a preparar, consolidar y despachar un único worktree D8 `estudio-ui`.
+`docs/prompts/D8_ESTUDIO_UI.md` fija una frontera exclusivamente frontend y
+sintética. Hasta crear y verificar el worktree real, D8 queda `LISTA PARA
+CREAR`; esta autorización no habilita capacidades externas ni acciones.
 
 ## Objetivo actual
 
-Conservar verde D7 consolidada y esperar una autorización específica antes de
-preparar o crear D8. `/api/v3/study` permanece exclusivamente sintética y
+Conservar verde D7 consolidada, auditar y consolidar el prompt D8 y crear un
+único worktree `estudio-ui` desde el SHA limpio que lo contenga. El especialista
+debe trabajar sólo en `frontend/src/**`; `/api/v3/study` permanece sintética y
 `canExecute: false`. No abrir OAuth, conectar una cuenta real, persistir
-metadatos privados ni usar credenciales.
+metadatos privados, usar credenciales ni comenzar Limpieza Controlada.
 
 ---
 
@@ -120,10 +124,11 @@ respetar el permiso mínimo, la allowlist de lectura,
 la atomicidad del índice, la clasificación conservadora, la separación de
 secretos y la barrera de no escritura sobre Gmail o mensajes.
 
-Mapa Total está aceptado con alcance sintético. C6 está aceptada y D7 fue
-integrada en el árbol de MAIN, todavía sin consolidación. Limpieza Controlada
-permanece detrás de otra puerta independiente. Las ideas futuras se registran
-sin incorporarlas al alcance activo.
+Mapa Total está aceptado con alcance sintético. C6 y D7 están consolidadas. D8
+está autorizada sólo como interfaz sintética de Estudio de Limpieza y debe
+partir de su prompt y un SHA limpio. Limpieza Controlada permanece detrás de
+otra puerta independiente. Las ideas futuras se registran sin incorporarlas al
+alcance activo.
 
 ---
 
@@ -153,7 +158,8 @@ Para coordinación de MAIN y dependencias:
 2. `docs/PLAN_DEPENDENCIAS.md`;
 3. `docs/WORKTREE_REGISTRY.md`;
 4. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
-5. `docs/prompts/D7_REAL_PLAN_ENGINE.md` para la delegación D7 entregada.
+5. `docs/prompts/D7_REAL_PLAN_ENGINE.md` para la delegación D7 entregada;
+6. `docs/prompts/D8_ESTUDIO_UI.md` para la delegación D8 autorizada.
 
 Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/SECURITY_PRIVACY_V1.md` y
@@ -165,9 +171,10 @@ habilita Gmail, OAuth ni datos reales. Para C5 y D6 prevalece
 y sintética. Para C6 prevalece el contrato aceptado
 `docs/contracts/CLEANUP_PLAN_V1.md`. Es el contrato de D7, pero no autoriza
 por sí solo datos reales o ejecución. El prompt D7 traduce ese contrato a una
-frontera especialista. Joa ya autorizó su implementación sintética en el único
-worktree registrado; esa autorización no se extiende a D8 ni a capacidades
-reales.
+frontera especialista y D7 quedó consolidada. Joa autorizó después preparar y
+crear D8 mediante `docs/prompts/D8_ESTUDIO_UI.md`, exclusivamente sobre el
+frontend sintético. Esa autorización no se extiende a Gmail, OAuth, datos
+reales, ejecución ni Limpieza Controlada.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -393,8 +400,10 @@ evidencia de entregas integradas. La fuente D6 `mapa-total-ui` también se
 conserva: su entrega fue auditada, integrada, aceptada por Joa y consolidada por
 el commit que contiene este estado. D7 `real-plan-engine` fue entregada, auditada
 e integrada con correcciones en el árbol de MAIN; su worktree desde `e92a77a`
-se conserva como evidencia. La integración quedó consolidada en `main` por el
-commit que contiene este estado; la fuente especialista continúa sin commit.
+se conserva como evidencia. La integración quedó consolidada en `c8c7b32`; la
+fuente especialista continúa sin commit. D8 `estudio-ui` tiene prompt y
+autorización propios, pero no se considera creada hasta que MAIN registre y
+verifique su worktree real.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -425,9 +434,9 @@ C6 aceptada + prompt D7 consolidado en `e92a77a`
         ↓ autorización independiente recibida
 D7 `real-plan-engine` INTEGRADA EN EL ÁRBOL DE MAIN
         ↓ commit y publicación autorizados por Joa
-D7 CONSOLIDADA EN MAIN
-        ↓ prompt y autorización propios
-D8 todavía bloqueada
+D7 CONSOLIDADA EN MAIN (`c8c7b32`)
+        ↓ prompt y autorización D8 recibidos
+D8 `estudio-ui` LISTA PARA CREAR
 ```
 
 Las puertas de producto son secuenciales:
@@ -538,7 +547,7 @@ por Joa el 28 de agosto de 2026.
 # 17. SEGURIDAD Y PRIVACIDAD
 
 - No conectar Gmail ni abrir OAuth hasta una autorización específica posterior;
-  C6 y D7 integrada son sintéticas.
+  C6, D7 y D8 autorizada son sintéticas.
 - No solicitar ni almacenar `credentials.json`, `token.json`, contraseñas o
   tokens.
 - No usar mensajes, nombres ni direcciones reales en fixtures, pruebas, logs,
@@ -546,7 +555,7 @@ por Joa el 28 de agosto de 2026.
 - No renderizar HTML ni cargar imágenes o recursos remotos de correos.
 - No enviar datos de correo a IA externa ni otros servicios.
 - Mantener la aplicación en loopback.
-- No introducir clientes Gmail o de red productivos durante C6 o D7.
+- No introducir clientes Gmail o de red productivos durante C6, D7 o D8.
 - Aplicar `SECURITY_PRIVACY_V1.md`: origen, métodos, endpoints, encabezados,
   tamaños y reintentos se deniegan por defecto salvo allowlist expresa.
 - No usar el índice SQLite vigente con datos reales: todavía no tiene cifrado
@@ -588,7 +597,7 @@ No desactivar la barrera automática de Base Segura para hacer pasar otro cambio
 - aceptar Base Segura y habilitar Mapa Total;
 - conectar Gmail, abrir OAuth o usar credenciales y datos reales;
 - solicitar permisos de lectura o modificación;
-- preparar, crear o aceptar D8, o habilitar Limpieza Controlada;
+- aceptar o integrar D8, o habilitar Limpieza Controlada;
 - modificar mensajes reales o enviar desuscripciones;
 - cambiar arquitectura, plataforma o persistencia central;
 - agregar dependencias importantes o servicios externos;
