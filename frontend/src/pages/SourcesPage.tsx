@@ -1,60 +1,166 @@
 import { useMemo, useState } from "react";
-import { api } from "../api";
-import { useResource } from "../hooks";
-import { Icon } from "../components/Icon";
-import { EmptyState, ErrorState, LoadingState, PageHeader } from "../components/Primitives";
+import { Badge, EmptyState, PageHeader } from "../components/Primitives";
 import { SourceCard } from "../components/SourceCard";
+import {
+  CONFIANZAS,
+  INTENCIONES,
+  PROTECCIONES,
+  RUBROS,
+  SUSCRIPCIONES,
+  type MapResponse,
+  type SourceProjection,
+} from "../types";
 
-type Props = {
-  view: string;
-  selected: Set<string>;
-  onToggle: (id: string) => void;
+export type SourceView = "all" | "subscriptions" | "spam" | "protected";
+
+const subscriptionViewValues = new Set([
+  "Confirmada",
+  "Probable",
+  "Baja solicitada",
+  "Posible incumplimiento",
+]);
+
+function sourceMatchesView(source: SourceProjection, view: SourceView): boolean {
+  if (view === "subscriptions") {
+    return source.flows.some((flow) => subscriptionViewValues.has(flow.subscription));
+  }
+  if (view === "spam") {
+    return source.flows.some((flow) => flow.effectiveIntention === "Sospechoso");
+  }
+  if (view === "protected") return source.protectedMessageCount > 0;
+  return true;
+}
+
+const viewCopy: Record<SourceView, { title: string; description: string }> = {
+  all: {
+    title: "Fuentes y flujos",
+    description: "Fuente y flujo permanecen separados. Los filtros sólo usan campos publicados por el mapa.",
+  },
+  subscriptions: {
+    title: "Suscripciones",
+    description: "Vista de fuentes con al menos un flujo confirmado, probable, con baja solicitada o posible incumplimiento.",
+  },
+  spam: {
+    title: "Spam",
+    description: "Vista de fuentes con al menos un flujo cuya intención efectiva es exactamente Sospechoso.",
+  },
+  protected: {
+    title: "Fuentes protegidas",
+    description: "Vista de las mismas fuentes cuando contienen al menos un mensaje protegido.",
+  },
 };
 
-const viewCopy: Record<string, { title: string; description: string }> = {
-  all: { title: "Fuentes y flujos", description: "Una fuente puede reunir varios remitentes y actividades sin mezclarlos en una sola etiqueta." },
-  subscriptions: { title: "Suscripciones detectadas", description: "Esta es una vista filtrada de las mismas fuentes. La baja y la limpieza del historial siguen siendo decisiones separadas." },
-  spam: { title: "Spam y señales sospechosas", description: "Se muestran fuentes aisladas cuando la autenticación o la identidad no alcanzan para agruparlas con seguridad." },
-  protected: { title: "Fuentes con protección", description: "Mensajes críticos, documentales, personales o elegidos por vos quedan fuera de los planes ordinarios." },
-};
-
-export function SourcesPage({ view, selected, onToggle }: Props) {
-  const resource = useResource(() => api.sources(view), [view]);
+export function SourcesPage({ map, view }: { map: MapResponse; view: SourceView }) {
   const [query, setQuery] = useState("");
-  const [rubro, setRubro] = useState("all");
-  const copy = viewCopy[view] ?? viewCopy.all!;
+  const [rubro, setRubro] = useState("");
+  const [intention, setIntention] = useState("");
+  const [subscription, setSubscription] = useState("");
+  const [confidence, setConfidence] = useState("");
+  const [protection, setProtection] = useState("");
+  const copy = viewCopy[view];
+  const activeAdvancedFilters = [rubro, intention, subscription, confidence, protection]
+    .filter(Boolean).length;
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase("es");
-    return (resource.data ?? []).filter((source) => {
-      const matchesText = !needle || source.name.toLocaleLowerCase("es").includes(needle) || source.senders.some((sender) => sender.includes(needle));
-      const matchesRubro = rubro === "all" || source.rubro === rubro;
-      return matchesText && matchesRubro;
+    return map.sources.filter((source) => {
+      if (!sourceMatchesView(source, view)) return false;
+      const searchable = [
+        source.effectiveDisplayName,
+        source.automaticDisplayName,
+        ...source.senders,
+        ...source.domains,
+      ];
+      const matchesText = !needle || searchable.some((value) =>
+        value.toLocaleLowerCase("es").includes(needle));
+      const matchesRubro = !rubro || source.effectiveRubro === rubro;
+      const matchesIntention = !intention || source.flows.some((flow) =>
+        flow.effectiveIntention === intention);
+      const matchesSubscription = !subscription || source.flows.some((flow) =>
+        flow.subscription === subscription);
+      const matchesConfidence = !confidence || source.effectiveConfidence === confidence;
+      const matchesProtection = !protection || source.protection.effective === protection;
+      return matchesText && matchesRubro && matchesIntention && matchesSubscription &&
+        matchesConfidence && matchesProtection;
     });
-  }, [query, resource.data, rubro]);
+  }, [confidence, intention, map.sources, protection, query, rubro, subscription, view]);
 
-  const rubros = [...new Set((resource.data ?? []).map((source) => source.rubro))].sort();
   return (
     <div className="page">
-      <PageHeader eyebrow="Explorador" title={copy.title} description={copy.description} actions={selected.size ? <a className="button button-primary" href="#/plan">Revisar plan ({selected.size}) <Icon name="arrow" /></a> : undefined} />
+      <PageHeader eyebrow="Explorador sintético" title={copy.title} description={copy.description} />
 
-      <div className="view-tabs" role="navigation" aria-label="Vistas de fuentes">
-        <a className={view === "all" ? "active" : undefined} href="#/sources">Todas</a>
-        <a className={view === "subscriptions" ? "active" : undefined} href="#/sources?view=subscriptions">Suscripciones</a>
-        <a className={view === "spam" ? "active" : undefined} href="#/sources?view=spam">Spam</a>
-        <a className={view === "protected" ? "active" : undefined} href="#/sources?view=protected">Protegidas</a>
-      </div>
+      {map.sync.partial ? (
+        <div className="partial-banner" role="status">
+          <strong>Mapa parcial.</strong> La fotografía no está completada; los conteos y pertenencias pueden cambiar.
+        </div>
+      ) : null}
 
-      <section className="filters" aria-label="Filtros">
-        <label className="search-field"><Icon name="search" /><span className="sr-only">Buscar fuentes</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar fuente o remitente" /></label>
-        <label><span className="sr-only">Filtrar por rubro</span><select value={rubro} onChange={(event) => setRubro(event.target.value)}><option value="all">Todos los rubros</option>{rubros.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
-        <span className="result-count">{filtered.length} {filtered.length === 1 ? "fuente" : "fuentes"}</span>
+      <nav className="view-tabs" aria-label="Vistas de fuentes">
+        <a aria-current={view === "all" ? "page" : undefined} className={view === "all" ? "active" : undefined} href="#/sources">Todas</a>
+        <a aria-current={view === "subscriptions" ? "page" : undefined} className={view === "subscriptions" ? "active" : undefined} href="#/sources?view=subscriptions">Suscripciones</a>
+        <a aria-current={view === "spam" ? "page" : undefined} className={view === "spam" ? "active" : undefined} href="#/sources?view=spam">Spam</a>
+        <a aria-current={view === "protected" ? "page" : undefined} className={view === "protected" ? "active" : undefined} href="#/sources?view=protected">Protegidas</a>
+      </nav>
+
+      <section className="filters" aria-label="Filtros de fuentes">
+        <div className="filter-primary">
+          <label className="search-field">
+            <span>Buscar fuente, remitente o dominio</span>
+            <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
+          </label>
+          <span className="result-count" role="status">{filtered.length} {filtered.length === 1 ? "fuente" : "fuentes"}</span>
+        </div>
+        <details className="advanced-filters">
+          <summary>
+            <span>Más filtros</span>
+            {activeAdvancedFilters > 0 ? (
+              <Badge tone="positive">{activeAdvancedFilters} activos</Badge>
+            ) : <span className="filter-optional">Opcional</span>}
+          </summary>
+          <div className="advanced-filter-grid">
+            <FilterSelect label="Rubro efectivo" value={rubro} onChange={setRubro} options={RUBROS} />
+            <FilterSelect label="Intención efectiva de flujo" value={intention} onChange={setIntention} options={INTENCIONES} />
+            <FilterSelect label="Suscripción de flujo" value={subscription} onChange={setSubscription} options={SUSCRIPCIONES} />
+            <FilterSelect label="Confianza efectiva" value={confidence} onChange={setConfidence} options={CONFIANZAS} />
+            <FilterSelect label="Protección efectiva" value={protection} onChange={setProtection} options={PROTECCIONES} />
+          </div>
+        </details>
       </section>
 
-      {resource.loading ? <LoadingState /> : null}
-      {resource.error ? <ErrorState message={resource.error} retry={resource.reload} /> : null}
-      {!resource.loading && !resource.error && filtered.length === 0 ? <EmptyState title="No hay coincidencias" detail="Probá otra búsqueda o quitá algún filtro." /> : null}
-      <div className="source-list">{filtered.map((source) => <SourceCard key={source.id} source={source} selected={selected.has(source.id)} onToggle={onToggle} />)}</div>
+      {filtered.length === 0 ? (
+        <EmptyState
+          title={map.sources.length === 0 ? "El mapa no contiene fuentes" : "No hay coincidencias"}
+          detail={map.sources.length === 0
+            ? "La fotografía sintética está disponible y vacía."
+            : "Probá otra búsqueda o quitá algún filtro presentacional."}
+        />
+      ) : (
+        <div className="source-list" aria-label="Fuentes del mapa">
+          {filtered.map((source) => <SourceCard key={source.id} source={source} />)}
+        </div>
+      )}
     </div>
+  );
+}
+
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: readonly string[];
+}) {
+  return (
+    <label>
+      <span>{label}</span>
+      <select value={value} onChange={(event) => onChange(event.target.value)}>
+        <option value="">Todos</option>
+        {options.map((option) => <option key={option} value={option}>{option}</option>)}
+      </select>
+    </label>
   );
 }

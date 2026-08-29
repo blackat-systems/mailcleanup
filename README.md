@@ -8,7 +8,7 @@ fuentes y flujos antes de preparar cualquier limpieza.
 Este repositorio nuevo heredó el historial y un candidato adelantado de Base
 Segura, anteriormente denominada Hito 0.
 MAIN auditó esa herencia y Joa confirmó el portado selectivo. El resultado
-actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
+actual es una Base Segura aceptada y un Mapa Total sintético también aceptado:
 
 - el dominio, la API, SQLite y el frontend sintéticos pasan la batería local;
 - el servidor real fue comprobado en `127.0.0.1:8765`;
@@ -32,8 +32,9 @@ actual es una Base Segura aceptada y una preparación controlada de Mapa Total:
   contiene este estado;
 - C5 de backend para Mapa Total está auditada, consolidada en `67b00c7` y verde:
   compone D1+D4+D5 desde una fotografía SQLite coherente y expone `/api/v2`
-  sólo con el fixture `.example`; D6 construye su interfaz sintética en un único
-  worktree aislado desde la base `75764c9`;
+  sólo con el fixture `.example`;
+- D6 presenta ese mapa mediante una interfaz sintética, responsive y de jerarquía
+  progresiva. Fue auditada, integrada y aceptada por Joa el 28 de agosto de 2026;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -76,7 +77,7 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso es recibir y auditar la entrega D6 `mapa-total-ui`, repetir la
-batería y revisar la experiencia en escritorio y 390 px antes de integrarla.
-Conectar una cuenta real continúa fuera de alcance y requiere otra autorización
-más resolver la protección del índice local.
+El próximo paso requiere una autorización independiente de Joa para iniciar
+Estudio de Limpieza. Antes de crear D7, MAIN debe estabilizar C6: el contrato de
+planes sin efectos. Conectar una cuenta real continúa fuera de alcance y requiere
+otra autorización más resolver la protección del índice local.

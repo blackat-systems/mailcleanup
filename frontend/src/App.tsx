@@ -1,68 +1,92 @@
 import { useEffect, useState } from "react";
 import { Shell } from "./components/Shell";
+import { BlockedState, ErrorState, LoadingState } from "./components/Primitives";
+import { useMapWorkspace } from "./hooks";
+import { CorrectionsPage } from "./pages/CorrectionsPage";
 import { OverviewPage } from "./pages/OverviewPage";
-import { PlanPage } from "./pages/PlanPage";
-import { SettingsPage } from "./pages/SettingsPage";
 import { SourceDetailPage } from "./pages/SourceDetailPage";
 import { SourcesPage } from "./pages/SourcesPage";
-
-type Route =
-  | { page: "overview"; key: "#/" }
-  | { page: "sources"; key: string; view: string }
-  | { page: "source"; key: "source"; id: string }
-  | { page: "plan"; key: "#/plan" }
-  | { page: "settings"; key: "#/settings" };
-
-function currentRoute(): Route {
-  const raw = window.location.hash.slice(1) || "/";
-  const [path = "/", query = ""] = raw.split("?");
-  if (path === "/sources") {
-    const view = new URLSearchParams(query).get("view") ?? "all";
-    const key = view === "all" ? "#/sources" : `#/sources?view=${view}`;
-    return { page: "sources", key, view };
-  }
-  if (path.startsWith("/source/")) {
-    return { page: "source", key: "source", id: decodeURIComponent(path.slice(8)) };
-  }
-  if (path === "/plan") return { page: "plan", key: "#/plan" };
-  if (path === "/settings") return { page: "settings", key: "#/settings" };
-  return { page: "overview", key: "#/" };
-}
+import { StatusPage } from "./pages/StatusPage";
+import { currentRoute, type Route } from "./routing";
 
 export default function App() {
   const [route, setRoute] = useState<Route>(currentRoute);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const workspace = useMapWorkspace();
 
   useEffect(() => {
     const updateRoute = () => {
       setRoute(currentRoute());
       window.scrollTo({ top: 0, behavior: "instant" });
+      queueMicrotask(() => document.getElementById("main-content")?.focus());
     };
     window.addEventListener("hashchange", updateRoute);
     return () => window.removeEventListener("hashchange", updateRoute);
   }, []);
 
-  const toggle = (id: string) => {
-    setSelected((current) => {
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  let content;
-  if (route.page === "sources") {
-    content = <SourcesPage view={route.view} selected={selected} onToggle={toggle} />;
-  } else if (route.page === "source") {
-    content = <SourceDetailPage id={route.id} selected={selected.has(route.id)} onToggle={toggle} />;
-  } else if (route.page === "plan") {
-    content = <PlanPage selected={selected} onToggle={toggle} />;
-  } else if (route.page === "settings") {
-    content = <SettingsPage />;
-  } else {
-    content = <OverviewPage selected={selected} onToggle={toggle} />;
+  if (workspace.state.kind === "loading") {
+    return (
+      <Shell routeKey={route.key}>
+        <div className="page"><h1 className="sr-only">Mapa Total</h1><LoadingState label="Coordinando contexto y fotografía sintética…" /></div>
+      </Shell>
+    );
+  }
+  if (workspace.state.kind === "blocked") {
+    return <Shell routeKey={route.key}><BlockedState reason={workspace.state.reason} /></Shell>;
+  }
+  if (workspace.state.kind === "error") {
+    return (
+      <Shell routeKey={route.key}>
+        <div className="page">
+          <h1 className="sr-only">Mapa Total no disponible</h1>
+          <ErrorState message={workspace.state.error.message} retry={workspace.reload} />
+        </div>
+      </Shell>
+    );
   }
 
-  return <Shell routeKey={route.key} selectedCount={selected.size}>{content}</Shell>;
+  const data = workspace.state.data;
+  let content;
+  if (route.page === "sources") {
+    content = <SourcesPage map={data.map} view={route.view} />;
+  } else if (route.page === "source") {
+    content = (
+      <SourceDetailPage
+        id={route.id}
+        mapRevision={data.map.mapRevision}
+        partial={data.map.sync.partial}
+      />
+    );
+  } else if (route.page === "corrections") {
+    content = (
+      <CorrectionsPage
+        map={data.map}
+        decisions={data.decisions}
+        initialSourceId={route.sourceId}
+        refreshProjection={workspace.refreshProjection}
+      />
+    );
+  } else if (route.page === "status") {
+    content = <StatusPage data={data} />;
+  } else if (route.page === "not_found") {
+    content = (
+      <div className="page not-found-page">
+        <h1>Esta sección no existe</h1>
+        <p>Volvé a una ruta publicada de Mapa Total.</p>
+        <a className="button button-primary" href="#/">Volver a Panorama</a>
+      </div>
+    );
+  } else {
+    content = <OverviewPage map={data.map} />;
+  }
+
+  return (
+    <Shell
+      routeKey={route.key}
+      partial={data.map.sync.partial}
+      reviewCount={data.map.policyReview.total}
+      writeEnabled
+    >
+      {content}
+    </Shell>
+  );
 }

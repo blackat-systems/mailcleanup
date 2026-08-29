@@ -316,7 +316,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Proceso | Mapa Total |
 | Responsabilidad única | Presentar en modo sintético el estado de conexión y sincronización, mapa, evidencia y correcciones mediante la API estable, sin ofrecer controles que C5 no publica. |
 | Razón para separarlo | Es una frontera de presentación TypeScript que puede consumir fixtures contractuales sin incorporar reglas de dominio. |
-| Estado actual | `EN DESARROLLO` en un único worktree especialista |
+| Estado actual | `INTEGRADA` y aceptada por Joa; consolidada por el commit que contiene este registro |
 | Dependencias previas | D2-D5 integradas; C5 estable; revisión visual de Base Segura completada. |
 | Contratos que consume | C5, sesión D2, progreso D3, mapa D4 y políticas D5. |
 | Resultados que produce | Experiencia verificable de Mapa Total en escritorio y 390 px. |
@@ -326,7 +326,7 @@ Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada y por contrato.
 | Rama propuesta | `codex/mapa-total-ui` |
 | Ruta real | `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup` |
 | Commit base requerido | Cumplido: `75764c9fbc66b2ba36bf1c3ccc5e8141e91f3130`. |
-| Verificaciones específicas | ESLint, Vitest, build, estados vacíos/carga/error, seis estados de sincronización y parcialidad sin controles operativos, escritorio y 390 px, ausencia de secretos. |
+| Verificaciones específicas | Cumplidas: ESLint, 98 pruebas Vitest, build, estados vacíos/carga/error, seis estados de sincronización y parcialidad sin controles operativos, ausencia de secretos, recorrido inicial en escritorio/390 px y aceptación posterior de la pasada minimalista por Joa. |
 | Criterios de aceptación | Distingue hechos e inferencias, no habilita procesos posteriores y permite entender/corregir sin ocultar protecciones. |
 | Riesgos de integración | Duplicar reglas en frontend, mezclar estado sintético/real y prometer operaciones no autorizadas. |
 | Paralelización real | Sólo puede construirse en paralelo tardío con backend si C5 está congelado y usa fixtures; integración después de D2-D5. |
@@ -472,9 +472,9 @@ recuerda decisiones sin reescribir ni debilitar la inferencia automática
         ↓ auditoría e integración consolidadas
 MAIN compone y consolida el backend y la API sintética de Mapa Total (C5)
         ↓ autorización recibida; prompt y SHA limpio de MAIN
-Interfaz sintética de Mapa Total (D6)
-muestra mapa, evidencia, progreso y correcciones
-        ↓ aceptación de Mapa Total + autorización de Estudio de Limpieza
+Interfaz sintética de Mapa Total (D6) auditada, integrada y aceptada
+muestra mapa, evidencia, progreso y correcciones sin capacidades reales
+        ↓ autorización independiente de Estudio de Limpieza + C6 estable
 Motor de planes reales sin efectos (D7)
         ↓
 Interfaz de Estudio de Limpieza (D8)
@@ -501,8 +501,9 @@ Orden de apertura recomendado: persistencia del índice (D1), sesión segura
 (D2), inventario de sólo metadatos (D3), clasificación (D4), memoria local
 (D5), interfaz de Mapa Total (D6), planes reales sin efectos (D7), interfaz del
 estudio (D8), ejecución por lotes (D9) y desuscripción segura (D10). El orden
-expresa consumo real. D1-D5 fueron consolidadas con alcance sintético. D8 puede
-adelantarse con fixtures
+expresa consumo real. D1-D6 fueron consolidadas con alcance sintético y D6 fue
+aceptada por Joa. D7 permanece bloqueada hasta que Joa autorice Estudio de
+Limpieza y MAIN estabilice C6. D8 puede adelantarse con fixtures
 solamente si C6 y la API están congelados; su integración siempre espera D7.
 
 ## 8. Primer worktree creado e integrado
@@ -561,7 +562,6 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
 
 | Bloqueo | Afecta | Autoridad necesaria |
 |---|---|---|
-| Revisión visual de la futura interfaz de Mapa Total | Aceptación visual final de Mapa Total; la revisión de Base Segura ya fue completada | MAIN y Joa, después de D6 |
 | Autorización para abrir OAuth, conectar Gmail y usar datos reales | D3-D6; D2 sólo implementa con dobles | Joa, después de auditoría D2 |
 | Metadatos exactos frente a fragmentos, MIME o adjuntos | C1, C2, D3, D4, D10 | MAIN propone; Joa decide privacidad |
 | Uso real de `gmail.metadata` sin `q` | D3 | Joa autoriza la conexión; MAIN conserva inventario completo y filtrado local |

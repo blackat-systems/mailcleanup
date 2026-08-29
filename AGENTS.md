@@ -79,17 +79,24 @@ MAIN definió `MAPA_TOTAL_API_V1.md` e implementó C5: fotografía SQLite cohere
 composición D4+D5, fixture canónico, puerta sintética cerrada y API local
 `/api/v2`. La auditoría y la batería global están verdes y C5 quedó consolidada
 en `67b00c7`. MAIN consolidó el prompt D6 en `75764c9`, creó un único worktree
-`mapa-total-ui` desde ese SHA y le entregó el alcance completo. Esta autorización
-cubre sólo la interfaz sintética y no habilita capacidades externas.
+`mapa-total-ui` desde ese SHA y le entregó el alcance completo. El 28 de agosto
+de 2026 MAIN auditó e integró su entrega en el árbol de trabajo con siete
+correcciones de seguridad, contrato, privacidad y accesibilidad. La batería
+global y el recorrido visual inicial en escritorio y 390 px están verdes. A
+pedido de Joa, MAIN aplicó después una segunda pasada de jerarquía visual:
+navegación primaria reducida, filtros avanzados y diagnósticos plegables, y
+detalle progresivo sin retirar información ni alertas. Esa pasada tiene batería
+global y HTTP local verdes. Joa aceptó explícitamente D6 el 28 de agosto de 2026;
+queda consolidada por el commit que contiene este estado. Esta integración cubre
+sólo la interfaz sintética y no habilita capacidades externas.
 
 ## Objetivo actual
 
-Supervisar la implementación especialista D6 y esperar su handoff. MAIN deberá
-auditar el diff completo y los no rastreados, repetir la batería y revisar la
-interfaz en escritorio y 390 px antes de decidir una integración. D6 debe
-consumir solamente `/api/v2`, retirar del recorrido activo Estudio de Limpieza y
-permanecer sintética. No abrir OAuth, conectar una cuenta real, persistir
-metadatos privados ni usar credenciales.
+Esperar una autorización independiente de Joa antes de iniciar Estudio de
+Limpieza. MAIN debe estabilizar C6 antes de crear D7. La interfaz aceptada consume
+solamente `/api/v2`, retiró Estudio de Limpieza del recorrido activo y permanece
+sintética. No abrir OAuth, conectar una cuenta real, persistir metadatos privados
+ni usar credenciales.
 
 ---
 
@@ -100,9 +107,9 @@ respetar el permiso mínimo, la allowlist de lectura,
 la atomicidad del índice, la clasificación conservadora, la separación de
 secretos y la barrera de no escritura.
 
-Mapa Total, Estudio de Limpieza y Limpieza Controlada permanecen detrás de
-puertas de autorización independientes. Las ideas futuras se registran sin
-incorporarlas al alcance activo.
+Mapa Total está aceptado con alcance sintético. Estudio de Limpieza y Limpieza
+Controlada permanecen detrás de puertas de autorización independientes. Las
+ideas futuras se registran sin incorporarlas al alcance activo.
 
 ---
 
@@ -165,7 +172,7 @@ contrato sin evidencia y decisión de MAIN.
 ## Frontend
 
 - React 19, TypeScript 6 y Vite 8.
-- Navegación local por hash. D6 reemplazará el consumo frontend activo de
+- Navegación local por hash. D6 reemplaza el consumo frontend activo de
   `/api/v1` por la API sintética `/api/v2`; el backend v1 permanece compatible.
 
 ## Persistencia
@@ -357,8 +364,9 @@ repite las pruebas relevantes. El informe especialista no sustituye su auditorí
 Los worktrees fuente de D1 `real-index-persistence`, D2
 `secure-gmail-session`, D3 `gmail-readonly-inventory`, D4
 `real-classification-domain` y D5 `local-policy-memory` se conservan como
-evidencia de entregas integradas. D6 `mapa-total-ui` está `EN DESARROLLO` en el
-único worktree registrado; su entrega no se considera integrada ni aceptada.
+evidencia de entregas integradas. La fuente D6 `mapa-total-ui` también se
+conserva: su entrega fue auditada, integrada, aceptada por Joa y consolidada por
+el commit que contiene este estado.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -482,8 +490,9 @@ Una tarea de MailCleanup está terminada sólo si:
 
 Base Segura no queda aceptada porque compile. Joa ya otorgó la aceptación
 explícita y MAIN completó después la revisión visual instrumental en escritorio
-y 390 px. Toda experiencia nueva de Mapa Total deberá repetir su propia revisión
-visual antes de considerarse cerrada.
+y 390 px. D6 repitió su recorrido visual inicial, recibió una pasada posterior
+de jerarquía minimalista con batería global verde y fue aceptada explícitamente
+por Joa el 28 de agosto de 2026.
 
 ---
 

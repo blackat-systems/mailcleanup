@@ -5,10 +5,11 @@ Fecha del corte: 18 de agosto de 2026.
 Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. MAIN completó
 el 27 de agosto de 2026 la revisión visual que había quedado pendiente; el fallo
 histórico de la herramienta se conserva como antecedente, no como estado actual.
-La preparación sintética de Mapa
-Total mediante D2, D3, D4 y D5 fue auditada e integrada con dobles o registros
-sintéticos, sin abrir OAuth ni conectar datos reales. D5 queda consolidada por
-el commit que contiene este estado.
+La preparación sintética de Mapa Total mediante D2, D3, D4 y D5 fue auditada e
+integrada con dobles o registros sintéticos, sin abrir OAuth ni conectar datos
+reales. D5 está consolidada. D6 fue auditada, integrada y aceptada explícitamente
+por Joa el 28 de agosto de 2026; queda consolidada por el commit que contiene
+este estado.
 
 ## Qué existe
 
@@ -81,8 +82,8 @@ No hay rutas activas con `oauth`, `gmail`, `execute` o `disconnect`. Los únicos
   dependencias, sin agregar paquetes sólo para ocultar el aviso.
 - La aplicación todavía no fue empaquetada como ejecutable de Windows; Base Segura
   se inicia como servidor web local.
-- Cada interfaz futura de Mapa Total deberá repetir su propio recorrido visual;
-  la revisión cerrada corresponde únicamente a Base Segura vigente.
+- D6 completó su recorrido visual inicial, recibió una pasada minimalista y fue
+  aceptada explícitamente por Joa el 28 de agosto de 2026.
 
 ## Cierre de Base Segura
 
@@ -110,13 +111,20 @@ MAIN implementó después C5 para Mapa Total: una fotografía SQLite
 coherente que incluye índice y políticas, composición determinista D4+D5, un
 fixture canónico `.example`, una puerta sintética revalidada dentro de cada
 escritura y nueve rutas cerradas bajo `/api/v2`. `/api/v1` permanece compatible,
-el frontend todavía no consume C5 y no existe acceso real. C5 fue auditada y
-quedó consolidada en `67b00c7`. MAIN consolidó el prompt D6 en `75764c9`, creó
-el único worktree autorizado y entregó la implementación de la superficie
-frontend de Mapa Total sintético. D6 permanece sin integrar.
+el frontend D6 consume C5 y no existe acceso real. C5 fue auditada y quedó
+consolidada en `67b00c7`. MAIN consolidó el prompt D6 en `75764c9`, creó el único
+worktree autorizado y auditó su entrega. La integración en el árbol de MAIN fue
+aprobada con siete correcciones comprobadas de seguridad, contrato, privacidad y
+accesibilidad. A pedido de Joa, MAIN aplicó luego una pasada minimalista que
+reduce la navegación primaria y pliega filtros, evidencia y diagnósticos
+secundarios, preservando advertencias y correcciones. D6 fue aceptada por Joa y
+queda consolidada por el commit que contiene este estado.
 
 La batería global actual pasó con 296 pruebas Python, Ruff, mypy estricto sobre
-24 archivos, ESLint, 4 pruebas Vitest y build Vite. El roundtrip DPAPI real pudo
+24 archivos, ESLint, 98 pruebas Vitest y build Vite. El recorrido HTTP local
+responde sobre loopback. El recorrido visual inicial de D6 pasó en escritorio y
+390 px, sin desborde horizontal ni errores de consola; la pasada minimalista
+posterior fue revisada y aceptada por Joa. El roundtrip DPAPI real pudo
 ejecutarse bajo el perfil de usuario actual en una verificación anterior. Este
-estado y la autorización D6 no permiten abrir OAuth, usar credenciales, conectar
-Gmail real ni persistir metadatos privados.
+estado y la integración D6 no permiten abrir OAuth, usar credenciales, conectar
+Gmail real, persistir metadatos privados, iniciar D7 ni ejecutar acciones.

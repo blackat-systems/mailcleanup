@@ -43,6 +43,9 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-034 | Cerrar la evidencia visual pendiente de Base Segura después de recorrer Panorama, Fuentes, detalle, Estudio y Estado en escritorio y 390 px, sin defectos bloqueantes. | Verificada | Recorrido instrumental de MAIN del 27 de agosto de 2026 |
 | D-035 | Estabilizar C5 en MAIN mediante una fotografía SQLite coherente, composición D4+D5, fixture canónico `.example`, puerta sintética ejecutable y una API local `/api/v2` cerrada, preservando `/api/v1` y sin crear D6 ni habilitar capacidades reales. | Ejecutada y consolidada por el commit que contiene esta decisión | `MAPA_TOTAL_API_V1.md`, auditorías independientes, batería global y autorización de commit de Joa del 27 de agosto de 2026 |
 | D-036 | Preparar y crear un único worktree D6 `mapa-total-ui` desde una base limpia posterior a C5, limitado al frontend sintético `/api/v2`, sin Gmail, OAuth, credenciales, datos reales, controles de sincronización, Estudio de Limpieza ni acciones. | Ejecutada: base `75764c9`, worktree `bbbc` | Autorización explícita de Joa del 27 de agosto de 2026, `MAPA_TOTAL_API_V1.md` y Puerta 0 verificada |
+| D-037 | Integrar D6 en el árbol de MAIN después de auditoría independiente, corrigiendo redirecciones externas, Unicode, atribución de protección, objetivos de undo, códigos de error, foco del menú y fixture de protección; mantener D7 y capacidades reales bloqueadas. | Ejecutada y consolidada por el commit que contiene esta decisión | Handoff especialista, auditorías independientes, batería global y recorrido visual del 28 de agosto de 2026 |
+| D-038 | Simplificar la jerarquía visual de D6 mediante navegación primaria reducida y divulgación progresiva, conservando accesibles toda la evidencia, advertencias, correcciones y diagnósticos, sin cambiar contratos ni capacidades. | Ejecutada y consolidada por el commit que contiene esta decisión | Observación explícita de Joa del 28 de agosto de 2026, auditoría de MAIN y batería global |
+| D-039 | Aceptar D6 y autorizar a MAIN a crear el commit de Mapa Total y publicarlo en `origin/main`, preservando `grafo.txt` fuera del commit y manteniendo bloqueados Estudio de Limpieza y las capacidades reales. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 28 de agosto de 2026 |
 
 ## Decisiones suficientemente definidas
 
@@ -71,9 +74,12 @@ preparación del prompt D5 mediante D-028 y finalmente un único worktree e
 implementación D5 mediante D-031. MAIN auditó e integró esa entrega mediante
 D-033, completó la evidencia visual mediante D-034, autorizó continuar con la
 columna vertebral C5 registrada por D-035 y autorizó la creación sintética de D6
-mediante D-036. Ninguna autorización permite abrir OAuth, conectar Gmail,
-solicitar credenciales, usar datos reales, ejecutar acciones externas, iniciar
-Estudio de Limpieza o Limpieza Controlada.
+mediante D-036. MAIN auditó e integró esa entrega en el árbol mediante D-037, sin
+presuponer su aceptación, y aplicó la simplificación de jerarquía D-038 sin
+retirar contenido contractual. Joa aceptó D6 y autorizó su publicación mediante
+D-039. Ninguna autorización permite abrir OAuth, conectar Gmail, solicitar
+credenciales, usar datos reales, ejecutar acciones externas, iniciar Estudio de
+Limpieza o Limpieza Controlada.
 
 ## Resultado de la implementación autorizada
 

@@ -19,7 +19,7 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
 | Base consolidada | El commit que contiene este registro |
-| Estado | Base Segura aceptada, técnicamente verificada y revisada visualmente; D1-D5 y C5 consolidadas |
+| Estado | Base Segura y Mapa Total aceptadas; D1-D6 y C5 consolidadas con alcance sintético |
 
 MAIN implementó C5 directamente porque conserva composición, contratos y API
 transversales. No se creó un worktree C5. El candidato agrega
@@ -219,7 +219,7 @@ especialista a hacer fetch, push, commit, publicación ni a cambiar su alcance.
 | Campo | Estado real |
 |---|---|
 | Proceso | Mapa Total, interfaz sintética sobre la API local `/api/v2` |
-| Estado | `EN DESARROLLO`; no integrada ni aceptada |
+| Estado | `INTEGRADA`, aceptada por Joa y consolidada por el commit que contiene este registro; fuente conservada |
 | Ruta | `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup` |
 | Rama | `codex/mapa-total-ui` |
 | Base | `75764c9fbc66b2ba36bf1c3ccc5e8141e91f3130` |
@@ -233,12 +233,29 @@ especialista a hacer fetch, push, commit, publicación ni a cambiar su alcance.
 | Gmail, OAuth, red externa, credenciales y datos reales | Prohibidos |
 | Estudio de Limpieza, controles de sincronización y acciones | Prohibidos |
 | Commit y publicación del especialista | No autorizados |
-| Integración en `main` | Pendiente de handoff, auditoría independiente, batería global y revisión visual de MAIN |
+| Integración en `main` | Integración semántica completada sobre `1745acd0dd2a9e3aa176ba61934181364d60d907`; consolidada por el commit que contiene este registro |
 
 Codex creó inicialmente el checkout en `detached HEAD` sobre la base exacta.
 MAIN verificó que estaba limpio, lo adjuntó a `codex/mapa-total-ui`, volvió a
 comprobar ruta, rama, HEAD y estado, y recién entonces envió el prompt durable
 con el SHA exacto. El especialista no recibió autorización para usar el remoto.
+
+El 28 de agosto de 2026 MAIN auditó los 29 archivos entregados y corrigió siete
+defectos comprobados: redirecciones HTTP externas, conteo Unicode, atribución de
+protección efectiva, identificación de objetivos de undo, validación de códigos
+de error, foco/inercia del menú y una contradicción del fixture de protección.
+Después de integrar pasaron 296 pruebas Python, Ruff, mypy estricto sobre 24
+archivos, ESLint, 98 pruebas Vitest y el build Vite. MAIN recorrió Panorama,
+Fuentes, vistas, detalle, Correcciones y Estado en escritorio y 390 px sin
+desborde horizontal ni errores de consola. La entrega sigue siendo sintética y
+no habilita Gmail, OAuth, credenciales, red externa, datos reales, D7 ni acciones.
+
+Joa pidió después reducir la densidad visual. MAIN mantuvo las rutas y contratos,
+redujo la navegación primaria y convirtió filtros, evidencia y diagnósticos
+secundarios en paneles progresivos accesibles. La batería global y el recorrido
+HTTP local volvieron a pasar. Joa aceptó explícitamente D6 y autorizó a MAIN a
+consolidarla y publicarla el 28 de agosto de 2026. Esa aceptación no habilita
+Estudio de Limpieza, Gmail real, OAuth, credenciales, datos privados ni acciones.
 
 ## Reglas de actualización
 

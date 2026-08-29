@@ -10,6 +10,6 @@ describe("formatos de presentación", () => {
   it("crea iniciales estables y tonos conservadores", () => {
     expect(initials("Diario Horizonte")).toBe("DH");
     expect(confidenceTone("Alta")).toBe("positive");
-    expect(confidenceTone("Contradictoria")).toBe("warning");
+    expect(confidenceTone("Contradictoria")).toBe("critical");
   });
 });
