@@ -35,6 +35,10 @@ actual es una Base Segura aceptada y un Mapa Total sintético también aceptado:
   sólo con el fixture `.example`;
 - D6 presenta ese mapa mediante una interfaz sintética, responsive y de jerarquía
   progresiva. Fue auditada, integrada y aceptada por Joa el 28 de agosto de 2026;
+- Joa autorizó comenzar Estudio de Limpieza y aceptó C6 después de la auditoría
+  de MAIN. El contrato
+  define planes congelados, revalidables, cancelables y todavía incapaces de
+  ejecutar; D7 no fue creado;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -51,6 +55,7 @@ Leer en este orden:
 6. [`docs/WORKTREE_REGISTRY.md`](docs/WORKTREE_REGISTRY.md)
 7. [`docs/DECISIONES.md`](docs/DECISIONES.md)
 8. [`docs/contracts/MAPA_TOTAL_API_V1.md`](docs/contracts/MAPA_TOTAL_API_V1.md), para C5 y D6
+9. [`docs/contracts/CLEANUP_PLAN_V1.md`](docs/contracts/CLEANUP_PLAN_V1.md), contrato C6 aceptado
 
 ## Organización y arquitectura candidata
 
@@ -77,7 +82,7 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso requiere una autorización independiente de Joa para iniciar
-Estudio de Limpieza. Antes de crear D7, MAIN debe estabilizar C6: el contrato de
-planes sin efectos. Conectar una cuenta real continúa fuera de alcance y requiere
-otra autorización más resolver la protección del índice local.
+El próximo paso es que MAIN prepare el prompt autosuficiente D7 desde C6 y el SHA
+limpio consolidado. Crear ese único worktree requiere una autorización separada.
+Conectar una cuenta real continúa fuera de alcance y exige otra autorización más
+resolver la protección del índice local.

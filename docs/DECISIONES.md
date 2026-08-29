@@ -16,7 +16,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-007 | El candidato `0a90b71` no está aceptado como Base Segura terminada. | Vigente | Instrucción actual de Joa |
 | D-008 | Retirar `src/gmail_cleaner`, su configuración y dependencias del árbol activo; conservarlo sólo en Git. | Ejecutada | Portado selectivo confirmado por Joa |
 | D-009 | No crear worktrees especialistas en esta inicialización. | Vigente | Instrucción actual de Joa |
-| D-010 | Estudio de Limpieza, Limpieza Controlada y todo acceso real siguen sin autorización; sólo la preparación sintética de Mapa Total por D2 queda exceptuada por D-020. | Vigente con excepción D-020 | Contrato y prompt actuales |
+| D-010 | Limpieza Controlada y todo acceso real siguen sin autorización. Estudio de Limpieza está autorizado sólo hasta C6 sintética aceptada; D7 requiere su propia puerta. | Vigente con excepciones registradas | Contrato, D-020, D-040 y D-041 |
 | D-011 | El candidato sólo puede presentarse para aceptación cuando pasen pruebas, lint, tipos, build y HTTP; la revisión visual se informa por separado. | Vigente | Criterios de calidad y auditoría de MAIN |
 | D-012 | MAIN conserva contratos, arquitectura, batería e integración, pero no implementa por defecto cada módulo funcional. | Vigente | Instrucción explícita de Joa |
 | D-013 | No se crea ningún worktree mientras `main` tenga cambios sin commit o carezca de un commit base limpio confirmado. | Vigente | Instrucción explícita de Joa |
@@ -46,6 +46,8 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-037 | Integrar D6 en el árbol de MAIN después de auditoría independiente, corrigiendo redirecciones externas, Unicode, atribución de protección, objetivos de undo, códigos de error, foco del menú y fixture de protección; mantener D7 y capacidades reales bloqueadas. | Ejecutada y consolidada por el commit que contiene esta decisión | Handoff especialista, auditorías independientes, batería global y recorrido visual del 28 de agosto de 2026 |
 | D-038 | Simplificar la jerarquía visual de D6 mediante navegación primaria reducida y divulgación progresiva, conservando accesibles toda la evidencia, advertencias, correcciones y diagnósticos, sin cambiar contratos ni capacidades. | Ejecutada y consolidada por el commit que contiene esta decisión | Observación explícita de Joa del 28 de agosto de 2026, auditoría de MAIN y batería global |
 | D-039 | Aceptar D6 y autorizar a MAIN a crear el commit de Mapa Total y publicarlo en `origin/main`, preservando `grafo.txt` fuera del commit y manteniendo bloqueados Estudio de Limpieza y las capacidades reales. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 28 de agosto de 2026 |
+| D-040 | Autorizar el comienzo de Estudio de Limpieza y la preparación de C6 como contrato de planes congelados, revalidables y sin efectos; mantener D7 bloqueada hasta que Joa acepte el contrato, exista un SHA limpio y MAIN prepare su prompt. | Ejecutada; C6 aceptado por D-041 | Autorización explícita de Joa del 28 de agosto de 2026 y `CLEANUP_PLAN_V1.md` |
+| D-041 | Aceptar C6 después de su auditoría contractual y autorizar a MAIN a consolidar exclusivamente su documentación en `main`, preservando `grafo.txt` y sin crear D7 ni publicar el commit. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 29 de agosto de 2026 |
 
 ## Decisiones suficientemente definidas
 
@@ -77,9 +79,10 @@ columna vertebral C5 registrada por D-035 y autorizó la creación sintética de
 mediante D-036. MAIN auditó e integró esa entrega en el árbol mediante D-037, sin
 presuponer su aceptación, y aplicó la simplificación de jerarquía D-038 sin
 retirar contenido contractual. Joa aceptó D6 y autorizó su publicación mediante
-D-039. Ninguna autorización permite abrir OAuth, conectar Gmail, solicitar
-credenciales, usar datos reales, ejecutar acciones externas, iniciar Estudio de
-Limpieza o Limpieza Controlada.
+D-039. Después autorizó comenzar Estudio de Limpieza y preparar C6 mediante
+D-040, y aceptó el contrato mediante D-041. Ninguna autorización permite abrir
+OAuth, conectar Gmail, solicitar credenciales, usar datos reales, ejecutar
+acciones externas, crear D7 ni iniciar Limpieza Controlada.
 
 ## Resultado de la implementación autorizada
 

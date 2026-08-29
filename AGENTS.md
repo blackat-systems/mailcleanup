@@ -67,7 +67,8 @@ MAIN quedó aprobada con una corrección conservadora: los fragmentos de un fluj
 particionado conservan la confianza automática original de D4. D5 queda
 consolidada por el commit que contiene este estado. No están autorizados abrir
 OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen siete
-worktrees: MAIN, las fuentes D1-D5 conservadas como evidencia y D6 activa en
+worktrees: MAIN y las fuentes D1-D6 conservadas como evidencia; no existe D7. D6
+permanece en
 `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup`, rama
 `codex/mapa-total-ui`. `origin` apunta al repositorio privado
 `https://github.com/blackat-systems/mailcleanup.git`. Sólo MAIN puede publicar
@@ -87,16 +88,20 @@ pedido de Joa, MAIN aplicó después una segunda pasada de jerarquía visual:
 navegación primaria reducida, filtros avanzados y diagnósticos plegables, y
 detalle progresivo sin retirar información ni alertas. Esa pasada tiene batería
 global y HTTP local verdes. Joa aceptó explícitamente D6 el 28 de agosto de 2026;
-queda consolidada por el commit que contiene este estado. Esta integración cubre
-sólo la interfaz sintética y no habilita capacidades externas.
+quedó consolidada y publicada en `963af89`. Joa autorizó después comenzar
+Estudio de Limpieza y preparar C6. MAIN auditó el contrato
+`CLEANUP_PLAN_V1.md`; Joa lo aceptó el 29 de agosto de 2026 y autorizó su commit.
+Queda consolidado por el commit que contiene este estado. D7 todavía no existe.
+Esta aceptación cubre solamente planificación sintética sin efectos y no
+habilita capacidades externas.
 
 ## Objetivo actual
 
-Esperar una autorización independiente de Joa antes de iniciar Estudio de
-Limpieza. MAIN debe estabilizar C6 antes de crear D7. La interfaz aceptada consume
-solamente `/api/v2`, retiró Estudio de Limpieza del recorrido activo y permanece
-sintética. No abrir OAuth, conectar una cuenta real, persistir metadatos privados
-ni usar credenciales.
+Preparar el prompt autosuficiente D7 desde el SHA limpio que consolida C6. No
+crear el worktree sin autorización explícita. La interfaz
+aceptada consume solamente `/api/v2`; `/api/v3/study` todavía no está
+implementada. No abrir OAuth, conectar una cuenta real, persistir metadatos
+privados ni usar credenciales.
 
 ---
 
@@ -107,9 +112,10 @@ respetar el permiso mínimo, la allowlist de lectura,
 la atomicidad del índice, la clasificación conservadora, la separación de
 secretos y la barrera de no escritura.
 
-Mapa Total está aceptado con alcance sintético. Estudio de Limpieza y Limpieza
-Controlada permanecen detrás de puertas de autorización independientes. Las
-ideas futuras se registran sin incorporarlas al alcance activo.
+Mapa Total está aceptado con alcance sintético. Joa autorizó preparar Estudio de
+Limpieza mediante C6, todavía sin implementación. Limpieza Controlada permanece
+detrás de otra puerta independiente. Las ideas futuras se registran sin
+incorporarlas al alcance activo.
 
 ---
 
@@ -127,10 +133,11 @@ Para determinar implementación y estado actual:
 2. pruebas en `tests` y `frontend/src`;
 3. `docs/contracts/API_V1.md`;
 4. `docs/contracts/MAPA_TOTAL_API_V1.md` para C5 y D6;
-5. `docs/adr/0001-arquitectura-base-segura.md`;
-6. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
-7. `docs/ESTADO_BASE_SEGURA.md`;
-8. `docs/DECISIONES.md`.
+5. `docs/contracts/CLEANUP_PLAN_V1.md` para C6 y la futura D7;
+6. `docs/adr/0001-arquitectura-base-segura.md`;
+7. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
+8. `docs/ESTADO_BASE_SEGURA.md`;
+9. `docs/DECISIONES.md`.
 
 Para coordinación de MAIN y dependencias:
 
@@ -146,7 +153,9 @@ Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 aprobado `docs/contracts/LOCAL_POLICY_MEMORY_V1.md`. Su integración sintética no
 habilita Gmail, OAuth ni datos reales. Para C5 y D6 prevalece
 `docs/contracts/MAPA_TOTAL_API_V1.md`; su API `/api/v2` es exclusivamente local
-y sintética.
+y sintética. Para C6 prevalece el contrato aceptado
+`docs/contracts/CLEANUP_PLAN_V1.md`. Es base para redactar D7, pero no autoriza
+crear su worktree ni habilita datos reales o ejecución.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -329,7 +338,8 @@ de typecheck frontend. No declarar que un comando pasó si no fue ejecutado.
 - Añadir la prueba mínima que demuestre cada cambio funcional.
 - Usar fixtures sintéticos con dominios reservados `.example`.
 - Modificar SQLite mediante migraciones, no editando bases generadas.
-- Mantener `canExecute: false` incondicional durante Base Segura.
+- Mantener `canExecute: false` incondicional durante Base Segura y Estudio de
+  Limpieza.
 - Sincronizar documentación cuando cambien contratos, arquitectura o estado.
 - Evitar refactors oportunistas, dependencias nuevas y cambios fuera de alcance.
 
@@ -390,6 +400,10 @@ Base Segura aceptada por Joa
 D1 integrada + D2 integrada + contratos de privacidad e inventario
         ↓
 D3 con dobles sintéticos → auditoría MAIN → integración consolidada
+        ↓
+D4 + D5 + C5 + D6 sintéticas aceptadas
+        ↓ autorización de Estudio recibida
+C6 aceptada → SHA limpio → prompt D7 → autorización de worktree
 ```
 
 Las puertas de producto son secuenciales:
@@ -481,7 +495,8 @@ Una tarea de MailCleanup está terminada sólo si:
 - respeta el proceso autorizado y el contrato MVP;
 - mantiene separados evidencia, clasificación, protección, plan y ejecución;
 - no introduce Gmail, OAuth, datos reales o ejecución fuera de su puerta;
-- conserva loopback y `canExecute: false` durante Base Segura;
+- conserva loopback y `canExecute: false` durante Base Segura y Estudio de
+  Limpieza;
 - pasan las pruebas específicas y, cuando corresponde, la batería global;
 - un cambio visual fue recorrido o queda expresamente pendiente;
 - API, código y documentación coinciden;
@@ -498,7 +513,8 @@ por Joa el 28 de agosto de 2026.
 
 # 17. SEGURIDAD Y PRIVACIDAD
 
-- No conectar Gmail ni abrir OAuth durante D3 sintética.
+- No conectar Gmail ni abrir OAuth hasta una autorización específica posterior;
+  C6 y la futura D7 son sintéticas.
 - No solicitar ni almacenar `credentials.json`, `token.json`, contraseñas o
   tokens.
 - No usar mensajes, nombres ni direcciones reales en fixtures, pruebas, logs,
@@ -506,7 +522,7 @@ por Joa el 28 de agosto de 2026.
 - No renderizar HTML ni cargar imágenes o recursos remotos de correos.
 - No enviar datos de correo a IA externa ni otros servicios.
 - Mantener la aplicación en loopback.
-- No introducir clientes Gmail o de red productivos durante D3.
+- No introducir clientes Gmail o de red productivos durante C6 o D7.
 - Aplicar `SECURITY_PRIVACY_V1.md`: origen, métodos, endpoints, encabezados,
   tamaños y reintentos se deniegan por defecto salvo allowlist expresa.
 - No usar el índice SQLite vigente con datos reales: todavía no tiene cifrado
@@ -548,7 +564,7 @@ No desactivar la barrera automática de Base Segura para hacer pasar otro cambio
 - aceptar Base Segura y habilitar Mapa Total;
 - conectar Gmail, abrir OAuth o usar credenciales y datos reales;
 - solicitar permisos de lectura o modificación;
-- habilitar Estudio de Limpieza o Limpieza Controlada;
+- aceptar C6, crear D7 o habilitar Limpieza Controlada;
 - modificar mensajes reales o enviar desuscripciones;
 - cambiar arquitectura, plataforma o persistencia central;
 - agregar dependencias importantes o servicios externos;

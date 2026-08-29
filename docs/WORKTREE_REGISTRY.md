@@ -19,13 +19,13 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
 | Base consolidada | El commit que contiene este registro |
-| Estado | Base Segura y Mapa Total aceptadas; D1-D6 y C5 consolidadas con alcance sintético |
+| Estado | Base Segura, Mapa Total y C6 aceptadas con alcance sintético; D1-D6 y C5 consolidadas; no existe D7 |
 
 MAIN implementó C5 directamente porque conserva composición, contratos y API
 transversales. No se creó un worktree C5. El candidato agrega
 `MAPA_TOTAL_API_V1.md`, fotografía SQLite, composición D4+D5, fixture `.example`,
 puerta sintética y `/api/v2`; queda consolidado por el commit que contiene este
-registro y no habilita D6 ni capacidades reales.
+registro. C5 no habilitó D6 por sí solo ni habilita capacidades reales.
 
 ## Estado al consolidar Base Segura
 
@@ -255,7 +255,10 @@ redujo la navegación primaria y convirtió filtros, evidencia y diagnósticos
 secundarios en paneles progresivos accesibles. La batería global y el recorrido
 HTTP local volvieron a pasar. Joa aceptó explícitamente D6 y autorizó a MAIN a
 consolidarla y publicarla el 28 de agosto de 2026. Esa aceptación no habilita
-Estudio de Limpieza, Gmail real, OAuth, credenciales, datos privados ni acciones.
+por sí sola Gmail real, OAuth, credenciales, datos privados ni acciones. Joa
+autorizó después preparar C6 de Estudio de Limpieza, pero no se creó ni registró
+un worktree D7. Joa aceptó C6 el 29 de agosto de 2026 y autorizó su commit; esa
+decisión tampoco crea ni registra D7.
 
 ## Reglas de actualización
 

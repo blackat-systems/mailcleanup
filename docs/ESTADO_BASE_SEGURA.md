@@ -1,6 +1,6 @@
 # Estado de Base Segura
 
-Fecha del corte: 18 de agosto de 2026.
+Fecha del corte: 29 de agosto de 2026.
 
 Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. MAIN completó
 el 27 de agosto de 2026 la revisión visual que había quedado pendiente; el fallo
@@ -8,17 +8,19 @@ histórico de la herramienta se conserva como antecedente, no como estado actual
 La preparación sintética de Mapa Total mediante D2, D3, D4 y D5 fue auditada e
 integrada con dobles o registros sintéticos, sin abrir OAuth ni conectar datos
 reales. D5 está consolidada. D6 fue auditada, integrada y aceptada explícitamente
-por Joa el 28 de agosto de 2026; queda consolidada por el commit que contiene
-este estado.
+por Joa el 28 de agosto de 2026; quedó consolidada y publicada en `963af89`.
+Joa autorizó después comenzar Estudio de Limpieza y preparar C6;
+MAIN auditó su contrato y Joa lo aceptó el 29 de agosto de 2026, sin crear D7 ni
+modificar el producto.
 
 ## Qué existe
 
 - una aplicación Python/FastAPI en `src/mailmap`;
 - una interfaz React/TypeScript en `frontend`;
-- SQLite local con migraciones acumulativas v1-v3;
-- 22 mensajes sintéticos y 15 fuentes en el dataset actual;
-- vistas de panorama, fuentes, detalle, plan simulado, historial y estado;
-- un contrato de API v1 verificado para Base Segura;
+- SQLite local con migraciones acumulativas v1-v4;
+- un corpus legado de Base Segura y un fixture canónico C5, ambos sintéticos;
+- vistas D6 de panorama, fuentes, detalle, correcciones y estado;
+- contratos verificados de API v1 para Base Segura y `/api/v2` para Mapa Total;
 - una barrera automática que inspecciona imports, marcadores de capacidad,
   empaquetado y rutas activas.
 
@@ -26,7 +28,10 @@ El prototipo `src/gmail_cleaner`, su configuración y sus dependencias opcionale
 fueron retirados del árbol activo. Permanecen recuperables en el historial Git,
 pero no se importan, prueban ni empaquetan como parte de Base Segura.
 
-## Verificación repetida por MAIN
+## Verificación histórica de Base Segura
+
+Este bloque conserva la evidencia del corte inicial; la batería vigente, con sus
+conteos actuales, se registra al final del documento.
 
 - entorno Python reconstruido desde el proyecto nuevo y paquete editable
   limitado a `mailmap`;
@@ -67,19 +72,25 @@ pero no se importan, prueban ni empaquetan como parte de Base Segura.
 
 ## Seguridad observada
 
-La aplicación activa no contiene importaciones de Google, OAuth, clientes HTTP
-externos ni sockets. Sólo se empaqueta `mailmap`; su API crea y revalida planes
-locales y responde `canExecute: false`. El servidor se enlaza a `127.0.0.1`.
+El paquete contiene modelos y orquestadores D2/D3 ejercitados únicamente con
+dobles sintéticos, pero no contiene un cliente productivo de Google/Gmail ni una
+ruta activa para abrir OAuth o red externa. La API local responde
+`canExecute: false` y el servidor se enlaza a `127.0.0.1`.
 
-No hay rutas activas con `oauth`, `gmail`, `execute` o `disconnect`. Los únicos
-`POST` son vista previa y revalidación. Los fixtures usan dominios reservados
-`.example`; no se solicitaron credenciales ni se conectó una cuenta.
+No hay rutas activas para conectar, sincronizar una cuenta real, ejecutar o
+desconectar Gmail. Los `POST` existentes son la vista previa y revalidación
+legadas de Base Segura, más decisiones locales D5 y su undo bajo `/api/v2`; no
+modifican mensajes. Los fixtures usan dominios reservados `.example`; no se
+solicitaron credenciales ni se conectó una cuenta.
 
 ## Riesgos conocidos
 
 - FastAPI/Starlette emite una advertencia de deprecación interna de `TestClient`;
   las pruebas y el recorrido HTTP real pasan. Debe revisarse al actualizar esas
   dependencias, sin agregar paquetes sólo para ocultar el aviso.
+- En la validación C6 del 28 de agosto de 2026 pytest no pudo actualizar su caché
+  ignorada `.pytest_cache` por permisos del directorio. Las 296 pruebas pasaron;
+  MAIN no cambió permisos ni trató la caché como evidencia funcional.
 - La aplicación todavía no fue empaquetada como ejecutable de Windows; Base Segura
   se inicia como servidor web local.
 - D6 completó su recorrido visual inicial, recibió una pasada minimalista y fue
@@ -118,7 +129,7 @@ aprobada con siete correcciones comprobadas de seguridad, contrato, privacidad y
 accesibilidad. A pedido de Joa, MAIN aplicó luego una pasada minimalista que
 reduce la navegación primaria y pliega filtros, evidencia y diagnósticos
 secundarios, preservando advertencias y correcciones. D6 fue aceptada por Joa y
-queda consolidada por el commit que contiene este estado.
+quedó consolidada y publicada en `963af89`.
 
 La batería global actual pasó con 296 pruebas Python, Ruff, mypy estricto sobre
 24 archivos, ESLint, 98 pruebas Vitest y build Vite. El recorrido HTTP local
@@ -127,4 +138,6 @@ responde sobre loopback. El recorrido visual inicial de D6 pasó en escritorio y
 posterior fue revisada y aceptada por Joa. El roundtrip DPAPI real pudo
 ejecutarse bajo el perfil de usuario actual en una verificación anterior. Este
 estado y la integración D6 no permiten abrir OAuth, usar credenciales, conectar
-Gmail real, persistir metadatos privados, iniciar D7 ni ejecutar acciones.
+Gmail real, persistir metadatos privados ni ejecutar acciones. La autorización
+posterior permitió preparar y aceptar C6 sintética. El próximo paso es redactar
+el prompt especialista desde el SHA limpio; crear D7 requiere otra autorización.

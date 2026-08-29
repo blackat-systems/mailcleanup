@@ -51,4 +51,7 @@ son la creación de la vista previa y su revalidación.
 - Un cambio incompatible requiere una nueva versión y auditoría de MAIN.
 - Mapa Total usa el contrato separado `MAPA_TOTAL_API_V1.md` bajo `/api/v2`;
   no reinterpreta estas respuestas.
+- C6 fue aceptado. Cuando D7 sea autorizado e implementado, Estudio de Limpieza
+  usará `CLEANUP_PLAN_V1.md` bajo el prefijo separado `/api/v3/study`; hoy esa
+  API no existe y el contrato no amplía la tabla ni las rutas de planes v1.
 - Las futuras acciones reales deben usar rutas y modelos separados, con revalidación, idempotencia y registro durable.
