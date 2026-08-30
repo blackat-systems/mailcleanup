@@ -66,6 +66,11 @@ describe("enrutado local", () => {
     expect(currentRoute()).toEqual({ page: "source", key: "source", id: "source/uno" });
     window.location.hash = "#/sources?view=desconocida";
     expect(currentRoute()).toEqual({ page: "sources", key: "#/sources", view: "all" });
+    window.location.hash = "#/study";
+    expect(currentRoute()).toEqual({ page: "study", key: "#/study" });
+    const planId = "cleanup-plan-v1-12345678-1234-4234-8234-123456789abc";
+    window.location.hash = `#/study/plans/${planId}`;
+    expect(currentRoute()).toEqual({ page: "study_plan", key: "#/study", planId });
     window.location.hash = "#/estudio";
     expect(currentRoute()).toEqual({ page: "not_found", key: "not_found" });
   });
@@ -88,11 +93,11 @@ describe("recorrido sintético de Mapa Total", () => {
     expect(screen.getByText("Horizonte local")).toBeVisible();
   });
 
-  it("no expone procesos ni controles fuera de D6", async () => {
+  it("descubre Estudio sin exponer Limpieza Controlada ni controles de ejecución", async () => {
     render(<App />);
     await screen.findByRole("heading", { name: "Mapa Total con datos de demostración" });
 
-    expect(screen.queryByText("Estudio de Limpieza")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Estudio de Limpieza" })).toBeVisible();
     expect(screen.queryByText("Limpieza Controlada")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /conectar|sincronizar|ejecutar/i })).not.toBeInTheDocument();
     expect(screen.getByText(/Sin credenciales · sin conexión a Gmail/i)).toBeVisible();

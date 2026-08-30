@@ -8,7 +8,7 @@ export type WorkspaceState =
   | { kind: "error"; error: ApiError }
   | { kind: "ready"; data: WorkspaceData };
 
-function isCompatibleContext(context: ContextProbe): context is MapContext {
+export function isCompatibleMapContext(context: ContextProbe): context is MapContext {
   const capabilities = context.capabilities;
   return (
     context.contractVersion === 1 &&
@@ -33,7 +33,7 @@ function isCompatibleContext(context: ContextProbe): context is MapContext {
 async function loadWorkspace(): Promise<WorkspaceState> {
   try {
     const context = await api.context();
-    if (!isCompatibleContext(context)) {
+    if (!isCompatibleMapContext(context)) {
       return {
         kind: "blocked",
         reason:

@@ -1,12 +1,11 @@
 # Plan de dependencias y worktrees
 
-Estado del plan: ejecución controlada; D1-D7 y C5 están consolidadas y Mapa
-Total fue aceptado. Joa autorizó comenzar Estudio de Limpieza, MAIN preparó C6 y
-Joa aceptó el contrato. D7 fue entregada, auditada, corregida, consolidada y
-publicada en `c8c7b32`. Joa autorizó después preparar, consolidar y despachar un
-único D8 `estudio-ui`. Su prompt quedó consolidado en `a1cf0ff`; MAIN creó y
-verificó el worktree real `83bb`, rama `codex/estudio-ui`, desde esa base exacta
-y despachó la tarea especialista.
+Estado del plan: ejecución controlada; D1-D8 y C5 están consolidadas. Mapa Total
+y Estudio de Limpieza fueron aceptados exclusivamente en modo sintético. D7 fue
+entregada, auditada, corregida y publicada en `c8c7b32`. D8 `estudio-ui` fue
+entregada desde el worktree `83bb`, auditada e integrada por MAIN y aceptada por
+Joa con 22 cambios limitados a `frontend/src/**`. C7, D9 y toda capacidad real
+continúan bloqueados.
 
 Fecha de inspección: 29 de agosto de 2026.
 
@@ -23,12 +22,12 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | HEAD limpio previo a C6 | `963af89067eab382ee0315708ff4d2817353d084` |
 | HEAD que consolida C6 | `5c913f2baed3c943c159df8e495ee3ce548d78d9` |
 | HEAD base D7 | `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
-| Estado actual | D1-D7 y C5 sintéticas consolidadas; C6 aceptada; D8 frontend sintética `EN DESARROLLO` |
-| Worktrees | Nueve: MAIN, D1-D7 conservadas como fuentes de evidencia y D8 activa |
+| Estado actual | D1-D8 y C5 sintéticas consolidadas; C6 aceptada; Estudio de Limpieza aceptado exclusivamente en modo sintético |
+| Worktrees | Nueve: MAIN y D1-D8 conservadas como fuentes de evidencia |
 | Remotos | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git`; `main` publicada desde `6310c76`; ninguna rama especialista publicada |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental completada después en escritorio y 390 px |
-| Capacidades autorizadas | Interfaz D8 exclusivamente sintética sobre `/api/v3/study`; ninguna conexión Gmail, OAuth abierto, credencial, dato real ni acción sobre mensajes |
+| Capacidades autorizadas | Estudio de Limpieza sintético integrado sobre `/api/v3/study`; ninguna conexión Gmail, OAuth abierto, credencial, dato real ni acción sobre mensajes |
 
 El primer SHA indicado consolida y publica D6; `5c913f2` consolida C6 y
 `e92a77a` el prompt D7. No existe un worktree C5 ni C6. El
@@ -65,7 +64,7 @@ No existen todavía:
 - autorización para conectar una cuenta o usar datos privados;
 - ubicación definitiva, ACL, cifrado autenticado, retención, respaldo y borrado
   verificable del índice privado real;
-- planes reales con conjunto congelado de identificadores;
+- planes respaldados por un índice Gmail real o datos privados;
 - rutas de modificación, lotes, reintentos o reversión;
 - ejecución automática o manual integrada de desuscripciones.
 
@@ -177,9 +176,10 @@ cancelación, tamaños y ausencia de efectos. MAIN consolidó el prompt en
 `e92a77a`; Joa autorizó crear e iniciar D7 desde esa base exacta. El especialista
 la entregó y MAIN auditó e integró la API y los fixtures contractuales en el
 árbol de trabajo. Joa autorizó consolidar y publicar D7 en `c8c7b32` y después
-autorizó preparar y crear D8. El prompt D8 queda listo por el commit que contiene
-este estado y fue consolidado en `a1cf0ff`. MAIN creó y verificó D8 desde esa
-base; no habilita capacidades reales.
+autorizó preparar y crear D8. El prompt D8 fue consolidado en `a1cf0ff`; el
+especialista entregó la interfaz y MAIN la auditó, integró y verificó. Joa aceptó
+Estudio de Limpieza únicamente en modo sintético. Esto no habilita capacidades
+reales.
 
 ### C7. Ejecución controlada
 
@@ -384,11 +384,11 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Proceso | Estudio de Limpieza |
 | Responsabilidad única | Presentar selección, alcance exacto, muestras, exclusiones, tamaños, advertencias, revalidación, cancelación e historial sin ejecución. |
 | Razón para separarlo | Es una ampliación cohesiva de frontend que consume un plan estable y no debe implementar reglas de planificación. |
-| Estado actual | `EN DESARROLLO` |
+| Estado actual | `INTEGRADA`, auditada y aceptada por Joa exclusivamente en modo sintético |
 | Dependencias previas | D7 auditada, integrada y consolidada en un SHA limpio. |
 | Contratos que consume | `CLEANUP_PLAN_V1.md` y la API `/api/v3/study`. |
 | Resultados que produce | Experiencia verificable de Estudio de Limpieza. |
-| Consumidores posteriores | Aceptación de Estudio de Limpieza y D9. |
+| Consumidores posteriores | Cierre sintético de Estudio; C7 y D9 sólo después de nuevas autorizaciones. |
 | Permitido | Exclusivamente `frontend/src/**`, incluidas pruebas y fixtures TypeScript contractuales. |
 | Prohibido | Backend, mutaciones Gmail, inferencias nuevas y representación engañosa del espacio liberado. |
 | Rama | `codex/estudio-ui` |
@@ -398,7 +398,7 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Criterios de aceptación | El usuario entiende qué ocurriría, qué queda protegido y que todavía no existen efectos. |
 | Riesgos de integración | UI adelantada al contrato, acciones ambiguas y pérdida de exclusiones al revalidar. |
 | Paralelización real | No se abre en paralelo con D7; consume su API ejecutable y sus fixtures ya auditados. |
-| Condición exacta de desbloqueo | Cumplida: D7 y su API están consolidadas, el prompt D8 quedó en `a1cf0ff`, Joa autorizó el comienzo y MAIN verificó ruta, rama, HEAD y limpieza antes de despachar. |
+| Condición exacta de desbloqueo | Cumplida para integrar D8. No desbloquea C7, D9, Gmail real ni Limpieza Controlada. |
 
 ### D9 — `controlled-action-engine`
 
@@ -409,7 +409,7 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Responsabilidad única | Ejecutar Archivo o Papelera por lotes sobre un plan aprobado, con revalidación, idempotencia, ledger, fallos parciales, reintento y reversión disponible. |
 | Razón para separarlo | Es la frontera destructiva y de mayor riesgo; necesita permisos, auditoría y pruebas de fallos independientes. |
 | Estado actual | `BLOQUEADA POR AUTORIZACIÓN` |
-| Dependencias previas | Estudio de Limpieza aceptado; Limpieza Controlada y `gmail.modify` autorizados; D7/D8 integradas; C7 aprobado. |
+| Dependencias previas | La aceptación sintética de Estudio de Limpieza está cumplida; siguen faltando la autorización de Limpieza Controlada y `gmail.modify`, además de C7 aprobado. |
 | Contratos que consume | Plan congelado C6, C7, sesión ampliada en contexto, protecciones y ledger. |
 | Resultados que produce | Ejecución auditable por mensaje/lote y estado de reversión; nunca borrado definitivo. |
 | Consumidores posteriores | Interfaz de confirmación compuesta por MAIN, D10 e historial global. |
@@ -422,7 +422,7 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Criterios de aceptación | No repite éxitos, nunca actúa fuera del snapshot revalidado, registra cada resultado y detiene contradicciones. |
 | Riesgos de integración | Daño real, permisos excesivos, diferencias entre etiquetas de sistema y falsa reversibilidad. |
 | Paralelización real | No con cambios de C6/C7 ni con D10; integrar y auditar antes de cualquier consumidor. |
-| Condición exacta de desbloqueo | Joa acepta Estudio y autoriza por separado Limpieza Controlada, plan de prueba y `gmail.modify`; MAIN aprueba C7, batería, SHA limpio y prompt. |
+| Condición exacta de desbloqueo | Parcialmente cumplida: la aceptación sintética de Estudio está recibida. Continúan pendientes la autorización separada de Limpieza Controlada, el plan de prueba y `gmail.modify`, además de C7 aprobado, batería, SHA limpio y prompt. |
 
 ### D10 — `rfc8058-one-click`
 
@@ -495,9 +495,10 @@ MAIN prepara C6: planes congelados, revalidables y sin efectos
         ↓ aceptación de Joa + batería + SHA limpio + prompt
 Motor de planes reales sin efectos (D7)
         ↓
-Interfaz de Estudio de Limpieza (D8)
-        ↓ aceptación del estudio + autorización de Limpieza Controlada
-Ejecución controlada por lotes, con reversión cuando esté disponible (D9)
+Interfaz de Estudio de Limpieza (D8) integrada y aceptada en modo sintético
+        ↓ autorización de Limpieza Controlada + `gmail.modify`
+          + plan de prueba + C7 aprobado
+Ejecución controlada por lotes (D9) — BLOQUEADA
         ↓ autorización específica para baja segura
 Desuscripción RFC 8058 de un clic (D10)
 ```
@@ -519,11 +520,12 @@ Orden de apertura recomendado: persistencia del índice (D1), sesión segura
 (D2), inventario de sólo metadatos (D3), clasificación (D4), memoria local
 (D5), interfaz de Mapa Total (D6), planes reales sin efectos (D7), interfaz del
 estudio (D8), ejecución por lotes (D9) y desuscripción segura (D10). El orden
-expresa consumo real. D1-D6 fueron consolidadas con alcance sintético y D6 fue
-aceptada por Joa. La autorización de Estudio ya fue recibida y C6 quedó
+expresa consumo real. D1-D8 fueron consolidadas con alcance sintético; D6 y D8
+fueron aceptadas por Joa. La autorización de Estudio ya fue recibida y C6 quedó
 preparada y aceptada. D7 fue entregada, auditada e integrada en el árbol de
-MAIN y quedó consolidada en `c8c7b32`. Joa autorizó después preparar y crear D8;
-el worktree `83bb` fue abierto y verificado desde `a1cf0ff` y está en desarrollo.
+MAIN y quedó consolidada en `c8c7b32`. D8 fue entregada desde el worktree
+`83bb`, auditada, integrada y aceptada exclusivamente en modo sintético. C7 y D9
+continúan bloqueadas.
 
 ## 8. Primer worktree creado e integrado
 
@@ -586,7 +588,7 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
 | Uso real de `gmail.metadata` sin `q` | D3 | Joa autoriza la conexión; MAIN conserva inventario completo y filtrado local |
 | Validación física de DPAPI y ubicación local | D2 antes de datos reales | MAIN audita; Joa autoriza la conexión |
 | Protección, retención y borrado del índice local | C4, D1 | MAIN propone; Joa decide si cambia el tratamiento de datos |
-| Entrega, auditoría, integración y aceptación de D8 | D8 | Especialista entrega; MAIN audita e integra; Joa acepta Estudio de Limpieza antes de evaluar D9 |
+| Preparación y aceptación de C7 | D9 | Nueva autorización explícita de Joa; no fue otorgada por la aceptación D8 |
 | Autorización de Limpieza Controlada y `gmail.modify` | D9 | Joa |
 | Consentimiento y contrato RFC 8058 | D10 | Joa y MAIN |
 

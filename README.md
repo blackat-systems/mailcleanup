@@ -8,7 +8,8 @@ fuentes y flujos antes de preparar cualquier limpieza.
 Este repositorio nuevo heredó el historial y un candidato adelantado de Base
 Segura, anteriormente denominada Hito 0.
 MAIN auditó esa herencia y Joa confirmó el portado selectivo. El resultado
-actual es una Base Segura aceptada y un Mapa Total sintético también aceptado:
+actual es Base Segura aceptada, con Mapa Total y Estudio de Limpieza aceptados
+exclusivamente en modo sintético:
 
 - el dominio, la API, SQLite y el frontend sintéticos pasan la batería local;
 - el servidor real fue comprobado en `127.0.0.1:8765`;
@@ -43,11 +44,11 @@ actual es una Base Segura aceptada y un Mapa Total sintético también aceptado:
   `e92a77a`. Joa autorizó después crear e iniciar D7; el especialista la entregó
   y MAIN la auditó e integró con correcciones. Joa autorizó su commit y
   publicación; quedó consolidada en `c8c7b32`;
-- Joa autorizó preparar y crear D8 `estudio-ui`. Su prompt quedó consolidado en
-  `a1cf0ff` y el worktree activo está en
-  `C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
-  `codex/estudio-ui`. La entrega se limita a `frontend/src/**`, consume la API
-  sintética `/api/v3/study` y mantiene `canExecute: false`;
+- D8 `estudio-ui` fue entregada, auditada, integrada y aceptada por Joa
+  exclusivamente en modo sintético. Sus 22 cambios bajo `frontend/src/**`
+  consumen la API cerrada `/api/v3/study`, mantienen `canExecute: false` y
+  superaron la batería integrada —391 pruebas Python y 335 de frontend—, el
+  recorrido HTTP local y la revisión visual en escritorio y 390 px;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -66,7 +67,7 @@ Leer en este orden:
 8. [`docs/contracts/MAPA_TOTAL_API_V1.md`](docs/contracts/MAPA_TOTAL_API_V1.md), para C5 y D6
 9. [`docs/contracts/CLEANUP_PLAN_V1.md`](docs/contracts/CLEANUP_PLAN_V1.md), contrato C6 aceptado
 10. [`docs/prompts/D7_REAL_PLAN_ENGINE.md`](docs/prompts/D7_REAL_PLAN_ENGINE.md), delegación D7 consolidada; el worktree fuente se conserva como evidencia
-11. [`docs/prompts/D8_ESTUDIO_UI.md`](docs/prompts/D8_ESTUDIO_UI.md), frontera frontend sintética autorizada para D8
+11. [`docs/prompts/D8_ESTUDIO_UI.md`](docs/prompts/D8_ESTUDIO_UI.md), frontera frontend sintética entregada e integrada como D8
 
 ## Organización y arquitectura candidata
 
@@ -93,8 +94,7 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El próximo paso es esperar la entrega especialista D8. MAIN deberá auditarla y
-repetir la batería y el recorrido visual antes de proponer su integración y la
-aceptación de Joa. Conectar una cuenta real y Limpieza Controlada siguen fuera
-de alcance: exigen puertas independientes y resolver antes la protección del
-índice local.
+El proyecto se detiene después de consolidar D8. C7, D9, Gmail real, OAuth,
+credenciales, datos privados, modificaciones de mensajes y Limpieza Controlada
+siguen fuera de alcance y requieren nuevas puertas explícitas. La aceptación
+sintética no prueba todavía el comportamiento frente a una bandeja Gmail real.

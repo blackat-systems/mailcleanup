@@ -16,12 +16,13 @@ D7; quedó auditado y consolidado en `e92a77a`. Joa autorizó después crear e
 iniciar el único worktree D7 desde esa base. El especialista entregó el motor
 sintético y MAIN lo auditó e integró con correcciones en el árbol de trabajo.
 Joa autorizó después su commit y publicación; D7 quedó consolidada en
-`c8c7b32`. Joa autorizó luego preparar, consolidar y despachar un único worktree
-D8 `estudio-ui`. El prompt autosuficiente quedó consolidado en `a1cf0ff`. MAIN
-creó y verificó la instancia real en
-`C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
-`codex/estudio-ui`, y despachó allí la tarea
-`01a04d55-2cae-7051-a2d9-2534c15dd793`.
+`c8c7b32`. Joa autorizó luego preparar, consolidar y despachar D8 `estudio-ui`
+desde `a1cf0ff`. El especialista entregó sus 22 cambios exclusivamente
+frontend; MAIN los auditó, integró y volvió a verificar. Joa aceptó D8 dentro de
+su alcance exclusivamente sintético y autorizó su consolidación y publicación
+en `main`. Estudio de Limpieza queda aceptado en modo sintético. C7, D9, Gmail
+real, OAuth, credenciales, datos privados y Limpieza Controlada continúan
+bloqueados.
 
 ## Qué existe
 
@@ -33,6 +34,9 @@ creó y verificó la instancia real en
 - contratos verificados de API v1 para Base Segura y `/api/v2` para Mapa Total;
 - un motor sintético D7 de planes congelados, revalidables y cancelables, con
   nueve rutas `/api/v3/study` y `canExecute: false`;
+- una interfaz D8 de Estudio de Limpieza con historia, constructor, detalle,
+  miembros, eventos, revalidación y cancelación sobre `/api/v3/study`, siempre
+  sin ejecución y con `canExecute: false`;
 - una barrera automática que inspecciona imports, marcadores de capacidad,
   empaquetado y rutas activas.
 
@@ -111,6 +115,10 @@ solicitaron credenciales ni se conectó una cuenta.
   No hidrata filas fuera de la página y los miembros están acotados a 100.000,
   pero un recorrido completo repite ese costo. Es una optimización futura, no un
   defecto contractual ni una razón para debilitar la detección de corrupción.
+- D8 y la batería sintética no demuestran todavía el comportamiento frente a
+  una bandeja Gmail real, sus volúmenes, latencias, cuotas o mensajes anómalos.
+  Esa validación requiere otra autorización y una prueba controlada de sólo
+  lectura; no forma parte de esta aceptación.
 
 ## Cierre de Base Segura
 
@@ -147,18 +155,19 @@ reduce la navegación primaria y pliega filtros, evidencia y diagnósticos
 secundarios, preservando advertencias y correcciones. D6 fue aceptada por Joa y
 quedó consolidada y publicada en `963af89`.
 
-La batería global actual pasó con 391 pruebas Python, Ruff, mypy estricto sobre
-27 archivos, ESLint, 98 pruebas Vitest y build Vite. El recorrido HTTP local
-responde sobre loopback. El recorrido visual inicial de D6 pasó en escritorio y
-390 px, sin desborde horizontal ni errores de consola; la pasada minimalista
-posterior fue revisada y aceptada por Joa. El roundtrip DPAPI real pudo
-ejecutarse bajo el perfil de usuario actual en una verificación anterior. Este
-estado y la integración D6 no permiten abrir OAuth, usar credenciales, conectar
-Gmail real, persistir metadatos privados ni ejecutar acciones. La autorización
-posterior permitió preparar y aceptar C6 sintética, consolidar el prompt D7 e
-iniciar su único worktree. D7 fue entregada, auditada e integrada con
-correcciones en el árbol de MAIN. Joa autorizó su consolidación y publicación.
-El próximo paso es recibir y auditar la entrega D8. D8 continúa limitada al
-frontend sintético y no está integrada ni aceptada; Gmail real, OAuth,
-credenciales, datos privados, acciones y Limpieza Controlada permanecen
-bloqueados.
+La batería global integrada pasó con 391 pruebas Python, Ruff, mypy estricto
+sobre 27 archivos, ESLint, 335 pruebas Vitest en 11 archivos y build Vite de 43
+módulos. El recorrido HTTP local confirmó salud sintética, Gmail desconectado,
+`cleanupPlan: false` en v2, `canExecute: false` y `Cache-Control: no-store` en
+v3, sin CORS y con Host y Origin ajenos rechazados. MAIN recorrió D8 en
+escritorio y 390 px: historia, constructor de cinco etapas y detalle; no hubo
+desborde horizontal, el menú móvil midió 44 por 44 px, aisló el contenido al
+abrirse, cerró con Escape y devolvió el foco. La consola no registró warnings ni
+errores y los únicos recursos declarados fueron JS y CSS relativos del build
+local. El roundtrip DPAPI real pudo ejecutarse bajo el perfil de usuario actual
+en una verificación anterior.
+
+D8 fue auditada, integrada y aceptada por Joa exclusivamente en modo sintético.
+El proyecto debe detenerse y esperar una nueva autorización antes de preparar
+C7 o comenzar Limpieza Controlada. Gmail real, OAuth, credenciales, datos
+privados y acciones continúan bloqueados.

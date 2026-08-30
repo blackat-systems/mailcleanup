@@ -18,8 +18,8 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Remoto actual | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git` |
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
-| Base consolidada | `a1cf0ff5b0ea71b6656a5bf14951df189f874cc4` consolida el prompt D8; `c8c7b3241d7731679fd9f775bb05c1c3d8acd38a` consolida D7; la fuente D7 conserva base `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
-| Estado | Base Segura, Mapa Total, C6 y D7 aceptadas con alcance sintético; D1-D7 y C5 consolidadas; D8 activa con alcance frontend sintético |
+| Base consolidada | El commit que contiene este estado consolida D8; `a1cf0ff5b0ea71b6656a5bf14951df189f874cc4` permanece como base de su fuente especialista |
+| Estado | Base Segura, Mapa Total y Estudio de Limpieza aceptados con alcance sintético; D1-D8 y C5 consolidadas; C7, D9 y capacidades reales bloqueadas |
 
 MAIN implementó C5 directamente porque conserva composición, contratos y API
 transversales. No se creó un worktree C5. El candidato agrega
@@ -297,7 +297,7 @@ los diez archivos autorizados sin commit y permanece como evidencia.
 
 | Campo | Valor |
 |---|---|
-| Estado | `EN DESARROLLO` |
+| Estado | `INTEGRADA`, auditada y aceptada por Joa exclusivamente en modo sintético; fuente conservada |
 | Ruta | `C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup` |
 | Rama | `codex/estudio-ui` |
 | Base y HEAD inicial | `a1cf0ff5b0ea71b6656a5bf14951df189f874cc4` |
@@ -308,11 +308,19 @@ los diez archivos autorizados sin commit y permanece como evidencia.
 | Gmail, OAuth, red externa, credenciales y datos reales | Prohibidos |
 | Backend, dependencias, API nueva, ejecución, D9 y Limpieza Controlada | Prohibidos |
 | Commit y publicación del especialista | No autorizados |
+| Auditoría MAIN | 22 archivos bajo `frontend/src/**`; contratos, seguridad, accesibilidad, batería global, HTTP y revisión visual repetidos |
+| Integración en `main` | Consolidada por el commit que contiene este registro; publicación de `main` autorizada |
 
 MAIN creó el worktree desde el commit local limpio que consolida el prompt,
 verificó ruta, rama, SHA y estado vacío antes de autorizar el comienzo, y envió
-el prompt completo a la tarea. `git worktree list` muestra nueve worktrees: MAIN
-y D1-D8. La existencia de `origin` no autoriza usarlo desde el especialista.
+el prompt completo a la tarea. El especialista entregó seis archivos modificados
+y dieciséis nuevos, sin commit ni publicación. MAIN auditó el diff completo,
+integró únicamente esos 22 archivos y preservó `New folder/grafo.txt` fuera del
+diff y del commit. Joa aceptó D8 sólo como interfaz sintética de Estudio de
+Limpieza. La fuente especialista permanece como evidencia; esta integración no
+habilita Gmail, OAuth, credenciales, datos reales, C7, D9 ni Limpieza
+Controlada. `git worktree list` muestra nueve worktrees: MAIN y D1-D8. La
+existencia de `origin` no autoriza usarlo desde el especialista.
 
 ## Reglas de actualización
 

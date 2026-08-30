@@ -67,7 +67,7 @@ MAIN quedó aprobada con una corrección conservadora: los fragmentos de un fluj
 particionado conservan la confianza automática original de D4. D5 queda
 consolidada por el commit que contiene este estado. No están autorizados abrir
 OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen
-nueve worktrees: MAIN, las fuentes D1-D7 conservadas como evidencia y D8 activa.
+nueve worktrees: MAIN y las fuentes D1-D8 conservadas como evidencia.
 D6
 permanece en
 `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup`, rama
@@ -108,16 +108,20 @@ MAIN a preparar, consolidar y despachar un único worktree D8 `estudio-ui`.
 sintética. MAIN consolidó el prompt en `a1cf0ff`, creó y verificó D8 en
 `C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
 `codex/estudio-ui`, y le entregó el prompt completo en la tarea
-`01a04d55-2cae-7051-a2d9-2534c15dd793`. D8 está `EN DESARROLLO`; esta
-autorización no habilita capacidades externas ni acciones.
+`01a04d55-2cae-7051-a2d9-2534c15dd793`. El especialista entregó D8 y MAIN
+auditó e integró únicamente sus 22 cambios autorizados bajo
+`frontend/src/**`. Joa aceptó D8 y Estudio de Limpieza exclusivamente en modo
+sintético. La batería global, el recorrido HTTP local y la revisión visual en
+escritorio y 390 px quedaron verdes. D8 queda consolidada por el commit que
+contiene este estado; no habilita capacidades externas ni acciones.
 
 ## Objetivo actual
 
-Esperar la entrega especialista D8 sin intervenir en su implementación. MAIN
-deberá auditar el diff completo, los archivos no rastreados, el consumo estricto
-de `/api/v3/study`, seguridad, accesibilidad, escritorio, 390 px y la batería
-global antes de integrar. No abrir OAuth, conectar una cuenta real, persistir
-metadatos privados, usar credenciales ni comenzar Limpieza Controlada.
+Conservar verde y auditable Estudio de Limpieza en su alcance sintético y
+detenerse después de esta consolidación. Esperar una nueva autorización
+específica de Joa antes de preparar C7 o comenzar cualquier trabajo de Limpieza
+Controlada. Gmail, OAuth, credenciales, datos privados y acciones reales
+permanecen bloqueados.
 
 ---
 
@@ -128,11 +132,10 @@ respetar el permiso mínimo, la allowlist de lectura,
 la atomicidad del índice, la clasificación conservadora, la separación de
 secretos y la barrera de no escritura sobre Gmail o mensajes.
 
-Mapa Total está aceptado con alcance sintético. C6 y D7 están consolidadas. D8
-está autorizada sólo como interfaz sintética de Estudio de Limpieza y debe
-partir de su prompt y un SHA limpio. Limpieza Controlada permanece detrás de
-otra puerta independiente. Las ideas futuras se registran sin incorporarlas al
-alcance activo.
+Mapa Total y Estudio de Limpieza están aceptados exclusivamente con alcance
+sintético. C6, D7 y D8 están consolidadas. Limpieza Controlada, C7, D9 y toda
+capacidad real permanecen detrás de una autorización independiente. Las ideas
+futuras se registran sin incorporarlas al alcance activo.
 
 ---
 
@@ -163,7 +166,7 @@ Para coordinación de MAIN y dependencias:
 3. `docs/WORKTREE_REGISTRY.md`;
 4. `docs/prompts/PLANTILLA_DEPENDENCIA.md`.
 5. `docs/prompts/D7_REAL_PLAN_ENGINE.md` para la delegación D7 entregada;
-6. `docs/prompts/D8_ESTUDIO_UI.md` para la delegación D8 autorizada.
+6. `docs/prompts/D8_ESTUDIO_UI.md` para la delegación D8 entregada e integrada.
 
 Para D2 prevalece `docs/contracts/GMAIL_SESSION_V1.md`. Para D3 prevalecen
 `docs/contracts/SECURITY_PRIVACY_V1.md` y
@@ -175,10 +178,10 @@ habilita Gmail, OAuth ni datos reales. Para C5 y D6 prevalece
 y sintética. Para C6 prevalece el contrato aceptado
 `docs/contracts/CLEANUP_PLAN_V1.md`. Es el contrato de D7, pero no autoriza
 por sí solo datos reales o ejecución. El prompt D7 traduce ese contrato a una
-frontera especialista y D7 quedó consolidada. Joa autorizó después preparar y
-crear D8 mediante `docs/prompts/D8_ESTUDIO_UI.md`, exclusivamente sobre el
-frontend sintético. Esa autorización no se extiende a Gmail, OAuth, datos
-reales, ejecución ni Limpieza Controlada.
+frontera especialista y D7 quedó consolidada. D8 fue preparada mediante
+`docs/prompts/D8_ESTUDIO_UI.md`, entregada, auditada, integrada y aceptada
+exclusivamente como frontend sintético. Esta aceptación no se extiende a Gmail,
+OAuth, datos reales, ejecución ni Limpieza Controlada.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -272,8 +275,9 @@ API local v2 cerrada
 - `cleanup_plan_model.py`, `cleanup_plan_domain.py` y `cleanup_plan_api.py`:
   planes sintéticos congelados, migración SQLite v5 y nueve rutas cerradas
   `/api/v3/study`; no ejecutan acciones.
-- `frontend/src`: presentación, navegación, selección y consumo tipado de la API;
-  no duplica reglas de clasificación o seguridad.
+- `frontend/src`: presentación, navegación y consumo tipado de `/api/v2` para
+  Mapa Total y `/api/v3/study` para Estudio de Limpieza; no duplica reglas de
+  clasificación, planificación o seguridad y no ofrece ejecución.
 - `tests`, pruebas frontend y `scripts/check.ps1`: invariantes, contrato HTTP,
   barrera de seguridad, lint, tipos, pruebas y build.
 
@@ -405,10 +409,10 @@ conserva: su entrega fue auditada, integrada, aceptada por Joa y consolidada por
 el commit que contiene este estado. D7 `real-plan-engine` fue entregada, auditada
 e integrada con correcciones en el árbol de MAIN; su worktree desde `e92a77a`
 se conserva como evidencia. La integración quedó consolidada en `c8c7b32`; la
-fuente especialista continúa sin commit. D8 `estudio-ui` está activa en
-`C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
-`codex/estudio-ui`, desde la base exacta `a1cf0ff`; todavía no fue entregada ni
-auditada.
+fuente especialista continúa sin commit. D8 `estudio-ui` fue entregada,
+auditada, integrada y aceptada por Joa con alcance sintético. Su fuente se
+conserva en `C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
+`codex/estudio-ui`, desde la base exacta `a1cf0ff`, sin commit especialista.
 
 Cuando MAIN habilite una dependencia debe completar
 `docs/prompts/PLANTILLA_DEPENDENCIA.md` con tarea, contexto, entradas, salida,
@@ -441,9 +445,10 @@ D7 `real-plan-engine` INTEGRADA EN EL ÁRBOL DE MAIN
         ↓ commit y publicación autorizados por Joa
 D7 CONSOLIDADA EN MAIN (`c8c7b32`)
         ↓ prompt consolidado en `a1cf0ff` + autorización recibida
-D8 `estudio-ui` EN DESARROLLO
-        ↓ entrega → auditoría MAIN → integración → aceptación de Joa
-Limpieza Controlada continúa bloqueada
+D8 `estudio-ui` INTEGRADA Y ACEPTADA EN MODO SINTÉTICO
+        ↓ autorización de Limpieza Controlada + `gmail.modify`
+          + plan de prueba + C7 aceptado
+D9 y Limpieza Controlada continúan bloqueados
 ```
 
 Las puertas de producto son secuenciales:
@@ -549,12 +554,16 @@ y 390 px. D6 repitió su recorrido visual inicial, recibió una pasada posterior
 de jerarquía minimalista con batería global verde y fue aceptada explícitamente
 por Joa el 28 de agosto de 2026.
 
+D8 fue auditada por MAIN, integrada y aceptada por Joa exclusivamente como
+experiencia sintética de Estudio de Limpieza. Esto no demuestra comportamiento
+sobre una bandeja Gmail real ni habilita Limpieza Controlada.
+
 ---
 
 # 17. SEGURIDAD Y PRIVACIDAD
 
 - No conectar Gmail ni abrir OAuth hasta una autorización específica posterior;
-  C6, D7 y D8 autorizada son sintéticas.
+  C6, D7 y D8 integrada y aceptada son sintéticas.
 - No solicitar ni almacenar `credentials.json`, `token.json`, contraseñas o
   tokens.
 - No usar mensajes, nombres ni direcciones reales en fixtures, pruebas, logs,
@@ -604,7 +613,7 @@ No desactivar la barrera automática de Base Segura para hacer pasar otro cambio
 - aceptar Base Segura y habilitar Mapa Total;
 - conectar Gmail, abrir OAuth o usar credenciales y datos reales;
 - solicitar permisos de lectura o modificación;
-- aceptar o integrar D8, o habilitar Limpieza Controlada;
+- habilitar Limpieza Controlada;
 - modificar mensajes reales o enviar desuscripciones;
 - cambiar arquitectura, plataforma o persistencia central;
 - agregar dependencias importantes o servicios externos;

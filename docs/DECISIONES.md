@@ -16,7 +16,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-007 | El candidato `0a90b71` no está aceptado como Base Segura terminada. | Vigente | Instrucción actual de Joa |
 | D-008 | Retirar `src/gmail_cleaner`, su configuración y dependencias del árbol activo; conservarlo sólo en Git. | Ejecutada | Portado selectivo confirmado por Joa |
 | D-009 | No crear worktrees especialistas en esta inicialización. | Vigente | Instrucción actual de Joa |
-| D-010 | Limpieza Controlada y todo acceso real siguen sin autorización. Estudio de Limpieza está autorizado únicamente en su recorrido sintético C6-D8 y cada dependencia conserva su puerta propia. | Vigente con excepciones registradas | Contrato, D-020, D-040, D-041, D-043 y D-045 |
+| D-010 | Limpieza Controlada y todo acceso real siguen sin autorización. Estudio de Limpieza está autorizado únicamente en su recorrido sintético C6-D8 y cada dependencia conserva su puerta propia. | Vigente con excepciones registradas | Contrato, D-020, D-040, D-041, D-043, D-045 y D-046 |
 | D-011 | El candidato sólo puede presentarse para aceptación cuando pasen pruebas, lint, tipos, build y HTTP; la revisión visual se informa por separado. | Vigente | Criterios de calidad y auditoría de MAIN |
 | D-012 | MAIN conserva contratos, arquitectura, batería e integración, pero no implementa por defecto cada módulo funcional. | Vigente | Instrucción explícita de Joa |
 | D-013 | No se crea ningún worktree mientras `main` tenga cambios sin commit o carezca de un commit base limpio confirmado. | Vigente | Instrucción explícita de Joa |
@@ -52,6 +52,7 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-043 | Crear e iniciar un único worktree D7 `real-plan-engine` desde `e92a77a`, limitado a planes sintéticos sin efectos, migración v5, API `/api/v3/study` y pruebas; sin D8 ni capacidades reales. | Ejecutada: worktree `4d09`, tarea `01a04b9f-8d9d-7181-8935-c156b669c05a` | Autorización explícita de Joa del 29 de agosto de 2026, prompt D7 y Puerta 0 verificada |
 | D-044 | Aceptar la integración auditada de D7 y autorizar a MAIN a consolidarla en `main` y publicarla en el `origin` privado, preservando `grafo.txt` fuera del commit y manteniendo D8 y toda capacidad real bloqueadas. | Confirmada; consolidada por el commit que contiene esta decisión | Autorización explícita de Joa del 29 de agosto de 2026 y auditoría MAIN con batería global verde |
 | D-045 | Autorizar a MAIN a preparar y consolidar el prompt D8 `estudio-ui`, crear un único worktree desde ese SHA y despacharle la implementación exclusivamente frontend y sintética de Estudio de Limpieza. No autoriza push, Gmail, OAuth, credenciales, datos reales, acciones sobre mensajes, D9 ni Limpieza Controlada. | Ejecutada: base `a1cf0ff`, worktree `83bb`, tarea `01a04d55-2cae-7051-a2d9-2534c15dd793` | Instrucción explícita de Joa del 29 de agosto de 2026, `CLEANUP_PLAN_V1.md`, prompt D8 y Puerta 0 verificada |
+| D-046 | Aceptar D8 `estudio-ui` exclusivamente en modo sintético y autorizar a MAIN a integrar sus 22 cambios bajo `frontend/src/**`, actualizar el estado durable, repetir la batería y revisión visual, consolidar en `main` y publicar únicamente `main` en el `origin` privado. `New folder/grafo.txt` queda excluido. Esta decisión no autoriza Gmail, OAuth, credenciales, datos reales, modificaciones, `gmail.modify`, C7, D9 ni Limpieza Controlada. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 29 de agosto de 2026 y auditoría independiente de MAIN |
 
 ## Decisiones suficientemente definidas
 
@@ -90,7 +91,10 @@ acciones externas. D-043 permite implementar D7 únicamente con datos sintético
 y sin efectos. D-044 autoriza consolidar y publicar esa integración. D-045
 autoriza preparar, consolidar y crear el único worktree D8 dentro de la frontera
 frontend sintética; no habilita Gmail, OAuth, datos reales, ejecución ni
-Limpieza Controlada.
+Limpieza Controlada. D-046 acepta e integra D8 únicamente como experiencia
+sintética de Estudio de Limpieza. La próxima puerta continúa cerrada: no
+autoriza preparar C7, comenzar D9, solicitar `gmail.modify` ni actuar sobre una
+bandeja real.
 
 ## Resultado de la implementación autorizada
 

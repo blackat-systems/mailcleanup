@@ -5,10 +5,13 @@ export type Route =
   | { page: "sources"; key: string; view: SourceView }
   | { page: "source"; key: "source"; id: string }
   | { page: "corrections"; key: "#/corrections"; sourceId?: string }
+  | { page: "study"; key: "#/study" }
+  | { page: "study_plan"; key: "#/study"; planId: string }
   | { page: "status"; key: "#/status" }
   | { page: "not_found"; key: "not_found" };
 
 const sourceViews = new Set<SourceView>(["all", "subscriptions", "spam", "protected"]);
+const planIdPattern = /^cleanup-plan-v1-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
 
 function safelyDecode(value: string): string | null {
   try {
@@ -39,6 +42,13 @@ export function currentRoute(): Route {
     return sourceId
       ? { page: "corrections", key: "#/corrections", sourceId }
       : { page: "corrections", key: "#/corrections" };
+  }
+  if (path === "/study" && query === "") return { page: "study", key: "#/study" };
+  if (path.startsWith("/study/plans/") && query === "") {
+    const planId = safelyDecode(path.slice(13));
+    return planId && planIdPattern.test(planId)
+      ? { page: "study_plan", key: "#/study", planId }
+      : { page: "not_found", key: "not_found" };
   }
   if (path === "/status") return { page: "status", key: "#/status" };
   if (path === "/") return { page: "overview", key: "#/" };

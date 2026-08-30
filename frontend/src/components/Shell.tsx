@@ -12,6 +12,7 @@ const navItems: readonly NavItem[] = [
   { href: "#/", label: "Panorama", icon: "overview" },
   { href: "#/sources", label: "Fuentes", icon: "sources" },
   { href: "#/corrections", label: "Correcciones", icon: "corrections", write: true },
+  { href: "#/study", label: "Estudio de Limpieza", icon: "search" },
   { href: "#/status", label: "Estado", icon: "settings" },
 ];
 

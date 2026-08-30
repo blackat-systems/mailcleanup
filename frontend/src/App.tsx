@@ -8,10 +8,14 @@ import { SourceDetailPage } from "./pages/SourceDetailPage";
 import { SourcesPage } from "./pages/SourcesPage";
 import { StatusPage } from "./pages/StatusPage";
 import { currentRoute, type Route } from "./routing";
+import { StudyApplication } from "./study/StudyApplication";
+import type { StudyCommandMemory } from "./study/commandMemory";
+import type { PlanDetail } from "./study/types";
 
 export default function App() {
   const [route, setRoute] = useState<Route>(currentRoute);
-  const workspace = useMapWorkspace();
+  const [studyCommandMemory, setStudyCommandMemory] = useState<StudyCommandMemory | null>(null);
+  const [studyPlanSnapshots] = useState(() => new Map<string, PlanDetail>());
 
   useEffect(() => {
     const updateRoute = () => {
@@ -22,6 +26,33 @@ export default function App() {
     window.addEventListener("hashchange", updateRoute);
     return () => window.removeEventListener("hashchange", updateRoute);
   }, []);
+
+  if (route.page === "study" || route.page === "study_plan") {
+    return (
+      <StudyApplication
+        route={route}
+        commandMemory={studyCommandMemory}
+        setCommandMemory={setStudyCommandMemory}
+        planSnapshots={studyPlanSnapshots}
+      />
+    );
+  }
+  if (route.page === "not_found") {
+    return (
+      <Shell routeKey={route.key} writeEnabled>
+        <div className="page not-found-page">
+          <h1>Esta sección no existe</h1>
+          <p>Volvé a una ruta publicada de MailCleanup.</p>
+          <a className="button button-primary" href="#/">Volver a Panorama</a>
+        </div>
+      </Shell>
+    );
+  }
+  return <MapApplication route={route} />;
+}
+
+function MapApplication({ route }: { route: Exclude<Route, { page: "study" | "study_plan" | "not_found" }> }) {
+  const workspace = useMapWorkspace();
 
   if (workspace.state.kind === "loading") {
     return (
@@ -67,14 +98,6 @@ export default function App() {
     );
   } else if (route.page === "status") {
     content = <StatusPage data={data} />;
-  } else if (route.page === "not_found") {
-    content = (
-      <div className="page not-found-page">
-        <h1>Esta sección no existe</h1>
-        <p>Volvé a una ruta publicada de Mapa Total.</p>
-        <a className="button button-primary" href="#/">Volver a Panorama</a>
-      </div>
-    );
   } else {
     content = <OverviewPage map={data.map} />;
   }

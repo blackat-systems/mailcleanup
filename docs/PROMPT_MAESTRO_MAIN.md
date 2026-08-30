@@ -22,9 +22,10 @@ activo en `C:\Users\Joaquin\.codex\worktrees\4d09\mailcleanup`, rama
 integrada con correcciones en el árbol de MAIN. Joa autorizó su commit y
 publicación; quedó consolidada en `c8c7b32`. Joa autorizó después a MAIN a
 preparar, consolidar y despachar un único worktree D8 `estudio-ui`. El prompt
-autosuficiente quedó consolidado en `a1cf0ff`; D8 está activa en
+autosuficiente quedó consolidado en `a1cf0ff`; D8 fue entregada desde
 `C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
-`codex/estudio-ui`, y limita la entrega al frontend sintético.
+`codex/estudio-ui`, auditada, integrada y aceptada por Joa exclusivamente como
+frontend sintético. Sus 22 cambios permanecen bajo `frontend/src/**`.
 La revisión visual instrumental de Base Segura está completada. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
@@ -70,9 +71,10 @@ D6 sólo habilita su consumidor frontend sintético y no habilita Gmail, OAuth,
 credenciales ni datos reales.
 
 Para C6 prevalece `docs/contracts/CLEANUP_PLAN_V1.md`, aceptado por Joa. D7
-está consolidada únicamente con alcance sintético. D8 está autorizada como
-consumidor frontend sintético bajo `docs/prompts/D8_ESTUDIO_UI.md`; Gmail,
-OAuth, datos reales y toda acción permanecen bloqueados.
+está consolidada únicamente con alcance sintético. D8 fue auditada, integrada y
+aceptada como consumidor frontend sintético bajo
+`docs/prompts/D8_ESTUDIO_UI.md`; Gmail, OAuth, datos reales y toda acción
+permanecen bloqueados.
 
 ## Procesos y puertas
 
@@ -87,11 +89,10 @@ D7 INTEGRADA EN EL ÁRBOL DE MAIN
         ↓ commit y publicación autorizados
 D7 CONSOLIDADA EN MAIN (`c8c7b32`)
         ↓ prompt `a1cf0ff` + autorización + Puerta 0
-D8 `estudio-ui` EN DESARROLLO
-        ↓ entrega y auditoría/integración MAIN
-revisión y aceptación de Estudio de Limpieza por Joa
-        ↓ autorización independiente de Joa
-Limpieza Controlada
+D8 `estudio-ui` INTEGRADA Y ACEPTADA EN MODO SINTÉTICO
+        ↓ autorización de Limpieza Controlada + `gmail.modify`
+          + plan de prueba + C7 aceptado
+D9 y Limpieza Controlada continúan bloqueados
 ```
 
 Preparar código no autoriza abrir OAuth, usar Gmail real, pedir credenciales,
@@ -99,9 +100,10 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Esperar la entrega especialista D8 y luego auditarla independientemente antes de
-integrar. No implementar D8 en MAIN ni agregar adaptadores productivos,
-conexiones, sincronización operativa, datos reales o acciones.
+Conservar verde y auditable Estudio de Limpieza en su alcance sintético y
+detenerse después de consolidar D8. Esperar una nueva autorización específica
+antes de preparar C7 o iniciar Limpieza Controlada. No agregar adaptadores
+productivos, conexiones, sincronización operativa, datos reales o acciones.
 
 ## Línea base de privacidad
 
@@ -173,8 +175,8 @@ MAIN debe:
 - Mantener `canExecute: false` y ausencia de operaciones de escritura sobre
   Gmail o mensajes.
 - No agregar dependencias para D4, D5, D6, C6, D7 o D8.
-- Conservar los worktrees D1-D7 como evidencia y D8 aislada en su worktree
-  verificado. D8 no habilita datos o conexiones reales.
+- Conservar los worktrees D1-D8 como evidencia. D8 integrada y aceptada no
+  habilita datos o conexiones reales.
 - Publicar sólo `main` en el `origin` privado cuando Joa lo autorice y el destino
   haya sido verificado; nunca publicar ramas o entregas especialistas por defecto.
 
