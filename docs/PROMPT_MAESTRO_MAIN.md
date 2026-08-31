@@ -25,7 +25,9 @@ preparar, consolidar y despachar un único worktree D8 `estudio-ui`. El prompt
 autosuficiente quedó consolidado en `a1cf0ff`; D8 fue entregada desde
 `C:\Users\Joaquin\.codex\worktrees\83bb\mailcleanup`, rama
 `codex/estudio-ui`, auditada, integrada y aceptada por Joa exclusivamente como
-frontend sintético. Sus 22 cambios permanecen bajo `frontend/src/**`.
+frontend sintético. Sus 22 cambios permanecen bajo `frontend/src/**`. MAIN
+preparó después C7 como contrato documental; Joa lo aceptó y autorizó consolidar
+únicamente esa documentación.
 La revisión visual instrumental de Base Segura está completada. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
@@ -90,8 +92,11 @@ D7 INTEGRADA EN EL ÁRBOL DE MAIN
 D7 CONSOLIDADA EN MAIN (`c8c7b32`)
         ↓ prompt `a1cf0ff` + autorización + Puerta 0
 D8 `estudio-ui` INTEGRADA Y ACEPTADA EN MODO SINTÉTICO
-        ↓ autorización de Limpieza Controlada + `gmail.modify`
-          + plan de prueba + C7 aceptado
+        ↓ C7 DOCUMENTAL ACEPTADO — SIN CAPACIDAD OPERATIVA
+        ↓ ampliación versionada de sesión/seguridad
+          + almacenamiento privado + autenticación local
+          + autorización de Limpieza Controlada + `gmail.modify`
+          + plan piloto aprobado
 D9 y Limpieza Controlada continúan bloqueados
 ```
 
@@ -100,10 +105,11 @@ persistir datos privados ni modificar mensajes.
 
 ## Objetivo actual
 
-Conservar verde y auditable Estudio de Limpieza en su alcance sintético y
-detenerse después de consolidar D8. Esperar una nueva autorización específica
-antes de preparar C7 o iniciar Limpieza Controlada. No agregar adaptadores
-productivos, conexiones, sincronización operativa, datos reales o acciones.
+Conservar verdes y auditables Estudio de Limpieza y C7 documental aceptado.
+Detenerse y esperar una autorización posterior antes de preparar D9, ampliar
+sesión/seguridad o iniciar Limpieza Controlada.
+No agregar adaptadores productivos, conexiones, sincronización operativa, datos
+reales o acciones.
 
 ## Línea base de privacidad
 
@@ -117,6 +123,10 @@ La privacidad se implementa por capas:
 6. persistencia por página y checkpoint atómicos;
 7. pruebas que bloquean red, navegador, escritura, scopes amplios y secretos;
 8. puertas separadas para OAuth real, índice real y futuras acciones.
+
+El contrato documental aceptado `CONTROLLED_EXECUTION_V1.md` no modifica esta
+línea base. Reserva `gmail.modify` sólo para una futura sesión de acción
+versionada y mantiene D2/D3 con `gmail.metadata` hasta una decisión posterior.
 
 Antes de Gmail real siguen bloqueando:
 

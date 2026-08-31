@@ -112,16 +112,23 @@ sintética. MAIN consolidó el prompt en `a1cf0ff`, creó y verificó D8 en
 auditó e integró únicamente sus 22 cambios autorizados bajo
 `frontend/src/**`. Joa aceptó D8 y Estudio de Limpieza exclusivamente en modo
 sintético. La batería global, el recorrido HTTP local y la revisión visual en
-escritorio y 390 px quedaron verdes. D8 queda consolidada por el commit que
-contiene este estado; no habilita capacidades externas ni acciones.
+escritorio y 390 px quedaron verdes. D8 quedó consolidada en `3ff29bd`; no
+habilita capacidades externas ni acciones.
+
+El 31 de agosto de 2026 Joa autorizó a MAIN a preparar C7 exclusivamente como
+contrato documental de Limpieza Controlada. MAIN redactó
+`docs/contracts/CONTROLLED_EXECUTION_V1.md`, Joa lo aceptó y autorizó consolidar
+únicamente su documentación. El contrato no habilita D9, `gmail.modify`, OAuth, Gmail real,
+credenciales, datos privados ni modificaciones. También deja como puertas
+obligatorias una ampliación versionada de sesión y seguridad, almacenamiento
+privado apto para datos reales y autenticación local del proceso.
 
 ## Objetivo actual
 
-Conservar verde y auditable Estudio de Limpieza en su alcance sintético y
-detenerse después de esta consolidación. Esperar una nueva autorización
-específica de Joa antes de preparar C7 o comenzar cualquier trabajo de Limpieza
-Controlada. Gmail, OAuth, credenciales, datos privados y acciones reales
-permanecen bloqueados.
+Conservar verdes Estudio de Limpieza y C7 documental aceptado. Esperar una
+autorización posterior antes de preparar la ampliación de sesión/seguridad, un
+prompt o un worktree D9. Gmail, OAuth, `gmail.modify`, credenciales, datos
+privados y acciones reales permanecen bloqueados.
 
 ---
 
@@ -133,8 +140,9 @@ la atomicidad del índice, la clasificación conservadora, la separación de
 secretos y la barrera de no escritura sobre Gmail o mensajes.
 
 Mapa Total y Estudio de Limpieza están aceptados exclusivamente con alcance
-sintético. C6, D7 y D8 están consolidadas. Limpieza Controlada, C7, D9 y toda
-capacidad real permanecen detrás de una autorización independiente. Las ideas
+sintético. C6, D7 y D8 están consolidadas. C7 existe como contrato documental
+aceptado. Limpieza Controlada, D9 y toda capacidad
+real permanecen detrás de autorizaciones y puertas independientes. Las ideas
 futuras se registran sin incorporarlas al alcance activo.
 
 ---
@@ -154,10 +162,12 @@ Para determinar implementación y estado actual:
 3. `docs/contracts/API_V1.md`;
 4. `docs/contracts/MAPA_TOTAL_API_V1.md` para C5 y D6;
 5. `docs/contracts/CLEANUP_PLAN_V1.md` para C6 y D7 integrada;
-6. `docs/adr/0001-arquitectura-base-segura.md`;
-7. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
-8. `docs/ESTADO_BASE_SEGURA.md`;
-9. `docs/DECISIONES.md`.
+6. `docs/contracts/CONTROLLED_EXECUTION_V1.md` para C7 aceptado como contrato
+   documental, sin capacidad operativa;
+7. `docs/adr/0001-arquitectura-base-segura.md`;
+8. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
+9. `docs/ESTADO_BASE_SEGURA.md`;
+10. `docs/DECISIONES.md`.
 
 Para coordinación de MAIN y dependencias:
 
@@ -182,6 +192,9 @@ frontera especialista y D7 quedó consolidada. D8 fue preparada mediante
 `docs/prompts/D8_ESTUDIO_UI.md`, entregada, auditada, integrada y aceptada
 exclusivamente como frontend sintético. Esta aceptación no se extiende a Gmail,
 OAuth, datos reales, ejecución ni Limpieza Controlada.
+`docs/contracts/CONTROLLED_EXECUTION_V1.md` es C7 aceptado sólo documentalmente: no
+prevalece sobre la sesión de sólo metadatos ni habilita una excepción operativa
+a `SECURITY_PRIVACY_V1.md`.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -446,8 +459,10 @@ D7 `real-plan-engine` INTEGRADA EN EL ÁRBOL DE MAIN
 D7 CONSOLIDADA EN MAIN (`c8c7b32`)
         ↓ prompt consolidado en `a1cf0ff` + autorización recibida
 D8 `estudio-ui` INTEGRADA Y ACEPTADA EN MODO SINTÉTICO
-        ↓ autorización de Limpieza Controlada + `gmail.modify`
-          + plan de prueba + C7 aceptado
+        ↓ C7 DOCUMENTAL ACEPTADO
+        ↓ ampliación versionada de sesión/seguridad
+          + autorización de Limpieza Controlada + `gmail.modify`
+          + almacenamiento privado + autenticación local + plan piloto
 D9 y Limpieza Controlada continúan bloqueados
 ```
 
@@ -563,7 +578,7 @@ sobre una bandeja Gmail real ni habilita Limpieza Controlada.
 # 17. SEGURIDAD Y PRIVACIDAD
 
 - No conectar Gmail ni abrir OAuth hasta una autorización específica posterior;
-  C6, D7 y D8 integrada y aceptada son sintéticas.
+  C6, D7 y D8 integrada y aceptada son sintéticas, y C7 es sólo documental.
 - No solicitar ni almacenar `credentials.json`, `token.json`, contraseñas o
   tokens.
 - No usar mensajes, nombres ni direcciones reales en fixtures, pruebas, logs,
@@ -578,6 +593,8 @@ sobre una bandeja Gmail real ni habilita Limpieza Controlada.
   autenticado, ACL, retención y borrado verificable definidos.
 - Mantener entornos, bases, cachés y dependencias descargadas fuera de Git.
 - No implementar eliminación definitiva ni vaciado de Papelera.
+- No interpretar C7 documental como permiso para solicitar `gmail.modify`,
+  crear D9 o cambiar `canExecute: false` en las APIs vigentes.
 - Toda futura acción real debe revalidarse, ser idempotente, registrable,
   reversible cuando corresponda y aprobada.
 
@@ -614,6 +631,7 @@ No desactivar la barrera automática de Base Segura para hacer pasar otro cambio
 - conectar Gmail, abrir OAuth o usar credenciales y datos reales;
 - solicitar permisos de lectura o modificación;
 - habilitar Limpieza Controlada;
+- cambiar materialmente C7 o autorizar por separado su implementación;
 - modificar mensajes reales o enviar desuscripciones;
 - cambiar arquitectura, plataforma o persistencia central;
 - agregar dependencias importantes o servicios externos;

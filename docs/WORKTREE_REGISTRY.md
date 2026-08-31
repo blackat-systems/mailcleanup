@@ -18,8 +18,8 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Remoto actual | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git` |
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
-| Base consolidada | El commit que contiene este estado consolida D8; `a1cf0ff5b0ea71b6656a5bf14951df189f874cc4` permanece como base de su fuente especialista |
-| Estado | Base Segura, Mapa Total y Estudio de Limpieza aceptados con alcance sintético; D1-D8 y C5 consolidadas; C7, D9 y capacidades reales bloqueadas |
+| Base consolidada | D8 está consolidada en `3ff29bdbb48ef7293feaa4420786180fcb7dfdde`; el commit que contiene este estado consolida C7 documental; `a1cf0ff5b0ea71b6656a5bf14951df189f874cc4` permanece como base de la fuente D8 |
+| Estado | Base Segura, Mapa Total y Estudio de Limpieza aceptados con alcance sintético; D1-D8 y C5 consolidadas; C7 aceptado sólo como contrato documental; D9 y capacidades reales bloqueadas |
 
 MAIN implementó C5 directamente porque conserva composición, contratos y API
 transversales. No se creó un worktree C5. El candidato agrega
@@ -321,6 +321,12 @@ Limpieza. La fuente especialista permanece como evidencia; esta integración no
 habilita Gmail, OAuth, credenciales, datos reales, C7, D9 ni Limpieza
 Controlada. `git worktree list` muestra nueve worktrees: MAIN y D1-D8. La
 existencia de `origin` no autoriza usarlo desde el especialista.
+
+El 31 de agosto de 2026 Joa autorizó a MAIN a preparar C7 exclusivamente como
+contrato documental; después lo aceptó y autorizó consolidar únicamente esa
+documentación. `docs/contracts/CONTROLLED_EXECUTION_V1.md` no representa un
+worktree ni una capacidad operativa. No se creó D9, no se agregó una rama y los
+nueve worktrees reales permanecen sin cambios.
 
 ## Reglas de actualización
 

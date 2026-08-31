@@ -49,6 +49,10 @@ exclusivamente en modo sintético:
   consumen la API cerrada `/api/v3/study`, mantienen `canExecute: false` y
   superaron la batería integrada —391 pruebas Python y 335 de frontend—, el
   recorrido HTTP local y la revisión visual en escritorio y 390 px;
+- Joa autorizó preparar C7 únicamente como contrato documental, lo aceptó y
+  autorizó consolidar esa documentación. `CONTROLLED_EXECUTION_V1.md` define
+  confirmación, revalidación por mensaje, Archivo, Papelera, ledger y
+  reconciliación, pero no habilita ninguna acción;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -68,6 +72,7 @@ Leer en este orden:
 9. [`docs/contracts/CLEANUP_PLAN_V1.md`](docs/contracts/CLEANUP_PLAN_V1.md), contrato C6 aceptado
 10. [`docs/prompts/D7_REAL_PLAN_ENGINE.md`](docs/prompts/D7_REAL_PLAN_ENGINE.md), delegación D7 consolidada; el worktree fuente se conserva como evidencia
 11. [`docs/prompts/D8_ESTUDIO_UI.md`](docs/prompts/D8_ESTUDIO_UI.md), frontera frontend sintética entregada e integrada como D8
+12. [`docs/contracts/CONTROLLED_EXECUTION_V1.md`](docs/contracts/CONTROLLED_EXECUTION_V1.md), contrato C7 aceptado sólo documentalmente
 
 ## Organización y arquitectura candidata
 
@@ -94,7 +99,8 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-El proyecto se detiene después de consolidar D8. C7, D9, Gmail real, OAuth,
-credenciales, datos privados, modificaciones de mensajes y Limpieza Controlada
-siguen fuera de alcance y requieren nuevas puertas explícitas. La aceptación
-sintética no prueba todavía el comportamiento frente a una bandeja Gmail real.
+C7 está aceptado y consolidado únicamente como documentación. No preparar D9 ni
+una ampliación operativa de sesión/seguridad sin otra autorización. Gmail real,
+OAuth, `gmail.modify`, credenciales, datos privados, modificaciones de mensajes
+y Limpieza Controlada siguen fuera de alcance. La aceptación sintética no prueba
+todavía el comportamiento frente a una bandeja Gmail real.

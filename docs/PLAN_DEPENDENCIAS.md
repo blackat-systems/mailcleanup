@@ -4,10 +4,11 @@ Estado del plan: ejecución controlada; D1-D8 y C5 están consolidadas. Mapa Tot
 y Estudio de Limpieza fueron aceptados exclusivamente en modo sintético. D7 fue
 entregada, auditada, corregida y publicada en `c8c7b32`. D8 `estudio-ui` fue
 entregada desde el worktree `83bb`, auditada e integrada por MAIN y aceptada por
-Joa con 22 cambios limitados a `frontend/src/**`. C7, D9 y toda capacidad real
-continúan bloqueados.
+Joa con 22 cambios limitados a `frontend/src/**`. C7 fue preparado y aceptado
+exclusivamente como contrato documental. D9 y toda capacidad real continúan
+bloqueados.
 
-Fecha de inspección: 29 de agosto de 2026.
+Fecha de inspección: 31 de agosto de 2026.
 
 Este documento define fronteras, dependencias, puertas y orden de integración.
 No autoriza capacidades, no crea worktrees y no reemplaza contratos funcionales
@@ -183,12 +184,17 @@ reales.
 
 ### C7. Ejecución controlada
 
-Debe definir plan aprobado, nueva autorización, permiso `gmail.modify`,
-revalidación por mensaje, idempotencia, lotes, ledger, fallos parciales,
-reintentos, Archivo, Papelera y reversión. Excluye eliminación definitiva y
-vaciado de Papelera.
+`docs/contracts/CONTROLLED_EXECUTION_V1.md` define un agregado separado para
+manifiesto, aprobación, ejecución, intentos y reversión. Define consentimiento
+contextual para `gmail.modify`, revalidación por mensaje, intención durable,
+operaciones individuales dentro de lotes locales, ledger append-only, fallos
+parciales, reconciliación, Archivo y Papelera. Excluye `batchModify` v1,
+desuscripción, Spam, eliminación definitiva y vaciado de Papelera.
 
-Estado: `BLOQUEADA POR AUTORIZACIÓN` de Limpieza Controlada.
+Estado contractual: `ACEPTADO POR JOA — ALCANCE EXCLUSIVAMENTE DOCUMENTAL`.
+La preparación y la consolidación documental fueron autorizadas el 31 de agosto
+de 2026. La aceptación no autoriza Limpieza Controlada, D9, un prompt o worktree,
+ampliar sesión o seguridad, OAuth, `gmail.modify`, datos reales ni acciones.
 
 ### C8. Evidencia y acción de desuscripción
 
@@ -409,7 +415,7 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Responsabilidad única | Ejecutar Archivo o Papelera por lotes sobre un plan aprobado, con revalidación, idempotencia, ledger, fallos parciales, reintento y reversión disponible. |
 | Razón para separarlo | Es la frontera destructiva y de mayor riesgo; necesita permisos, auditoría y pruebas de fallos independientes. |
 | Estado actual | `BLOQUEADA POR AUTORIZACIÓN` |
-| Dependencias previas | La aceptación sintética de Estudio de Limpieza está cumplida; siguen faltando la autorización de Limpieza Controlada y `gmail.modify`, además de C7 aprobado. |
+| Dependencias previas | La aceptación sintética de Estudio de Limpieza y la aceptación documental de C7 están cumplidas. Siguen faltando ampliación versionada de sesión/seguridad, almacenamiento privado, autenticación local, autorización de Limpieza Controlada y `gmail.modify`. |
 | Contratos que consume | Plan congelado C6, C7, sesión ampliada en contexto, protecciones y ledger. |
 | Resultados que produce | Ejecución auditable por mensaje/lote y estado de reversión; nunca borrado definitivo. |
 | Consumidores posteriores | Interfaz de confirmación compuesta por MAIN, D10 e historial global. |
@@ -417,12 +423,12 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Prohibido | Eliminación definitiva, vaciado de Papelera, desuscripción, ejecución sin confirmación, UI y scope global `mail.google.com`. |
 | Rama propuesta | `codex/controlled-action-engine` |
 | Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-controlled-action-engine` |
-| Commit base requerido | SHA limpio posterior a aceptación de Estudio y C7. |
+| Commit base requerido | SHA limpio posterior a la aceptación sintética de Estudio y a la consolidación documental de C7. |
 | Verificaciones específicas | Revalidación por mensaje, doble ejecución, fallos parciales, reintento, lote pequeño, cambio de protección, Archivo/Papelera/restauración y scopes. |
 | Criterios de aceptación | No repite éxitos, nunca actúa fuera del snapshot revalidado, registra cada resultado y detiene contradicciones. |
 | Riesgos de integración | Daño real, permisos excesivos, diferencias entre etiquetas de sistema y falsa reversibilidad. |
 | Paralelización real | No con cambios de C6/C7 ni con D10; integrar y auditar antes de cualquier consumidor. |
-| Condición exacta de desbloqueo | Parcialmente cumplida: la aceptación sintética de Estudio está recibida. Continúan pendientes la autorización separada de Limpieza Controlada, el plan de prueba y `gmail.modify`, además de C7 aprobado, batería, SHA limpio y prompt. |
+| Condición exacta de desbloqueo | Parcialmente cumplida: la aceptación sintética de Estudio y la aceptación documental de C7 existen. Continúan pendientes la ampliación versionada de sesión/seguridad, almacenamiento privado y autenticación local; después, autorización separada de Limpieza Controlada, plan piloto, `gmail.modify`, batería, SHA limpio y prompt. |
 
 ### D10 — `rfc8058-one-click`
 
@@ -496,8 +502,11 @@ MAIN prepara C6: planes congelados, revalidables y sin efectos
 Motor de planes reales sin efectos (D7)
         ↓
 Interfaz de Estudio de Limpieza (D8) integrada y aceptada en modo sintético
-        ↓ autorización de Limpieza Controlada + `gmail.modify`
-          + plan de prueba + C7 aprobado
+        ↓ C7 documental aceptado — sin capacidad operativa
+        ↓ ampliación versionada de sesión/seguridad
+          + almacenamiento privado + autenticación local
+          + autorización de Limpieza Controlada + `gmail.modify`
+          + plan piloto aprobado
 Ejecución controlada por lotes (D9) — BLOQUEADA
         ↓ autorización específica para baja segura
 Desuscripción RFC 8058 de un clic (D10)
@@ -525,7 +534,8 @@ fueron aceptadas por Joa. La autorización de Estudio ya fue recibida y C6 qued�
 preparada y aceptada. D7 fue entregada, auditada e integrada en el árbol de
 MAIN y quedó consolidada en `c8c7b32`. D8 fue entregada desde el worktree
 `83bb`, auditada, integrada y aceptada exclusivamente en modo sintético. C7 y D9
-continúan bloqueadas.
+no están operativas: C7 está aceptado únicamente como contrato documental y D9
+continúa bloqueada.
 
 ## 8. Primer worktree creado e integrado
 
@@ -588,7 +598,8 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
 | Uso real de `gmail.metadata` sin `q` | D3 | Joa autoriza la conexión; MAIN conserva inventario completo y filtrado local |
 | Validación física de DPAPI y ubicación local | D2 antes de datos reales | MAIN audita; Joa autoriza la conexión |
 | Protección, retención y borrado del índice local | C4, D1 | MAIN propone; Joa decide si cambia el tratamiento de datos |
-| Preparación y aceptación de C7 | D9 | Nueva autorización explícita de Joa; no fue otorgada por la aceptación D8 |
+| Ampliación versionada de sesión y seguridad para escritura | D9 | MAIN propone; Joa acepta antes de implementar |
+| Ubicación, ACL, cifrado, retención y autenticación local | D9 y todo dato real | MAIN propone; Joa decide tratamiento de datos y riesgo local |
 | Autorización de Limpieza Controlada y `gmail.modify` | D9 | Joa |
 | Consentimiento y contrato RFC 8058 | D10 | Joa y MAIN |
 
@@ -602,6 +613,11 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
   `https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list`.
 - Google, sincronización completa/parcial e historial vencido:
   `https://developers.google.com/workspace/gmail/api/guides/sync`.
+- Google, `users.messages.modify`, `batchModify`, `trash` y `untrash`:
+  `https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/modify`;
+  `https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/batchModify`;
+  `https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/trash`;
+  `https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/untrash`.
 - IETF, RFC 8058:
   `https://www.rfc-editor.org/rfc/rfc8058.html`.
 

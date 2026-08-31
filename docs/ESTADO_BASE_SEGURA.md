@@ -1,6 +1,6 @@
 # Estado de Base Segura
 
-Fecha del corte: 29 de agosto de 2026.
+Fecha del corte: 31 de agosto de 2026.
 
 Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. MAIN completó
 el 27 de agosto de 2026 la revisión visual que había quedado pendiente; el fallo
@@ -20,9 +20,11 @@ Joa autorizó después su commit y publicación; D7 quedó consolidada en
 desde `a1cf0ff`. El especialista entregó sus 22 cambios exclusivamente
 frontend; MAIN los auditó, integró y volvió a verificar. Joa aceptó D8 dentro de
 su alcance exclusivamente sintético y autorizó su consolidación y publicación
-en `main`. Estudio de Limpieza queda aceptado en modo sintético. C7, D9, Gmail
-real, OAuth, credenciales, datos privados y Limpieza Controlada continúan
-bloqueados.
+en `main` mediante `3ff29bd`. Estudio de Limpieza queda aceptado en modo sintético. Joa autorizó
+después preparar C7 exclusivamente como contrato documental. MAIN redactó
+`CONTROLLED_EXECUTION_V1.md`; Joa lo aceptó y autorizó consolidar únicamente su
+documentación. D9, Gmail real, OAuth, `gmail.modify`, credenciales, datos
+privados y Limpieza Controlada continúan bloqueados.
 
 ## Qué existe
 
@@ -37,6 +39,8 @@ bloqueados.
 - una interfaz D8 de Estudio de Limpieza con historia, constructor, detalle,
   miembros, eventos, revalidación y cancelación sobre `/api/v3/study`, siempre
   sin ejecución y con `canExecute: false`;
+- un contrato documental C7 aceptado que define la futura frontera de
+  confirmación, ejecución y reversión sin agregar código ni rutas;
 - una barrera automática que inspecciona imports, marcadores de capacidad,
   empaquetado y rutas activas.
 
@@ -119,6 +123,13 @@ solicitaron credenciales ni se conectó una cuenta.
   una bandeja Gmail real, sus volúmenes, latencias, cuotas o mensajes anómalos.
   Esa validación requiere otra autorización y una prueba controlada de sólo
   lectura; no forma parte de esta aceptación.
+- La sesión y la línea base vigentes admiten sólo `gmail.metadata`. C7 reserva
+  `gmail.modify` para una futura capacidad separada, pero exige una ampliación
+  versionada antes de D9; no puede reutilizarse D2 cambiando su constante o
+  relajando sus barreras.
+- Índice, planes y futuro ledger todavía carecen de ubicación privada, ACL,
+  cifrado autenticado, retención y autenticación local aprobados para datos
+  reales. Loopback por sí solo no resuelve ese riesgo.
 
 ## Cierre de Base Segura
 
@@ -168,6 +179,8 @@ local. El roundtrip DPAPI real pudo ejecutarse bajo el perfil de usuario actual
 en una verificación anterior.
 
 D8 fue auditada, integrada y aceptada por Joa exclusivamente en modo sintético.
-El proyecto debe detenerse y esperar una nueva autorización antes de preparar
-C7 o comenzar Limpieza Controlada. Gmail real, OAuth, credenciales, datos
-privados y acciones continúan bloqueados.
+C7 fue preparado y aceptado exclusivamente como contrato documental; Joa
+autorizó consolidar sólo esa documentación. Su aceptación no autoriza crear D9,
+ampliar sesión o seguridad, solicitar `gmail.modify` ni comenzar Limpieza
+Controlada. Gmail real, OAuth, credenciales, datos privados y acciones continúan
+bloqueados.
