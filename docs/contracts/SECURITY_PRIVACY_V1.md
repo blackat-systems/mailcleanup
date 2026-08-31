@@ -29,8 +29,8 @@ Antes de una conexión real deben cumplirse conjuntamente:
 2. credencial de aplicación de escritorio fuera de Git;
 3. PKCE S256, `state` de un solo uso, callback exacto en `127.0.0.1` y puerto
    efímero conforme a `GMAIL_SESSION_V1.md`;
-4. evaluación e implementación de DPoP para el refresh token o una decisión
-   explícita de MAIN y Joa que acepte el riesgo residual documentado;
+4. implementación auditada de DPoP para todo refresh token real persistido, sin
+   degradación a una aceptación del riesgo residual;
 5. prueba de DPAPI en un proceso Windows normal con perfil de usuario;
 6. ubicación por usuario y ACL restrictiva para el índice;
 7. cifrado autenticado de los metadatos sensibles con una clave protegida por
@@ -42,6 +42,14 @@ Antes de una conexión real deben cumplirse conjuntamente:
 
 SQLite D1 no satisface por sí sola los puntos 6 a 8: su esquema sintético actual
 no cifra el índice. Hasta resolverlos, ningún dato real puede persistirse.
+
+El 31 de agosto de 2026 Joa aceptó documentalmente
+`GMAIL_ACTION_SESSION_V1.md` y `PRIVATE_LOCAL_VAULT_V1.md`. La primera define
+una sesión de acción efímera sin refresh token; la segunda fija propiedades de
+cifrado autenticado, ACL, claves y verificación local. Su aceptación sin
+implementación no satisface esta barrera. Cualquier refresh token real
+persistido, incluso el de lectura, requiere una ampliación versionada que
+resuelva DPoP; la implementación sintética actual no lo hace.
 
 ## Red y permisos
 

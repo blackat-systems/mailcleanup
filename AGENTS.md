@@ -118,17 +118,22 @@ habilita capacidades externas ni acciones.
 El 31 de agosto de 2026 Joa autorizó a MAIN a preparar C7 exclusivamente como
 contrato documental de Limpieza Controlada. MAIN redactó
 `docs/contracts/CONTROLLED_EXECUTION_V1.md`, Joa lo aceptó y autorizó consolidar
-únicamente su documentación. El contrato no habilita D9, `gmail.modify`, OAuth, Gmail real,
-credenciales, datos privados ni modificaciones. También deja como puertas
-obligatorias una ampliación versionada de sesión y seguridad, almacenamiento
-privado apto para datos reales y autenticación local del proceso.
+únicamente su documentación. C7 quedó consolidado y publicado en `49e2e58`.
+El contrato no habilita D9, `gmail.modify`, OAuth, Gmail real, credenciales,
+datos privados ni modificaciones. Joa autorizó después a MAIN a preparar dos
+extensiones documentales: C3-A `GMAIL_ACTION_SESSION_V1.md` y C4-P
+`PRIVATE_LOCAL_VAULT_V1.md`. Joa aceptó ambas con compatibilidad escalonada y
+autorizó consolidarlas y publicarlas. Quedan consolidadas por el commit que
+contiene este estado y siguen sin constituir controles implementados. No se creó
+D9 ni un worktree nuevo.
 
 ## Objetivo actual
 
-Conservar verdes Estudio de Limpieza y C7 documental aceptado. Esperar una
-autorización posterior antes de preparar la ampliación de sesión/seguridad, un
-prompt o un worktree D9. Gmail, OAuth, `gmail.modify`, credenciales, datos
-privados y acciones reales permanecen bloqueados.
+Conservar verdes Estudio de Limpieza y los contratos documentales C7, C3-A y
+C4-P aceptados. Esperar otra autorización antes de preparar un spike técnico,
+implementar esos contratos o crear un prompt/worktree D9. Gmail, OAuth,
+`gmail.modify`, credenciales, datos privados y acciones reales permanecen
+bloqueados.
 
 ---
 
@@ -164,10 +169,14 @@ Para determinar implementación y estado actual:
 5. `docs/contracts/CLEANUP_PLAN_V1.md` para C6 y D7 integrada;
 6. `docs/contracts/CONTROLLED_EXECUTION_V1.md` para C7 aceptado como contrato
    documental, sin capacidad operativa;
-7. `docs/adr/0001-arquitectura-base-segura.md`;
-8. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
-9. `docs/ESTADO_BASE_SEGURA.md`;
-10. `docs/DECISIONES.md`.
+7. `docs/contracts/GMAIL_ACTION_SESSION_V1.md` para C3-A aceptada sólo
+   documentalmente;
+8. `docs/contracts/PRIVATE_LOCAL_VAULT_V1.md` para C4-P aceptada sólo
+   documentalmente;
+9. `docs/adr/0001-arquitectura-base-segura.md`;
+10. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
+11. `docs/ESTADO_BASE_SEGURA.md`;
+12. `docs/DECISIONES.md`.
 
 Para coordinación de MAIN y dependencias:
 
@@ -195,6 +204,10 @@ OAuth, datos reales, ejecución ni Limpieza Controlada.
 `docs/contracts/CONTROLLED_EXECUTION_V1.md` es C7 aceptado sólo documentalmente: no
 prevalece sobre la sesión de sólo metadatos ni habilita una excepción operativa
 a `SECURITY_PRIVACY_V1.md`.
+`docs/contracts/GMAIL_ACTION_SESSION_V1.md` y
+`docs/contracts/PRIVATE_LOCAL_VAULT_V1.md` son C3-A y C4-P aceptadas con alcance
+exclusivamente documental. Hasta que exista implementación auditada y nuevas
+autorizaciones, no prevalecen como capacidades ni desbloquean D9.
 
 Si código, pruebas y documentación se contradicen, investigar la divergencia.
 No ampliar alcance apoyándose en una implementación accidental ni cambiar un
@@ -235,8 +248,12 @@ contrato sin evidencia y decisión de MAIN.
 - Vitest, Testing Library, jsdom y ESLint.
 - Build TypeScript y Vite.
 
-Windows es la plataforma objetivo inicial. No reemplazar tecnologías centrales
-ni agregar dependencias importantes sin necesidad demostrada y, cuando afecte
+Windows es la plataforma objetivo inicial. La compatibilidad escalonada aceptada
+mantiene Windows 10/11 como objetivo de la experiencia sintética y exige
+Windows 11 build 22000 para datos y acciones reales mientras no exista una
+alternativa local equivalente aceptada. Esto es una política, no evidencia de
+que Windows 10 ya haya sido probado. No reemplazar tecnologías centrales ni
+agregar dependencias importantes sin necesidad demostrada y, cuando afecte
 arquitectura o seguridad, aprobación de Joa.
 
 ---
@@ -460,9 +477,12 @@ D7 CONSOLIDADA EN MAIN (`c8c7b32`)
         ↓ prompt consolidado en `a1cf0ff` + autorización recibida
 D8 `estudio-ui` INTEGRADA Y ACEPTADA EN MODO SINTÉTICO
         ↓ C7 DOCUMENTAL ACEPTADO
-        ↓ ampliación versionada de sesión/seguridad
+        ↓ C3-A Sesión de Acción Gmail DOCUMENTAL ACEPTADA
+          + C4-P Bóveda Privada Local DOCUMENTAL ACEPTADA
+          + endurecimiento auditado de D2 real y su almacén de secretos
+          + autorización para implementar e implementación auditada de esas puertas
           + autorización de Limpieza Controlada + `gmail.modify`
-          + almacenamiento privado + autenticación local + plan piloto
+          + plan piloto
 D9 y Limpieza Controlada continúan bloqueados
 ```
 
@@ -589,8 +609,19 @@ sobre una bandeja Gmail real ni habilita Limpieza Controlada.
 - No introducir clientes Gmail o de red productivos durante C6, D7 o D8.
 - Aplicar `SECURITY_PRIVACY_V1.md`: origen, métodos, endpoints, encabezados,
   tamaños y reintentos se deniegan por defecto salvo allowlist expresa.
-- No usar el índice SQLite vigente con datos reales: todavía no tiene cifrado
-  autenticado, ACL, retención y borrado verificable definidos.
+- No usar el índice SQLite vigente con datos reales: todavía no implementa el
+  cifrado autenticado, la ACL, la retención y el borrado consciente definidos
+  documentalmente por C4-P.
+- Tratar C3-A y C4-P como contratos documentales aceptados, no implementados: la
+  sesión efímera, el proyecto OAuth separado, SQLCipher, Windows Hello y un
+  broker nativo todavía no existen en el producto.
+- Antes de OAuth real, corregir y auditar también D2: autorización no
+  incremental, DPoP para refresh persistido, known folder, DACL y rechazo de
+  reparse points. C3-A/C4-P no corrigen ese código por existir como documentos.
+- Compatibilidad escalonada aceptada: Windows 10/11 como objetivo para la
+  experiencia sintética; Windows 11 build 22000 como mínimo inicial para datos
+  y acciones reales. Windows 10 permanece sin capacidades reales hasta aceptar
+  una alternativa equivalente a `UserConsentVerifierInterop`.
 - Mantener entornos, bases, cachés y dependencias descargadas fuera de Git.
 - No implementar eliminación definitiva ni vaciado de Papelera.
 - No interpretar C7 documental como permiso para solicitar `gmail.modify`,

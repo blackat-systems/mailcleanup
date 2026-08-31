@@ -1,7 +1,12 @@
 # Contrato de Limpieza Controlada v1
 
-Estado: `ACEPTADO POR JOA` el 31 de agosto de 2026. La autorización vigente
-permite consolidar únicamente esta documentación.
+Estado: `ACEPTADO POR JOA` el 31 de agosto de 2026 y consolidado/publicado en
+`49e2e58`. No existe autorización operativa.
+
+Nota de revisión: la base C7 aceptada está publicada en `49e2e58`. Joa aceptó
+después C3-A/C4-P y las precisiones sobre OAuth instalado y alcance de
+revocación, siempre con alcance exclusivamente documental. No cambian ninguna
+capacidad activa.
 
 Autoridad: `CONTRATO_MVP.md`, `SECURITY_PRIVACY_V1.md`,
 `GMAIL_SESSION_V1.md`, `GMAIL_READONLY_INVENTORY_V1.md`,
@@ -59,7 +64,8 @@ siquiera un worktree D9 todavía deben cumplirse:
 
 1. autorización separada para preparar D9, inicialmente sólo con dobles
    sintéticos;
-2. ampliación versionada de sesión y seguridad para `gmail.modify`;
+2. implementación auditada de los contratos documentales ya aceptados
+   `GMAIL_ACTION_SESSION_V1.md` y `PRIVATE_LOCAL_VAULT_V1.md`;
 3. contrato y prompt autosuficiente de D9;
 4. batería global verde y SHA limpio de MAIN.
 
@@ -85,18 +91,28 @@ Una puerta satisfecha no reemplaza ninguna de las demás.
 `GMAIL_SESSION_V1.md` y `SECURITY_PRIVACY_V1.md` permiten hoy únicamente
 `gmail.metadata` y lectura. D2 rechaza otros permisos. C7 no modifica esa verdad.
 
-Antes de D9 debe existir una extensión versionada y aceptada que:
+MAIN preparó `GMAIL_ACTION_SESSION_V1.md` como extensión versionada y Joa la
+aceptó documentalmente. Antes de D9 debe ser implementada y auditada y debe:
 
 - modele una credencial de acción separada de la credencial de sólo metadatos;
-- solicite consentimiento incremental y contextual;
+- solicite una autorización contextual separada; Google no admite autorización
+  incremental para aplicaciones instaladas y no debe enviarse
+  `include_granted_scopes`;
 - preserve PKCE S256, `state` de un solo uso, callback exacto en
-  `127.0.0.1` y DPAPI de usuario;
+  `127.0.0.1` y DPAPI CurrentUser para cualquier secreto que una versión
+  aceptada permita persistir;
 - verifique que la identidad y `account_key` coinciden con el plan;
-- valide el conjunto exacto de permisos al restaurar y renovar;
+- valide el conjunto exacto de permisos al activar y, si una versión aceptada
+  permite persistencia, también al restaurar y renovar;
 - permita retirar u olvidar la capacidad de modificación conscientemente;
 - no promueva ni reescriba en silencio una sesión D2 existente;
-- explique que la revocación remota de Google puede no aislarse de otras
-  credenciales concedidas al mismo cliente.
+- explique que la revocación remota de Google afecta los scopes concedidos al
+  proyecto OAuth y sus clientes; dos credenciales locales o dos clientes del
+  mismo proyecto no ofrecen aislamiento remoto;
+
+C3-A, aceptada documentalmente por Joa, exige un proyecto OAuth de acción
+separado para lograr aislamiento remoto real. Todavía no está implementado ni
+autoriza una conexión.
 
 La futura implementación no puede hacer pasar C7 cambiando la constante actual
 de D2 ni relajando sus pruebas negativas.
@@ -665,9 +681,10 @@ Joa aceptó estas decisiones como contrato C7 documental:
 | reversión | comando separado, condicional y por delta |
 | desuscripción | fuera de C7 |
 
-La retención exacta del ledger privado, su borrado y el modelo de autenticación
-local siguen siendo decisiones bloqueantes que deben cerrarse antes de D9 real,
-no supuestos que el especialista pueda inventar.
+C4-P cerró documentalmente la retención del ledger privado, su borrado consciente
+y el modelo de autenticación local. Su implementación y verificación, junto con
+el proveedor y broker todavía pendientes, siguen siendo controles bloqueantes
+antes de D9 real; el especialista no puede inventarlos ni darlos por satisfechos.
 
 ## 26. Aceptación registrada y siguiente puerta
 
@@ -679,10 +696,11 @@ C7 fue aceptado después de comprobar que:
 - D9, OAuth, Gmail real y datos privados continúan bloqueados;
 - las fuentes durables coinciden con este estado.
 
-Después de consolidar esta documentación, MAIN todavía necesita otra
-autorización para preparar la ampliación de sesión/seguridad o el prompt D9
-desde un commit limpio. Ninguno de esos pasos se deduce automáticamente de este
-documento.
+Joa aceptó después `GMAIL_ACTION_SESSION_V1.md` y
+`PRIVATE_LOCAL_VAULT_V1.md` exclusivamente como contratos documentales y
+autorizó consolidarlos. Su aceptación no autoriza implementarlos, preparar el
+prompt D9 ni crear un worktree. Ninguno de esos pasos se deduce automáticamente
+de este documento.
 
 ## 27. Referencias oficiales verificadas
 
@@ -707,6 +725,8 @@ Consultadas por MAIN el 31 de agosto de 2026:
 - historial y sincronización:
   `https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.history/list`;
   `https://developers.google.com/workspace/gmail/api/guides/sync`.
+- OAuth para aplicaciones instaladas y alcance de revocación:
+  `https://developers.google.com/identity/protocols/oauth2/native-app`.
 
 La documentación oficial describe capacidades del proveedor, no autoriza a
 MailCleanup a usarlas.

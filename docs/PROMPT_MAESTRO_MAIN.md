@@ -27,7 +27,12 @@ autosuficiente quedó consolidado en `a1cf0ff`; D8 fue entregada desde
 `codex/estudio-ui`, auditada, integrada y aceptada por Joa exclusivamente como
 frontend sintético. Sus 22 cambios permanecen bajo `frontend/src/**`. MAIN
 preparó después C7 como contrato documental; Joa lo aceptó y autorizó consolidar
-únicamente esa documentación.
+únicamente esa documentación. C7 quedó publicado en `49e2e58`. Joa autorizó
+después a MAIN a preparar C3-A `GMAIL_ACTION_SESSION_V1.md` y C4-P
+`PRIVATE_LOCAL_VAULT_V1.md`; Joa aceptó ambas exclusivamente como contratos
+documentales con compatibilidad escalonada y autorizó consolidarlas/publicarlas.
+Quedan consolidadas por el commit que contiene este estado y no son controles
+implementados.
 La revisión visual instrumental de Base Segura está completada. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
@@ -78,6 +83,15 @@ aceptada como consumidor frontend sintético bajo
 `docs/prompts/D8_ESTUDIO_UI.md`; Gmail, OAuth, datos reales y toda acción
 permanecen bloqueados.
 
+Existen dos contratos aceptados sin autoridad operativa:
+
+- `docs/contracts/GMAIL_ACTION_SESSION_V1.md` — C3-A, sesión de acción efímera;
+- `docs/contracts/PRIVATE_LOCAL_VAULT_V1.md` — C4-P, almacenamiento privado y
+  verificación local.
+
+Aceptadas documentalmente no significa implementadas. No pueden usarse para
+justificar código, dependencias, OAuth, datos reales o D9.
+
 ## Procesos y puertas
 
 ```text
@@ -93,8 +107,10 @@ D7 CONSOLIDADA EN MAIN (`c8c7b32`)
         ↓ prompt `a1cf0ff` + autorización + Puerta 0
 D8 `estudio-ui` INTEGRADA Y ACEPTADA EN MODO SINTÉTICO
         ↓ C7 DOCUMENTAL ACEPTADO — SIN CAPACIDAD OPERATIVA
-        ↓ ampliación versionada de sesión/seguridad
-          + almacenamiento privado + autenticación local
+        ↓ C3-A SESIÓN DE ACCIÓN DOCUMENTAL ACEPTADA
+          + C4-P BÓVEDA PRIVADA DOCUMENTAL ACEPTADA
+          + endurecimiento auditado de D2 real y su secret store
+        ↓ autorización para implementar + implementación auditada de las puertas
           + autorización de Limpieza Controlada + `gmail.modify`
           + plan piloto aprobado
 D9 y Limpieza Controlada continúan bloqueados
@@ -106,10 +122,10 @@ persistir datos privados ni modificar mensajes.
 ## Objetivo actual
 
 Conservar verdes y auditables Estudio de Limpieza y C7 documental aceptado.
-Detenerse y esperar una autorización posterior antes de preparar D9, ampliar
-sesión/seguridad o iniciar Limpieza Controlada.
-No agregar adaptadores productivos, conexiones, sincronización operativa, datos
-reales o acciones.
+Conservar C3-A/C4-P aceptadas sólo como contratos. Esperar otra autorización
+antes de preparar un spike, implementar, agregar dependencias, endurecer D2 o
+preparar D9. No agregar adaptadores productivos, conexiones, sincronización
+operativa, datos reales o acciones.
 
 ## Línea base de privacidad
 
@@ -128,9 +144,24 @@ El contrato documental aceptado `CONTROLLED_EXECUTION_V1.md` no modifica esta
 línea base. Reserva `gmail.modify` sólo para una futura sesión de acción
 versionada y mantiene D2/D3 con `gmail.metadata` hasta una decisión posterior.
 
+C3-A define autorización contextual no incremental, proyecto OAuth de acción
+separado y access token efímero. C4-P define bóveda cifrada por cuenta, DEK
+protegida por DPAPI, DACL y Windows Hello mediante un futuro broker nativo. Nada
+de eso está implementado. Google no admite incremental authorization para
+clientes instalados y la SQLite vigente continúa sin cifrado autenticado.
+
+Antes de cualquier lectura real, D2 también necesita una ampliación auditada:
+retirar `include_granted_scopes`, resolver DPoP para el refresh token, usar la
+known folder de Windows y verificar DACL y reparse points del almacén. C4-P no
+cubre credenciales OAuth. El broker propuesto mediante
+`UserConsentVerifierInterop` requiere hoy Windows 11 build 22000. Joa aceptó
+compatibilidad escalonada: Windows 10/11 para la experiencia sintética y Windows
+11 como mínimo inicial para datos y acciones reales; una alternativa Windows 10
+con propiedades equivalentes requerirá otra aceptación.
+
 Antes de Gmail real siguen bloqueando:
 
-- DPoP o aceptación explícita del riesgo residual;
+- DPoP auditado para todo refresh token real persistido;
 - credencial de escritorio fuera de Git;
 - prueba DPAPI con perfil Windows normal;
 - índice por usuario con ACL, cifrado autenticado, retención, respaldo y borrado;

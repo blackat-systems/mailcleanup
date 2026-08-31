@@ -52,7 +52,16 @@ exclusivamente en modo sintético:
 - Joa autorizó preparar C7 únicamente como contrato documental, lo aceptó y
   autorizó consolidar esa documentación. `CONTROLLED_EXECUTION_V1.md` define
   confirmación, revalidación por mensaje, Archivo, Papelera, ledger y
-  reconciliación, pero no habilita ninguna acción;
+  reconciliación, pero no habilita ninguna acción. Quedó publicado en
+  `49e2e58`;
+- MAIN preparó después C3-A `GMAIL_ACTION_SESSION_V1.md` y C4-P
+  `PRIVATE_LOCAL_VAULT_V1.md`. Joa aceptó ambas exclusivamente como contratos
+  documentales, con compatibilidad escalonada: Windows 10/11 para la experiencia
+  sintética y Windows 11 build 22000 como mínimo inicial para datos y acciones
+  reales. La primera define autorización de acción efímera y separada; la
+  segunda, una bóveda cifrada por cuenta con verificación local. Quedan
+  consolidadas por el commit que contiene este estado y ninguna está
+  implementada;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -73,6 +82,8 @@ Leer en este orden:
 10. [`docs/prompts/D7_REAL_PLAN_ENGINE.md`](docs/prompts/D7_REAL_PLAN_ENGINE.md), delegación D7 consolidada; el worktree fuente se conserva como evidencia
 11. [`docs/prompts/D8_ESTUDIO_UI.md`](docs/prompts/D8_ESTUDIO_UI.md), frontera frontend sintética entregada e integrada como D8
 12. [`docs/contracts/CONTROLLED_EXECUTION_V1.md`](docs/contracts/CONTROLLED_EXECUTION_V1.md), contrato C7 aceptado sólo documentalmente
+13. [`docs/contracts/GMAIL_ACTION_SESSION_V1.md`](docs/contracts/GMAIL_ACTION_SESSION_V1.md), C3-A aceptada sólo documentalmente
+14. [`docs/contracts/PRIVATE_LOCAL_VAULT_V1.md`](docs/contracts/PRIVATE_LOCAL_VAULT_V1.md), C4-P aceptada sólo documentalmente
 
 ## Organización y arquitectura candidata
 
@@ -99,8 +110,9 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-C7 está aceptado y consolidado únicamente como documentación. No preparar D9 ni
-una ampliación operativa de sesión/seguridad sin otra autorización. Gmail real,
-OAuth, `gmail.modify`, credenciales, datos privados, modificaciones de mensajes
-y Limpieza Controlada siguen fuera de alcance. La aceptación sintética no prueba
-todavía el comportamiento frente a una bandeja Gmail real.
+C7, C3-A y C4-P están aceptados exclusivamente como documentación. No preparar
+un spike, implementar, agregar SQLCipher, endurecer D2 ni crear D9 sin nuevas
+autorizaciones. Gmail real, OAuth, `gmail.modify`, credenciales, datos privados,
+modificaciones de mensajes y Limpieza Controlada siguen fuera de alcance. La
+aceptación sintética no prueba todavía el comportamiento frente a una bandeja
+Gmail real.

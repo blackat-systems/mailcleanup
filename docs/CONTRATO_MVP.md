@@ -81,7 +81,8 @@ Objetivo: ejecutar solamente planes aprobados.
 
 Incluye:
 
-- autorización incremental para `gmail.modify`;
+- autorización contextual separada para `gmail.modify`; Google no admite la
+  función de autorización incremental en clientes instalados;
 - revalidación por mensaje;
 - Archivo y Papelera;
 - restauración mientras Gmail la permita;

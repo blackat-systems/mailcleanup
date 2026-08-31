@@ -100,7 +100,9 @@ Estudio de Limpieza y Limpieza Controlada.
 
 **Impacto:** una aplicación pública exige verificación. Almacenar o transmitir datos restringidos mediante servidores puede agregar una evaluación de seguridad. Pedir permisos “para el futuro” contradice el principio de mínimo acceso.
 
-**Resolución:** autorización incremental:
+**Resolución (errata factual verificada el 31 de agosto de 2026):** autorización
+contextual separada. Los clientes OAuth instalados no admiten la función de
+autorización incremental:
 
 1. análisis de sólo lectura con el permiso mínimo capaz de cumplir el hito;
 2. solicitar `gmail.modify` recién cuando el usuario habilite acciones;
@@ -296,7 +298,8 @@ Se recomiendan como contrato inicial:
 6. Clasificación determinista y explicable antes de incorporar IA.
 7. Primer hito completamente sintético y sin OAuth.
 8. Segundo hito de sólo lectura.
-9. Acciones reales recién en un hito separado y con autorización incremental.
+9. Acciones reales recién en un hito separado y con autorización contextual
+   separada para el permiso de modificación.
 10. Sin filtros persistentes, Guardián en segundo plano, múltiples proveedores, pagos ni eliminación definitiva en el MVP.
 
 Estas decisiones conservan el camino comercial, pero impiden que la visión futura contamine la primera entrega verificable.

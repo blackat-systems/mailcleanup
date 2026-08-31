@@ -55,6 +55,9 @@ todavía necesita aceptación. Los commits heredados son evidencia, no autoridad
 | D-046 | Aceptar D8 `estudio-ui` exclusivamente en modo sintético y autorizar a MAIN a integrar sus 22 cambios bajo `frontend/src/**`, actualizar el estado durable, repetir la batería y revisión visual, consolidar en `main` y publicar únicamente `main` en el `origin` privado. `New folder/grafo.txt` queda excluido. Esta decisión no autoriza Gmail, OAuth, credenciales, datos reales, modificaciones, `gmail.modify`, C7, D9 ni Limpieza Controlada. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 29 de agosto de 2026 y auditoría independiente de MAIN |
 | D-047 | Autorizar a MAIN a preparar C7 exclusivamente como contrato documental de Limpieza Controlada. La preparación no autoriza aceptar el contrato, crear D9, solicitar `gmail.modify`, abrir OAuth, conectar Gmail, usar datos reales, modificar mensajes, hacer commit ni publicar. | Ejecutada; C7 aceptado posteriormente mediante D-048 | Autorización explícita de Joa del 31 de agosto de 2026 y `CONTROLLED_EXECUTION_V1.md` |
 | D-048 | Aceptar C7 exclusivamente como contrato documental y autorizar a MAIN a consolidar únicamente su documentación en `main`, preservando `New folder/grafo.txt` fuera del índice y del commit. Esta decisión no autoriza push, D9, prompt o worktree especialista, ampliación de sesión/seguridad, `gmail.modify`, OAuth, Gmail real, credenciales, datos privados, adaptadores productivos ni acciones sobre mensajes. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 31 de agosto de 2026 |
+| D-049 | Publicar exclusivamente el commit documental C7 de `main` en el `origin` privado verificado, preservando `New folder/grafo.txt` fuera del índice. | Ejecutada y verificada: `49e2e583e2fbe1139f59f8811edcda6ba19ad4cc` en `origin/main` | Autorización explícita de Joa del 31 de agosto de 2026 y verificación local/remota posterior |
+| D-050 | Autorizar a MAIN a preparar C3-A `GMAIL_ACTION_SESSION_V1.md` y C4-P `PRIVATE_LOCAL_VAULT_V1.md` exclusivamente como propuestas documentales. Prepararlas no las acepta, no autoriza consolidación, implementación, dependencias, D9, OAuth, Gmail, credenciales, datos privados ni acciones. | Ejecutada; propuestas aceptadas posteriormente por D-051 | Autorización explícita de Joa del 31 de agosto de 2026 y fuentes oficiales verificadas por MAIN |
+| D-051 | Aceptar C3-A y C4-P exclusivamente como contratos documentales con compatibilidad escalonada —Windows 10/11 para la experiencia sintética y Windows 11 build 22000 como mínimo inicial para datos y acciones reales— y autorizar su commit y push en `main`. La aceptación no autoriza implementación, dependencias, spike, D9, OAuth, Gmail, credenciales, datos privados ni acciones. | Confirmada; consolidada por el commit que contiene esta decisión | Aceptación y autorización explícitas de Joa del 31 de agosto de 2026 |
 
 ## Decisiones suficientemente definidas
 
@@ -98,6 +101,10 @@ sintética de Estudio de Limpieza. D-047 autoriza después preparar C7 sólo com
 contrato documental y D-048 lo acepta y autoriza consolidar exclusivamente esa
 documentación. Ninguna de ambas decisiones autoriza comenzar D9, ampliar la
 sesión o seguridad, solicitar `gmail.modify` o actuar sobre una bandeja real.
+D-049 autorizó y completó únicamente la publicación del commit C7. D-050
+autorizó preparar C3-A y C4-P. D-051 las acepta únicamente como contratos
+documentales, fija la compatibilidad escalonada y autoriza su consolidación y
+publicación. No autoriza implementar, crear un spike o comenzar D9.
 
 ## Resultado de la implementación autorizada
 

@@ -20,11 +20,17 @@ Joa autorizó después su commit y publicación; D7 quedó consolidada en
 desde `a1cf0ff`. El especialista entregó sus 22 cambios exclusivamente
 frontend; MAIN los auditó, integró y volvió a verificar. Joa aceptó D8 dentro de
 su alcance exclusivamente sintético y autorizó su consolidación y publicación
-en `main` mediante `3ff29bd`. Estudio de Limpieza queda aceptado en modo sintético. Joa autorizó
-después preparar C7 exclusivamente como contrato documental. MAIN redactó
+en `main` mediante `3ff29bd`. Estudio de Limpieza queda aceptado en modo
+sintético. Joa autorizó después preparar C7 exclusivamente como contrato
+documental. MAIN redactó
 `CONTROLLED_EXECUTION_V1.md`; Joa lo aceptó y autorizó consolidar únicamente su
-documentación. D9, Gmail real, OAuth, `gmail.modify`, credenciales, datos
-privados y Limpieza Controlada continúan bloqueados.
+documentación. C7 quedó publicado en `49e2e58`. Joa autorizó luego preparar C3-A
+`GMAIL_ACTION_SESSION_V1.md` y C4-P `PRIVATE_LOCAL_VAULT_V1.md`. Joa aceptó
+ambas exclusivamente como contratos documentales con compatibilidad escalonada
+y autorizó consolidarlas y publicarlas. Quedan consolidadas por el commit que
+contiene este estado y no son controles implementados. D9, Gmail real, OAuth,
+`gmail.modify`, credenciales, datos privados y Limpieza Controlada continúan
+bloqueados.
 
 ## Qué existe
 
@@ -41,6 +47,8 @@ privados y Limpieza Controlada continúan bloqueados.
   sin ejecución y con `canExecute: false`;
 - un contrato documental C7 aceptado que define la futura frontera de
   confirmación, ejecución y reversión sin agregar código ni rutas;
+- dos contratos documentales C3-A/C4-P aceptados para sesión de acción efímera y
+  bóveda privada local; no están implementados;
 - una barrera automática que inspecciona imports, marcadores de capacidad,
   empaquetado y rutas activas.
 
@@ -127,9 +135,23 @@ solicitaron credenciales ni se conectó una cuenta.
   `gmail.modify` para una futura capacidad separada, pero exige una ampliación
   versionada antes de D9; no puede reutilizarse D2 cambiando su constante o
   relajando sus barreras.
-- Índice, planes y futuro ledger todavía carecen de ubicación privada, ACL,
-  cifrado autenticado, retención y autenticación local aprobados para datos
-  reales. Loopback por sí solo no resuelve ese riesgo.
+- Google no admite autorización incremental para clientes instalados y una
+  revocación afecta los grants del proyecto OAuth, no sólo un archivo o cliente
+  local. C3-A define autorización contextual, proyecto de acción separado y
+  token de acción efímero; está aceptada documentalmente y no implementada.
+- Índice, planes y futuro ledger todavía carecen de la implementación auditada
+  de ubicación privada, ACL, cifrado autenticado, retención y autenticación
+  local definidas por C4-P. Loopback por sí solo no resuelve ese riesgo.
+- C4-P define base cifrada separada, DEK por cuenta protegida con DPAPI, ACL y
+  Windows Hello mediante un futuro broker nativo. SQLCipher es sólo el primer
+  proveedor a evaluar; no se agregó ni aprobó la dependencia.
+- La sesión real de lectura D2 también necesita endurecimiento antes de OAuth:
+  retirar `include_granted_scopes`, ligar su refresh token mediante DPoP y
+  verificar known folder, DACL y reparse points del almacén. C4-P no almacena
+  credenciales ni resuelve ese trabajo por sí sola.
+- La compatibilidad escalonada aceptada mantiene Windows 10/11 como objetivo
+  sintético y exige Windows 11 build 22000 para datos y acciones reales hasta
+  que Joa acepte una alternativa equivalente.
 
 ## Cierre de Base Segura
 
@@ -179,8 +201,9 @@ local. El roundtrip DPAPI real pudo ejecutarse bajo el perfil de usuario actual
 en una verificación anterior.
 
 D8 fue auditada, integrada y aceptada por Joa exclusivamente en modo sintético.
-C7 fue preparado y aceptado exclusivamente como contrato documental; Joa
-autorizó consolidar sólo esa documentación. Su aceptación no autoriza crear D9,
-ampliar sesión o seguridad, solicitar `gmail.modify` ni comenzar Limpieza
-Controlada. Gmail real, OAuth, credenciales, datos privados y acciones continúan
-bloqueados.
+C7 fue preparado, aceptado, consolidado y publicado exclusivamente como contrato
+documental. C3-A y C4-P fueron aceptadas después con compatibilidad escalonada y
+autorización de consolidación/publicación. Ninguna autoriza crear D9, ampliar
+sesión o seguridad en código, agregar dependencias, solicitar `gmail.modify` ni
+comenzar Limpieza Controlada. Gmail real, OAuth, credenciales, datos privados y
+acciones continúan bloqueados.

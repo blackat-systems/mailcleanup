@@ -3,6 +3,11 @@
 Estado: aprobado por MAIN para implementar D2 con dobles sintéticos y sin abrir
 una sesión real.
 
+Nota de revisión: el contrato D2 sintético sigue aprobado. Joa aceptó junto con
+C3-A la corrección factual del 31 de agosto de 2026 sobre autorización
+incremental. Esto no autoriza modificar D2 ni abrir OAuth en este trabajo
+documental.
+
 Autoridad: aceptación explícita de Base Segura y autorización de Joa del 18 de
 agosto de 2026 para preparar y crear la siguiente dependencia especialista.
 
@@ -51,7 +56,14 @@ La implementación futura real debe usar:
 - `state` impredecible, de un solo uso y comparado en tiempo constante;
 - código de autorización intercambiado una sola vez;
 - tiempo máximo y cancelación explícitos;
-- consentimiento incremental limitado al permiso exacto anterior.
+- autorización contextual limitada al permiso exacto anterior, sin
+  `include_granted_scopes`.
+
+Actualización factual verificada por MAIN el 31 de agosto de 2026: Google no
+admite autorización incremental para aplicaciones instaladas. El orquestador D2
+sintético integrado todavía emite ese parámetro, aunque no existe un transporte
+real; debe retirarlo y agregar una regresión antes de cualquier adaptador OAuth
+real. Esta corrección documental no autoriza ese adaptador ni una conexión.
 
 No se admite `localhost`, puerto fijo, servidor enlazado a interfaces externas,
 flujo out-of-band, copiar códigos manualmente ni registrar URL, código, `state`

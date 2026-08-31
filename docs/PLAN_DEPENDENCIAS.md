@@ -5,8 +5,10 @@ y Estudio de Limpieza fueron aceptados exclusivamente en modo sintético. D7 fue
 entregada, auditada, corregida y publicada en `c8c7b32`. D8 `estudio-ui` fue
 entregada desde el worktree `83bb`, auditada e integrada por MAIN y aceptada por
 Joa con 22 cambios limitados a `frontend/src/**`. C7 fue preparado y aceptado
-exclusivamente como contrato documental. D9 y toda capacidad real continúan
-bloqueados.
+exclusivamente como contrato documental y publicado en `49e2e58`. C3-A Sesión
+de Acción Gmail y C4-P Bóveda Privada Local fueron aceptadas exclusivamente como
+contratos documentales con compatibilidad escalonada. D9 y toda capacidad real
+continúan bloqueados.
 
 Fecha de inspección: 31 de agosto de 2026.
 
@@ -23,7 +25,8 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | HEAD limpio previo a C6 | `963af89067eab382ee0315708ff4d2817353d084` |
 | HEAD que consolida C6 | `5c913f2baed3c943c159df8e495ee3ce548d78d9` |
 | HEAD base D7 | `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
-| Estado actual | D1-D8 y C5 sintéticas consolidadas; C6 aceptada; Estudio de Limpieza aceptado exclusivamente en modo sintético |
+| HEAD publicado que consolida C7 | `49e2e583e2fbe1139f59f8811edcda6ba19ad4cc` |
+| Estado actual | D1-D8 y C5 sintéticas consolidadas; C6/C7/C3-A/C4-P aceptadas sólo en sus alcances documentales o sintéticos; D9 bloqueada |
 | Worktrees | Nueve: MAIN y D1-D8 conservadas como fuentes de evidencia |
 | Remotos | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git`; `main` publicada desde `6310c76`; ninguna rama especialista publicada |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
@@ -139,6 +142,19 @@ Estado: estabilizada para implementar D2 con dobles por
 PKCE S256, DPAPI de usuario y revocación separada. Abrir OAuth o usar
 credenciales reales sigue bloqueado.
 
+#### C3-A. Sesión de Acción Gmail
+
+`docs/contracts/GMAIL_ACTION_SESSION_V1.md` define una extensión separada de
+C3 para `gmail.modify`: proyecto OAuth de acción distinto, autorización
+contextual no incremental, token de acción efímero sólo en memoria, identidad y
+manifiesto exactos y revocación observable. Corrige dos supuestos históricos:
+los clientes instalados no admiten `include_granted_scopes` y revocar afecta el
+proyecto OAuth, no sólo un archivo o cliente local.
+
+Estado: `ACEPTADA POR JOA — ALCANCE EXCLUSIVAMENTE DOCUMENTAL`. No está
+implementada, no cambia D2 y no autoriza OAuth, `gmail.modify`, D9 ni datos
+reales.
+
 ### C4. Índice privado y sincronización
 
 Debe definir esquema, migraciones, checkpoints, estados de sincronización,
@@ -150,6 +166,20 @@ del contrato antes de implementar.
 Estado: estabilizada para migraciones, checkpoint, reanudación y borrado
 sintéticos de D3. Sigue bloqueada para datos reales hasta implementar ubicación
 por usuario, ACL, cifrado autenticado, retención, respaldo y borrado verificable.
+
+#### C4-P. Bóveda Privada Local
+
+`docs/contracts/PRIVATE_LOCAL_VAULT_V1.md` define una base real físicamente
+separada, por cuenta opaca, con cifrado autenticado integral, DEK aleatoria
+protegida por DPAPI CurrentUser, DACL cerrada, rechazo de reparse points,
+retención consciente y verificación local mediante Windows Hello y un futuro
+broker nativo.
+
+Estado: `ACEPTADA POR JOA — ALCANCE EXCLUSIVAMENTE DOCUMENTAL`. SQLCipher es
+sólo la primera alternativa a evaluar mediante un futuro spike todavía no
+autorizado; no se agregó ni autorizó la dependencia. La SQLite actual continúa
+prohibida para datos reales. La compatibilidad escalonada exige Windows 11 build
+22000 para datos y acciones reales hasta aceptar una alternativa equivalente.
 
 ### C5. API de Mapa Total
 
@@ -415,20 +445,20 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Responsabilidad única | Ejecutar Archivo o Papelera por lotes sobre un plan aprobado, con revalidación, idempotencia, ledger, fallos parciales, reintento y reversión disponible. |
 | Razón para separarlo | Es la frontera destructiva y de mayor riesgo; necesita permisos, auditoría y pruebas de fallos independientes. |
 | Estado actual | `BLOQUEADA POR AUTORIZACIÓN` |
-| Dependencias previas | La aceptación sintética de Estudio de Limpieza y la aceptación documental de C7 están cumplidas. Siguen faltando ampliación versionada de sesión/seguridad, almacenamiento privado, autenticación local, autorización de Limpieza Controlada y `gmail.modify`. |
-| Contratos que consume | Plan congelado C6, C7, sesión ampliada en contexto, protecciones y ledger. |
+| Dependencias previas | La aceptación sintética de Estudio y las aceptaciones documentales de C7/C3-A/C4-P están cumplidas. Faltan implementación auditada, endurecimiento de la sesión real de lectura D2 y su almacén, decisión técnica sobre proveedor/broker, autorización de Limpieza Controlada y `gmail.modify`. |
+| Contratos que consume | Plan congelado C6, C7, C3-A y C4-P aceptadas e implementadas, protecciones y ledger. |
 | Resultados que produce | Ejecución auditable por mensaje/lote y estado de reversión; nunca borrado definitivo. |
 | Consumidores posteriores | Interfaz de confirmación compuesta por MAIN, D10 e historial global. |
 | Permitido | Puertos y adaptadores de acciones, ledger, reintentos y pruebas con dobles; migraciones expresamente delimitadas. |
 | Prohibido | Eliminación definitiva, vaciado de Papelera, desuscripción, ejecución sin confirmación, UI y scope global `mail.google.com`. |
 | Rama propuesta | `codex/controlled-action-engine` |
 | Ruta propuesta | `C:\Users\Joaquin\.codex\worktrees\mailcleanup-controlled-action-engine` |
-| Commit base requerido | SHA limpio posterior a la aceptación sintética de Estudio y a la consolidación documental de C7. |
+| Commit base requerido | SHA limpio posterior a implementar y auditar C3-A/C4-P, endurecer D2 real y consolidar todas esas puertas desde sus autorizaciones específicas. |
 | Verificaciones específicas | Revalidación por mensaje, doble ejecución, fallos parciales, reintento, lote pequeño, cambio de protección, Archivo/Papelera/restauración y scopes. |
 | Criterios de aceptación | No repite éxitos, nunca actúa fuera del snapshot revalidado, registra cada resultado y detiene contradicciones. |
 | Riesgos de integración | Daño real, permisos excesivos, diferencias entre etiquetas de sistema y falsa reversibilidad. |
 | Paralelización real | No con cambios de C6/C7 ni con D10; integrar y auditar antes de cualquier consumidor. |
-| Condición exacta de desbloqueo | Parcialmente cumplida: la aceptación sintética de Estudio y la aceptación documental de C7 existen. Continúan pendientes la ampliación versionada de sesión/seguridad, almacenamiento privado y autenticación local; después, autorización separada de Limpieza Controlada, plan piloto, `gmail.modify`, batería, SHA limpio y prompt. |
+| Condición exacta de desbloqueo | Parcialmente cumplida: Estudio sintético y C7/C3-A/C4-P documentales están aceptados. MAIN debe resolver, mediante autorizaciones posteriores, el spike de cifrado, el broker nativo, el endurecimiento D2 real/secret store y una implementación auditada de todas las puertas; después siguen siendo necesarias la autorización separada de Limpieza Controlada, `gmail.modify`, plan piloto, batería, SHA limpio y prompt. |
 
 ### D10 — `rfc8058-one-click`
 
@@ -503,8 +533,11 @@ Motor de planes reales sin efectos (D7)
         ↓
 Interfaz de Estudio de Limpieza (D8) integrada y aceptada en modo sintético
         ↓ C7 documental aceptado — sin capacidad operativa
-        ↓ ampliación versionada de sesión/seguridad
-          + almacenamiento privado + autenticación local
+        ↓ C3-A Sesión de Acción Gmail — DOCUMENTAL ACEPTADA
+          + C4-P Bóveda Privada Local — DOCUMENTAL ACEPTADA
+          + endurecimiento D2 real: OAuth no incremental, DPoP,
+            known folder, DACL y rechazo de reparse points
+        ↓ autorización para implementar + implementación auditada de las puertas
           + autorización de Limpieza Controlada + `gmail.modify`
           + plan piloto aprobado
 Ejecución controlada por lotes (D9) — BLOQUEADA
@@ -598,8 +631,11 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
 | Uso real de `gmail.metadata` sin `q` | D3 | Joa autoriza la conexión; MAIN conserva inventario completo y filtrado local |
 | Validación física de DPAPI y ubicación local | D2 antes de datos reales | MAIN audita; Joa autoriza la conexión |
 | Protección, retención y borrado del índice local | C4, D1 | MAIN propone; Joa decide si cambia el tratamiento de datos |
-| Ampliación versionada de sesión y seguridad para escritura | D9 | MAIN propone; Joa acepta antes de implementar |
-| Ubicación, ACL, cifrado, retención y autenticación local | D9 y todo dato real | MAIN propone; Joa decide tratamiento de datos y riesgo local |
+| Implementación auditada de C3-A Sesión de Acción | D9 | Contrato aceptado; implementación requiere autorización posterior de Joa |
+| Implementación auditada de C4-P Bóveda Privada | D9 y todo dato real | Contrato aceptado; spike, proveedor, dependencia y broker requieren autorizaciones posteriores |
+| Endurecimiento de la sesión real de lectura D2 y su secret store | D3 real y D9 | MAIN versiona y audita `include_granted_scopes`, DPoP, known folder, DACL y reparse points antes de OAuth real |
+| Spike de proveedor SQLite cifrado y dependencia nativa | C4-P | Joa autoriza después de aceptar propiedades; MAIN verifica Windows, licencia y reproducibilidad |
+| Launcher/broker nativo y Windows Hello | C4-P y D9 | Compatibilidad escalonada aceptada: Windows 11 build 22000 inicial; alternativa Windows 10 requiere nueva aceptación |
 | Autorización de Limpieza Controlada y `gmail.modify` | D9 | Joa |
 | Consentimiento y contrato RFC 8058 | D10 | Joa y MAIN |
 
