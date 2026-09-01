@@ -67,7 +67,8 @@ MAIN quedó aprobada con una corrección conservadora: los fragmentos de un fluj
 particionado conservan la confianza automática original de D4. D5 queda
 consolidada por el commit que contiene este estado. No están autorizados abrir
 OAuth, conectar Gmail, solicitar credenciales ni usar datos reales. Existen
-nueve worktrees: MAIN y las fuentes D1-D8 conservadas como evidencia.
+once worktrees: MAIN, las fuentes D1-D8 y los dos worktrees detached `a0ea` y
+`eeaa` de ejecución y corrección documental de Fase A C4-P.
 D6
 permanece en
 `C:\Users\Joaquin\.codex\worktrees\bbbc\mailcleanup`, rama
@@ -125,13 +126,24 @@ extensiones documentales: C3-A `GMAIL_ACTION_SESSION_V1.md` y C4-P
 `PRIVATE_LOCAL_VAULT_V1.md`. Joa aceptó ambas con compatibilidad escalonada y
 autorizó consolidarlas y publicarlas. Quedan consolidadas por el commit que
 contiene este estado y siguen sin constituir controles implementados. No se creó
-D9 ni un worktree nuevo.
+D9 ni un worktree nuevo. Joa autorizó después a MAIN a preparar, pero no
+ejecutar, el estudio técnico sintético de C4-P. Joa autorizó después sólo su
+Fase A sin dependencias. La ejecución ocurrió en el worktree aislado `a0ea` con
+canarios sintéticos: confirmó que SQLite estándar expone plaintext en DB, WAL y
+journal, inventarió el host y cerró documentalmente la matriz de opciones, el
+harness y el modelo IPC. El
+protocolo durable queda `FASE A EJECUTADA — FASES B-D NO EJECUTADAS`; no se
+agregó una dependencia, no se modificó código y no se creó una capacidad real.
+La candidata final aislada fue reauditada por MAIN, aceptada por Joa mediante
+D-054 e integrada documentalmente por el commit que contiene este estado. No se
+seleccionó proveedor, versión, binding ni toolchain.
 
 ## Objetivo actual
 
 Conservar verdes Estudio de Limpieza y los contratos documentales C7, C3-A y
-C4-P aceptados. Esperar otra autorización antes de preparar un spike técnico,
-implementar esos contratos o crear un prompt/worktree D9. Gmail, OAuth,
+C4-P aceptados. Conservar la evidencia de Fase A C4-P y esperar otra autorización
+antes de iniciar B0, ejecutar Fase B, seleccionar o incorporar un proveedor,
+construir el broker, implementar esos contratos o crear un prompt/worktree D9. Gmail, OAuth,
 `gmail.modify`, credenciales, datos privados y acciones reales permanecen
 bloqueados.
 
@@ -173,10 +185,12 @@ Para determinar implementación y estado actual:
    documentalmente;
 8. `docs/contracts/PRIVATE_LOCAL_VAULT_V1.md` para C4-P aceptada sólo
    documentalmente;
-9. `docs/adr/0001-arquitectura-base-segura.md`;
-10. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
-11. `docs/ESTADO_BASE_SEGURA.md`;
-12. `docs/DECISIONES.md`.
+9. `docs/ESTUDIO_TECNICO_C4P.md` para la Fase A C4-P ejecutada sin dependencias y
+   las Fases B-D todavía no ejecutadas;
+10. `docs/adr/0001-arquitectura-base-segura.md`;
+11. `pyproject.toml`, `frontend/package.json`, lockfile y scripts;
+12. `docs/ESTADO_BASE_SEGURA.md`;
+13. `docs/DECISIONES.md`.
 
 Para coordinación de MAIN y dependencias:
 
@@ -479,6 +493,7 @@ D8 `estudio-ui` INTEGRADA Y ACEPTADA EN MODO SINTÉTICO
         ↓ C7 DOCUMENTAL ACEPTADO
         ↓ C3-A Sesión de Acción Gmail DOCUMENTAL ACEPTADA
           + C4-P Bóveda Privada Local DOCUMENTAL ACEPTADA
+            Fase A EJECUTADA — Fases B-D NO EJECUTADAS
           + endurecimiento auditado de D2 real y su almacén de secretos
           + autorización para implementar e implementación auditada de esas puertas
           + autorización de Limpieza Controlada + `gmail.modify`
@@ -615,6 +630,11 @@ sobre una bandeja Gmail real ni habilita Limpieza Controlada.
 - Tratar C3-A y C4-P como contratos documentales aceptados, no implementados: la
   sesión efímera, el proyecto OAuth separado, SQLCipher, Windows Hello y un
   broker nativo todavía no existen en el producto.
+- Tratar `docs/ESTUDIO_TECNICO_C4P.md` como protocolo y evidencia limitada de
+  Fase A, no como aprobación de proveedor: A1-A3 fueron ejecutadas o
+  inspeccionadas, A4-A5 se cerraron documentalmente y A6 sólo conceptualmente.
+  No se construyeron ni probaron proveedor, harness o IPC; las Fases B-D siguen
+  sin ejecutar.
 - Antes de OAuth real, corregir y auditar también D2: autorización no
   incremental, DPoP para refresh persistido, known folder, DACL y rechazo de
   reparse points. C3-A/C4-P no corrigen ese código por existir como documentos.

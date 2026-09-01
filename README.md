@@ -62,6 +62,14 @@ exclusivamente en modo sintético:
   segunda, una bóveda cifrada por cuenta con verificación local. Quedan
   consolidadas por el commit que contiene este estado y ninguna está
   implementada;
+- MAIN preparó el estudio técnico sintético de C4-P en
+  `docs/ESTUDIO_TECNICO_C4P.md`. Joa autorizó después sólo la Fase A sin
+  dependencias. El inventario y el control negativo confirmaron que SQLite
+  estándar deja plaintext sintético en DB, WAL y journal; la comparación de
+  cuatro opciones, el harness y el IPC quedaron cerrados documentalmente. MAIN
+  auditó la candidata final y Joa aceptó su integración documental. Ningún
+  proveedor fue seleccionado. Las Fases B-D no fueron ejecutadas y no se agregó
+  ninguna dependencia o capacidad;
 
 El dictamen y la evidencia están en
 [`docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md`](docs/AUDITORIA_HERENCIA_PROYECTO_ANTERIOR.md).
@@ -84,6 +92,7 @@ Leer en este orden:
 12. [`docs/contracts/CONTROLLED_EXECUTION_V1.md`](docs/contracts/CONTROLLED_EXECUTION_V1.md), contrato C7 aceptado sólo documentalmente
 13. [`docs/contracts/GMAIL_ACTION_SESSION_V1.md`](docs/contracts/GMAIL_ACTION_SESSION_V1.md), C3-A aceptada sólo documentalmente
 14. [`docs/contracts/PRIVATE_LOCAL_VAULT_V1.md`](docs/contracts/PRIVATE_LOCAL_VAULT_V1.md), C4-P aceptada sólo documentalmente
+15. [`docs/ESTUDIO_TECNICO_C4P.md`](docs/ESTUDIO_TECNICO_C4P.md), Fase A C4-P ejecutada sin dependencias y Fases B-D bloqueadas
 
 ## Organización y arquitectura candidata
 
@@ -110,9 +119,12 @@ ignora. Detener el servidor con `Ctrl+C`.
 
 ## Próximo paso
 
-C7, C3-A y C4-P están aceptados exclusivamente como documentación. No preparar
-un spike, implementar, agregar SQLCipher, endurecer D2 ni crear D9 sin nuevas
-autorizaciones. Gmail real, OAuth, `gmail.modify`, credenciales, datos privados,
-modificaciones de mensajes y Limpieza Controlada siguen fuera de alcance. La
-aceptación sintética no prueba todavía el comportamiento frente a una bandeja
-Gmail real.
+C7, C3-A y C4-P están aceptados exclusivamente como documentación. La Fase A
+del estudio C4-P está ejecutada, auditada y aceptada, y demuestra que SQLite
+estándar no sirve para datos privados; no aprueba un reemplazo. El próximo paso
+todavía debe acordarse con Joa. Cualquier B0 o Fase B que seleccione o evalúe un
+candidato exacto requiere una autorización nueva. No descargar, incorporar ni
+compilar SQLCipher/SEE, implementar, endurecer D2 ni crear D9 sin nuevas autorizaciones.
+Gmail real, OAuth, `gmail.modify`, credenciales, datos privados, modificaciones
+de mensajes y Limpieza Controlada siguen fuera de alcance. La aceptación
+sintética no prueba todavía el comportamiento frente a una bandeja Gmail real.

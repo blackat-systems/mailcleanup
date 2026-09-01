@@ -18,8 +18,8 @@ Este archivo es la fuente durable de coordinación. No reemplaza
 | Remoto actual | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git` |
 | Política de publicación | Sólo MAIN publica `main` con autorización explícita y verificación del destino; ninguna rama especialista se publica por defecto |
 | Primera publicación | `main` → `origin/main` verificada desde `6310c7654084e322b9d280cd43b359809e55d354` |
-| Base consolidada | D8 está consolidada en `3ff29bdbb48ef7293feaa4420786180fcb7dfdde`; C7 documental está publicado en `49e2e583e2fbe1139f59f8811edcda6ba19ad4cc`; el commit que contiene este estado consolida C3-A/C4-P; `a1cf0ff5b0ea71b6656a5bf14951df189f874cc4` permanece como base de la fuente D8 |
-| Estado | Base Segura, Mapa Total y Estudio aceptados con alcance sintético; D1-D8 y C5 consolidadas; C7/C3-A/C4-P aceptadas sólo como contratos documentales; D9 y capacidades reales bloqueadas |
+| Base consolidada | D8 está consolidada en `3ff29bdbb48ef7293feaa4420786180fcb7dfdde`; C7 documental está publicado en `49e2e583e2fbe1139f59f8811edcda6ba19ad4cc`; C3-A/C4-P están consolidadas en `6f867544d8bc8319e082328163ea3684e24a86c0`; el commit que contiene este estado consolida la Fase A C4-P auditada; `a1cf0ff5b0ea71b6656a5bf14951df189f874cc4` permanece como base de la fuente D8 |
+| Estado | Base Segura, Mapa Total y Estudio aceptados con alcance sintético; D1-D8 y C5 consolidadas; C7/C3-A/C4-P aceptadas sólo como contratos documentales; Fase A C4-P ejecutada y aceptada sin dependencias; Fases B-D, D9 y capacidades reales bloqueadas |
 
 MAIN implementó C5 directamente porque conserva composición, contratos y API
 transversales. No se creó un worktree C5. El candidato agrega
@@ -319,14 +319,14 @@ integró únicamente esos 22 archivos y preservó `New folder/grafo.txt` fuera d
 diff y del commit. Joa aceptó D8 sólo como interfaz sintética de Estudio de
 Limpieza. La fuente especialista permanece como evidencia; esta integración no
 habilita Gmail, OAuth, credenciales, datos reales, C7, D9 ni Limpieza
-Controlada. `git worktree list` muestra nueve worktrees: MAIN y D1-D8. La
-existencia de `origin` no autoriza usarlo desde el especialista.
+Controlada. Al cerrar D8, `git worktree list` mostraba nueve worktrees: MAIN y
+D1-D8. La existencia de `origin` no autoriza usarlo desde el especialista.
 
 El 31 de agosto de 2026 Joa autorizó a MAIN a preparar C7 exclusivamente como
 contrato documental; después lo aceptó y autorizó consolidar únicamente esa
 documentación. `docs/contracts/CONTROLLED_EXECUTION_V1.md` no representa un
-worktree ni una capacidad operativa. No se creó D9, no se agregó una rama y los
-nueve worktrees reales permanecen sin cambios.
+worktree ni una capacidad operativa. No se creó D9 ni se agregó una rama; en ese
+momento los nueve worktrees reales permanecían sin cambios.
 
 Joa autorizó después el push exclusivo de C7; `origin/main` quedó verificado en
 `49e2e583e2fbe1139f59f8811edcda6ba19ad4cc`. También autorizó a MAIN a preparar
@@ -335,6 +335,25 @@ propuestas documentales. Joa aceptó ambas con compatibilidad escalonada y
 autorizó consolidarlas/publicarlas, sin autorizar implementación. No se creó un
 registro de worktree para ellas porque no son dependencias ejecutadas. D9 sigue
 sin rama, prompt ni worktree.
+
+## C4-P Fase A — fuentes documentales aisladas
+
+Joa autorizó posteriormente ejecutar la Fase A C4-P sin dependencias en un
+checkout separado y luego crear otro checkout para sus correcciones. Ambos se
+conservan como evidencia; no son D9 ni habilitan Fase B o capacidades reales.
+
+| Campo | Ejecución original `a0ea` | Correcciones finales `eeaa` |
+|---|---|---|
+| Ruta | `C:\Users\Joaquin\.codex\worktrees\a0ea\mailcleanup` | `C:\Users\Joaquin\.codex\worktrees\eeaa\mailcleanup` |
+| Rama | detached HEAD | detached HEAD |
+| Base y HEAD | `6f867544d8bc8319e082328163ea3684e24a86c0` | `6f867544d8bc8319e082328163ea3684e24a86c0` |
+| Estado fuente | Un único `docs/ESTUDIO_TECNICO_C4P.md` no rastreado; corregido posteriormente | Un único `docs/ESTUDIO_TECNICO_C4P.md` no rastreado; candidata final auditada y aceptada |
+| SHA-256 del artefacto | `5D107D4B2D9DA933A6BF5E667F3B71D7182BD4DA5E59E3B9F7D32248D20B5569` | `DB50327F3EE524503E3D85F041452133777579A1F06BA3F5BBB2895AAA326AF3` |
+| Commit o publicación especialista | Ninguno | Ninguno |
+| Capacidades reales | Prohibidas | Prohibidas |
+
+Con estas dos fuentes, `git worktree list` muestra once worktrees reales: MAIN,
+D1-D8, `a0ea` y `eeaa`.
 
 ## Reglas de actualización
 

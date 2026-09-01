@@ -7,10 +7,13 @@ entregada desde el worktree `83bb`, auditada e integrada por MAIN y aceptada por
 Joa con 22 cambios limitados a `frontend/src/**`. C7 fue preparado y aceptado
 exclusivamente como contrato documental y publicado en `49e2e58`. C3-A Sesión
 de Acción Gmail y C4-P Bóveda Privada Local fueron aceptadas exclusivamente como
-contratos documentales con compatibilidad escalonada. D9 y toda capacidad real
-continúan bloqueados.
+contratos documentales con compatibilidad escalonada. La Fase A del estudio
+técnico sintético C4-P está ejecutada, auditada y aceptada sin dependencias:
+descarta SQLite estándar para datos privados, pero no selecciona proveedor ni
+autoriza dependencias o implementación. B0, las Fases B-D, D9 y toda capacidad
+real continúan bloqueados.
 
-Fecha de inspección: 31 de agosto de 2026.
+Fecha de inspección: 1 de septiembre de 2026.
 
 Este documento define fronteras, dependencias, puertas y orden de integración.
 No autoriza capacidades, no crea worktrees y no reemplaza contratos funcionales
@@ -26,8 +29,9 @@ ni de API. `docs/WORKTREE_REGISTRY.md` registra solamente worktrees reales.
 | HEAD que consolida C6 | `5c913f2baed3c943c159df8e495ee3ce548d78d9` |
 | HEAD base D7 | `e92a77a34f25e468be3056a4c65bef8d59fa4506` |
 | HEAD publicado que consolida C7 | `49e2e583e2fbe1139f59f8811edcda6ba19ad4cc` |
-| Estado actual | D1-D8 y C5 sintéticas consolidadas; C6/C7/C3-A/C4-P aceptadas sólo en sus alcances documentales o sintéticos; D9 bloqueada |
-| Worktrees | Nueve: MAIN y D1-D8 conservadas como fuentes de evidencia |
+| HEAD publicado que consolida C3-A/C4-P | `6f867544d8bc8319e082328163ea3684e24a86c0` |
+| Estado actual | D1-D8 y C5 sintéticas consolidadas; C6/C7/C3-A/C4-P aceptadas sólo en sus alcances documentales o sintéticos; Fase A C4-P ejecutada sin dependencias y Fases B-D bloqueadas; D9 bloqueada |
+| Worktrees | Once: MAIN, D1-D8 y los worktrees detached `a0ea`/`eeaa` de Fase A C4-P conservados como evidencia |
 | Remotos | `origin` privado: `https://github.com/blackat-systems/mailcleanup.git`; `main` publicada desde `6310c76`; ninguna rama especialista publicada |
 | AGENTS.md | Inicializado, sin campos de plantilla pendientes |
 | Base Segura | Aceptada explícitamente por Joa; revisión visual instrumental completada después en escritorio y 390 px |
@@ -175,11 +179,15 @@ protegida por DPAPI CurrentUser, DACL cerrada, rechazo de reparse points,
 retención consciente y verificación local mediante Windows Hello y un futuro
 broker nativo.
 
-Estado: `ACEPTADA POR JOA — ALCANCE EXCLUSIVAMENTE DOCUMENTAL`. SQLCipher es
-sólo la primera alternativa a evaluar mediante un futuro spike todavía no
-autorizado; no se agregó ni autorizó la dependencia. La SQLite actual continúa
-prohibida para datos reales. La compatibilidad escalonada exige Windows 11 build
-22000 para datos y acciones reales hasta aceptar una alternativa equivalente.
+Estado: `ACEPTADA POR JOA — ALCANCE EXCLUSIVAMENTE DOCUMENTAL`; Fase A del
+estudio técnico `EJECUTADA SIN DEPENDENCIAS` en
+`docs/ESTUDIO_TECNICO_C4P.md`. El control negativo descartó SQLite estándar para
+datos privados. La Fase A comparó cuatro opciones y no seleccionó ninguna. El
+contrato C4-P sólo recomienda evaluar primero SQLCipher 4 Community; versión,
+artefacto y proveedor permanecen pendientes y no fueron autorizados como
+dependencia. La SQLite actual continúa prohibida para datos reales.
+La compatibilidad escalonada exige Windows 11 build 22000 para datos y acciones
+reales hasta aceptar una alternativa equivalente.
 
 ### C5. API de Mapa Total
 
@@ -458,7 +466,7 @@ justifica un worktree independiente y nunca debe disparar una solicitud.
 | Criterios de aceptación | No repite éxitos, nunca actúa fuera del snapshot revalidado, registra cada resultado y detiene contradicciones. |
 | Riesgos de integración | Daño real, permisos excesivos, diferencias entre etiquetas de sistema y falsa reversibilidad. |
 | Paralelización real | No con cambios de C6/C7 ni con D10; integrar y auditar antes de cualquier consumidor. |
-| Condición exacta de desbloqueo | Parcialmente cumplida: Estudio sintético y C7/C3-A/C4-P documentales están aceptados. MAIN debe resolver, mediante autorizaciones posteriores, el spike de cifrado, el broker nativo, el endurecimiento D2 real/secret store y una implementación auditada de todas las puertas; después siguen siendo necesarias la autorización separada de Limpieza Controlada, `gmail.modify`, plan piloto, batería, SHA limpio y prompt. |
+| Condición exacta de desbloqueo | Parcialmente cumplida: Estudio sintético y C7/C3-A/C4-P documentales están aceptados y la Fase A C4-P está ejecutada. MAIN todavía debe ejecutar y auditar las Fases B-D mediante autorizaciones posteriores, resolver proveedor y broker, endurecer D2 real/secret store y obtener una implementación auditada de todas las puertas; después siguen siendo necesarias la autorización separada de Limpieza Controlada, `gmail.modify`, plan piloto, batería, SHA limpio y prompt. |
 
 ### D10 — `rfc8058-one-click`
 
@@ -535,6 +543,7 @@ Interfaz de Estudio de Limpieza (D8) integrada y aceptada en modo sintético
         ↓ C7 documental aceptado — sin capacidad operativa
         ↓ C3-A Sesión de Acción Gmail — DOCUMENTAL ACEPTADA
           + C4-P Bóveda Privada Local — DOCUMENTAL ACEPTADA
+            Fase A EJECUTADA — Fases B-D NO EJECUTADAS
           + endurecimiento D2 real: OAuth no incremental, DPoP,
             known folder, DACL y rechazo de reparse points
         ↓ autorización para implementar + implementación auditada de las puertas
@@ -632,9 +641,10 @@ entre sí, no compiten por archivos o migraciones y admiten pruebas aisladas.
 | Validación física de DPAPI y ubicación local | D2 antes de datos reales | MAIN audita; Joa autoriza la conexión |
 | Protección, retención y borrado del índice local | C4, D1 | MAIN propone; Joa decide si cambia el tratamiento de datos |
 | Implementación auditada de C3-A Sesión de Acción | D9 | Contrato aceptado; implementación requiere autorización posterior de Joa |
-| Implementación auditada de C4-P Bóveda Privada | D9 y todo dato real | Contrato aceptado; spike, proveedor, dependencia y broker requieren autorizaciones posteriores |
+| Fases B-D del estudio técnico C4-P | C4-P | Fase A ejecutada; Joa debe autorizar el candidato, runtime, dependencias y fase exactos antes de cualquier descarga, build, broker o empaquetado |
+| Implementación auditada de C4-P Bóveda Privada | D9 y todo dato real | Contrato aceptado; sólo Fase A ejecutada; proveedor, dependencia, broker e implementación requieren decisiones y autorizaciones posteriores |
 | Endurecimiento de la sesión real de lectura D2 y su secret store | D3 real y D9 | MAIN versiona y audita `include_granted_scopes`, DPoP, known folder, DACL y reparse points antes de OAuth real |
-| Spike de proveedor SQLite cifrado y dependencia nativa | C4-P | Joa autoriza después de aceptar propiedades; MAIN verifica Windows, licencia y reproducibilidad |
+| Proveedor SQLite cifrado y dependencia nativa | C4-P | Sólo después de ejecutar y auditar el estudio: Joa acepta candidato, versión y dependencia exactos; MAIN verifica Windows, licencia y reproducibilidad |
 | Launcher/broker nativo y Windows Hello | C4-P y D9 | Compatibilidad escalonada aceptada: Windows 11 build 22000 inicial; alternativa Windows 10 requiere nueva aceptación |
 | Autorización de Limpieza Controlada y `gmail.modify` | D9 | Joa |
 | Consentimiento y contrato RFC 8058 | D10 | Joa y MAIN |

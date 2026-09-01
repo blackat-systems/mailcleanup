@@ -32,7 +32,13 @@ después a MAIN a preparar C3-A `GMAIL_ACTION_SESSION_V1.md` y C4-P
 `PRIVATE_LOCAL_VAULT_V1.md`; Joa aceptó ambas exclusivamente como contratos
 documentales con compatibilidad escalonada y autorizó consolidarlas/publicarlas.
 Quedan consolidadas por el commit que contiene este estado y no son controles
-implementados.
+implementados. Joa autorizó después preparar, pero no ejecutar, el estudio
+técnico sintético C4-P. Joa autorizó después sólo su Fase A sin dependencias.
+`docs/ESTUDIO_TECNICO_C4P.md` conserva su evidencia y queda en estado
+`FASE A EJECUTADA Y ACEPTADA — FASES B-D NO EJECUTADAS`; MAIN auditó su
+candidata final y Joa autorizó únicamente su integración documental, commit y
+publicación. No es un prompt especialista ni autoriza proveedor, dependencias,
+código o capacidades reales.
 La revisión visual instrumental de Base Segura está completada. `origin`
 apunta al repositorio privado `https://github.com/blackat-systems/mailcleanup.git`;
 su existencia no autoriza publicar ramas especialistas ni cambia las puertas de
@@ -91,6 +97,10 @@ Existen dos contratos aceptados sin autoridad operativa:
 
 Aceptadas documentalmente no significa implementadas. No pueden usarse para
 justificar código, dependencias, OAuth, datos reales o D9.
+El estudio C4-P sólo constituye evidencia limitada para A1-A6: Fase A se ejecutó
+sin dependencias y descartó SQLite estándar para datos privados. No demuestra un
+proveedor cifrado, broker o empaquetado; B0 y cada Fase B-D exigen otra
+autorización de Joa.
 
 ## Procesos y puertas
 
@@ -109,6 +119,7 @@ D8 `estudio-ui` INTEGRADA Y ACEPTADA EN MODO SINTÉTICO
         ↓ C7 DOCUMENTAL ACEPTADO — SIN CAPACIDAD OPERATIVA
         ↓ C3-A SESIÓN DE ACCIÓN DOCUMENTAL ACEPTADA
           + C4-P BÓVEDA PRIVADA DOCUMENTAL ACEPTADA
+            Fase A EJECUTADA — Fases B-D NO EJECUTADAS
           + endurecimiento auditado de D2 real y su secret store
         ↓ autorización para implementar + implementación auditada de las puertas
           + autorización de Limpieza Controlada + `gmail.modify`
@@ -122,9 +133,10 @@ persistir datos privados ni modificar mensajes.
 ## Objetivo actual
 
 Conservar verdes y auditables Estudio de Limpieza y C7 documental aceptado.
-Conservar C3-A/C4-P aceptadas sólo como contratos. Esperar otra autorización
-antes de preparar un spike, implementar, agregar dependencias, endurecer D2 o
-preparar D9. No agregar adaptadores productivos, conexiones, sincronización
+Conservar C3-A/C4-P aceptadas sólo como contratos y la evidencia de Fase A C4-P.
+Esperar otra autorización antes de iniciar B0, ejecutar Fase B, seleccionar un
+proveedor, implementar, agregar dependencias, construir el broker, endurecer D2
+o preparar D9. No agregar adaptadores productivos, conexiones, sincronización
 operativa, datos reales o acciones.
 
 ## Línea base de privacidad

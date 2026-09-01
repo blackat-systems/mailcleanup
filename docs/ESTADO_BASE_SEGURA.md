@@ -1,6 +1,6 @@
 # Estado de Base Segura
 
-Fecha del corte: 31 de agosto de 2026.
+Fecha del corte: 1 de septiembre de 2026.
 
 Estado: aceptada explícitamente por Joa el 18 de agosto de 2026. MAIN completó
 el 27 de agosto de 2026 la revisión visual que había quedado pendiente; el fallo
@@ -28,7 +28,15 @@ documentación. C7 quedó publicado en `49e2e58`. Joa autorizó luego preparar C
 `GMAIL_ACTION_SESSION_V1.md` y C4-P `PRIVATE_LOCAL_VAULT_V1.md`. Joa aceptó
 ambas exclusivamente como contratos documentales con compatibilidad escalonada
 y autorizó consolidarlas y publicarlas. Quedan consolidadas por el commit que
-contiene este estado y no son controles implementados. D9, Gmail real, OAuth,
+contiene este estado y no son controles implementados. Joa autorizó después
+preparar el estudio técnico sintético C4-P y después autorizó sólo su Fase A sin
+dependencias. La ejecución aislada en `a0ea` confirmó con canarios sintéticos que
+SQLite estándar expone plaintext en DB, WAL y rollback journal, inventarió el
+host y completó documentalmente la matriz de distribución, el harness futuro y
+el modelo IPC. MAIN auditó la candidata aislada final y Joa aceptó su
+integración documental.
+B0 y las Fases B-D no fueron ejecutados, no se seleccionó proveedor, no se
+agregaron dependencias y no se habilitaron capacidades. D9, Gmail real, OAuth,
 `gmail.modify`, credenciales, datos privados y Limpieza Controlada continúan
 bloqueados.
 
@@ -49,6 +57,8 @@ bloqueados.
   confirmación, ejecución y reversión sin agregar código ni rutas;
 - dos contratos documentales C3-A/C4-P aceptados para sesión de acción efímera y
   bóveda privada local; no están implementados;
+- un estudio técnico sintético C4-P con Fase A ejecutada sin dependencias: SQLite
+  estándar quedó descartada para datos privados y no hay proveedor seleccionado;
 - una barrera automática que inspecciona imports, marcadores de capacidad,
   empaquetado y rutas activas.
 
@@ -143,8 +153,11 @@ solicitaron credenciales ni se conectó una cuenta.
   de ubicación privada, ACL, cifrado autenticado, retención y autenticación
   local definidas por C4-P. Loopback por sí solo no resuelve ese riesgo.
 - C4-P define base cifrada separada, DEK por cuenta protegida con DPAPI, ACL y
-  Windows Hello mediante un futuro broker nativo. SQLCipher es sólo el primer
-  proveedor a evaluar; no se agregó ni aprobó la dependencia.
+  Windows Hello mediante un futuro broker nativo. La Fase A descartó SQLite
+  estándar, comparó cuatro opciones y no seleccionó ninguna. El contrato C4-P
+  sólo recomienda evaluar primero la familia SQLCipher 4 Community; versión,
+  artefacto y proveedor permanecen pendientes. No hubo build, binding, cifrado,
+  DPAPI, Windows Hello ni broker real.
 - La sesión real de lectura D2 también necesita endurecimiento antes de OAuth:
   retirar `include_granted_scopes`, ligar su refresh token mediante DPoP y
   verificar known folder, DACL y reparse points del almacén. C4-P no almacena
@@ -203,7 +216,9 @@ en una verificación anterior.
 D8 fue auditada, integrada y aceptada por Joa exclusivamente en modo sintético.
 C7 fue preparado, aceptado, consolidado y publicado exclusivamente como contrato
 documental. C3-A y C4-P fueron aceptadas después con compatibilidad escalonada y
-autorización de consolidación/publicación. Ninguna autoriza crear D9, ampliar
-sesión o seguridad en código, agregar dependencias, solicitar `gmail.modify` ni
-comenzar Limpieza Controlada. Gmail real, OAuth, credenciales, datos privados y
-acciones continúan bloqueados.
+autorización de consolidación/publicación. La Fase A del estudio C4-P quedó
+ejecutada, auditada y aceptada sin dependencias; las Fases B-D siguen sin
+ejecutar. Ninguna de esas
+decisiones autoriza crear D9, ampliar sesión o seguridad en código, agregar
+dependencias, solicitar `gmail.modify` ni comenzar Limpieza Controlada. Gmail
+real, OAuth, credenciales, datos privados y acciones continúan bloqueados.
